@@ -90,8 +90,8 @@
 <nav class="rail" id="rail"></nav>
 
 <main>
-  <div class="vh"><div class="eyebrow" id="eyebrow">Control · Banque Horizon · credit</div><h1 id="title">Decision to payment</h1>
-    <p class="lede" id="lede">Each bank action carries, inside its own record, the fingerprints of the AI decision and the human review it relies on. Each step is sealed as it happens, so the chain also fixes their order. Nobody can later claim the money moved first, on another decision, or without a human.</p></div>
+  <div class="vh"><div class="eyebrow" id="eyebrow">Control · example: Banque Horizon, credit</div><h1 id="title">Decision to action</h1>
+    <p class="lede" id="lede">Every action a company takes on an AI decision carries, inside its own record, the fingerprints of the decision and the human review it relies on. Each step is sealed as it happens, so the chain fixes their order: nobody can later claim the action came first, on another decision, or without a human. Here, a bank and a loan; the same works for a job offer after an AI screening, or a claim payout after an AI assessment.</p></div>
   <div class="seg" id="seg"><button data-case="0" class="on">Approved loan · Luna R.</button><button data-case="1">Payment without approval</button></div>
   <div id="case"></div>
 </main>
@@ -367,8 +367,8 @@ function mode() {
   const gate = location.hash === "#gate";
   if (gate) cur = 2; else if (cur === 2) cur = 0;
   $("seg").style.display = gate ? "none" : "";
-  $("title").textContent = gate ? "Payment gate" : "Decision to payment";
-  $("lede").textContent = gate ? "A bank changes state faster than any human can check. Before each payment commits, the gate verifies the decision it cites against the sealed chain, with SHA-256 only, then seals the outcome. Machines check every transition; people set the rules and review what is blocked." : LEDE_DECISION;
+  $("title").textContent = gate ? "Action gate" : "Decision to action";
+  $("lede").textContent = gate ? "A company acts faster than any human can check. Before each action commits, the gate verifies the decision it cites against the sealed chain, with SHA-256 only, then seals the outcome. Machines check every transition; people set the rules and review what is blocked. Here, one day of bank payments." : LEDE_DECISION;
   Shell.setActive(gate ? "gate" : "decision");
   render();
 }

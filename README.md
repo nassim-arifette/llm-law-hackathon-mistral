@@ -18,8 +18,8 @@ One menu on every page, in three groups:
 | Disputes | **Credit refusal** · HZ-2026-04417 | Drop the applicant's letter: Counsel finds his 5 AI actions among 200, verifies each against its own receipt, drafts the plain-language explanation (live by Mistral through the relay), refuses any figure the log does not contain, and exports a self-verifying evidence file. |
 | Disputes | **Disputed transfer** · INV-2209 | A transfer, then the customer's conversation about it and the assistant's tool calls. Counsel proves what belongs together, what answered what and in which order without reading any content, then checks the disclosed answer against the disclosed transfer. |
 | Disputes | **Chatbot promise** · C-0903-1841 | The customer says the assistant promised 30 days; 3 of 12 messages disclosed; the sealed answer says 14 days. Undisclosed messages stay salted fingerprints. |
-| Controls | **Decision to payment** | An AI approval, a human review and a disbursement bound by fingerprint in sealed order; and a payment with no decision behind it. |
-| Controls | **Payment gate** | A day of 600 decisions and 438 payments checked before commit, 11 anomalies blocked, the whole day sealed as one Merkle root. |
+| Controls | **Decision to action** | Any action taken on an AI decision, bound to that decision and its human review by fingerprint, in sealed order. Example: a loan approval, its review and the disbursement; and a payment with no decision behind it. The same applies to a job offer after an AI screening or a claim payout after an AI assessment. |
+| Controls | **Action gate** | Every action checked against the sealed decisions before it commits. Example: a day of 600 credit decisions and 438 payments, 11 anomalies blocked, the whole day sealed as one Merkle root. |
 
 Files: `index.html` (Practice and Credit refusal), `linked.html`, `conversation.html`, `binding.html` (both Controls), `shell.js` and `shell.css` (the shared header and menu), `server.mjs` (the relay), `PITCH.md`.
 

@@ -12,8 +12,8 @@
       ["transfer", "Disputed transfer", "linked.html", "INV-2209"],
       ["promise", "Chatbot promise", "conversation.html", "C-0903-1841"]]],
     ["Controls", [
-      ["decision", "Decision to payment", "binding.html#decision"],
-      ["gate", "Payment gate", "binding.html#gate"]]]
+      ["decision", "Decision to action", "binding.html#decision"],
+      ["gate", "Action gate", "binding.html#gate"]]]
   ];
   const me = document.currentScript, page = me.dataset.page || "";
   document.getElementById("top").innerHTML =
