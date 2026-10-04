@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PORT = Number(process.env.PORT) || 8787;
-const KEY = process.env.MISTRAL_API_KEY || "";
+const KEY = (process.env.MISTRAL_API_KEY || "").trim().replace(/^["']|["']$/g, "");
 const MODEL = process.env.MISTRAL_MODEL || "mistral-large-latest";
 const BASE = process.env.MISTRAL_BASE || "https://api.mistral.ai";
 const TYPES = { ".html": "text/html; charset=utf-8", ".md": "text/markdown; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
@@ -55,7 +55,11 @@ async function explain(req, res) {
       body: JSON.stringify({ model: MODEL, temperature: 0.2, max_tokens: 500, messages: [{ role: "system", content: SYSTEM }, { role: "user", content: user }] })
     });
     const data = await r.json().catch(() => ({}));
-    if (!r.ok) return json(res, 502, { error: `Mistral answered ${r.status}`, detail: data?.message || data?.error || null });
+    if (!r.ok) {
+      const detail = data?.message || data?.detail || data?.error || null;
+      console.log(`Mistral answered ${r.status}${detail ? ": " + JSON.stringify(detail) : ""}`);
+      return json(res, 502, { error: `Mistral answered ${r.status}${r.status === 401 ? " (key not accepted: new keys can take a few minutes, and the key's workspace needs an active plan or credits)" : ""}`, detail });
+    }
     const text = data?.choices?.[0]?.message?.content;
     if (typeof text !== "string" || !text.trim()) return json(res, 502, { error: "empty answer from Mistral" });
     return json(res, 200, { text: text.trim(), model: data.model || MODEL });
@@ -77,7 +81,7 @@ async function serveFile(req, res) {
 }
 
 createServer((req, res) => {
-  if (req.url === "/api/health") return json(res, 200, { mistral: Boolean(KEY), model: MODEL });
+  if (req.url === "/api/health") return json(res, 200, { mistral: Boolean(KEY), model: MODEL, keyLength: KEY.length });
   if (req.url === "/api/explain" && req.method === "POST") return explain(req, res);
   if (req.method === "GET") return serveFile(req, res);
   res.writeHead(405); res.end();

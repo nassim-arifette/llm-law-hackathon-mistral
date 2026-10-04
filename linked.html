@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counsel · Words and money</title>
+<style>
+  :root {
+    --ink: #0f1115; --body: #2b2f36; --muted: #6b7079; --faint: #a6aab1; --line: #ececef; --soft: #f7f7f8;
+    --ok: #136c4a; --okbg: #f1f8f4; --risk: #b42318; --riskbg: #fdf4f3; --mark: #fbf6e9;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: Inter, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--body); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  a { color: inherit; }
+  code { font-family: var(--mono); font-size: 12px; }
+  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
+  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
+  main { max-width: 1180px; margin: 0 auto; padding: 44px 56px 96px; }
+  .eyebrow { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.015em; color: var(--ink); margin: 0; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 21px; color: var(--ink); margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 8px 0 0; max-width: 760px; }
+  .note { font-size: 12.5px; color: var(--muted); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 500; display: inline-flex; align-items: center; text-decoration: none; transition: opacity .15s; }
+  .btn:hover { opacity: .86; }
+  .btn.ghost { background: #fff; color: var(--ink); border-color: #dfe1e5; }
+  .btn.ghost:hover { border-color: var(--faint); opacity: 1; }
+  .vh { margin-bottom: 36px; }
+  .private { display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px; }
+  .box { border: 1px solid var(--line); }
+  .box-h { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .box-h .lock { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+  .box-b { padding: 18px; }
+  .tx { font-family: var(--serif); font-size: 17px; color: var(--ink); line-height: 1.5; }
+  .chat { display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 86%; }
+  .msg .meta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin-bottom: 3px; }
+  .msg .bub { padding: 10px 14px; border: 1px solid var(--line); color: var(--ink); line-height: 1.5; }
+  .msg.customer { align-self: flex-end; } .msg.customer .bub { background: var(--soft); } .msg.customer .meta { text-align: right; }
+  .msg.action { align-self: center; max-width: 94%; } .msg.action .bub { border-style: dashed; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .arrow { text-align: center; color: var(--faint); font-size: 12.5px; margin: 28px 0 10px; letter-spacing: .04em; }
+  .counsel { border: 1px solid var(--ink); }
+  .counsel .box-h { border-bottom-color: var(--line); }
+  .graph { padding: 8px 18px 18px; }
+  .node { display: grid; grid-template-columns: 26px 160px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: start; }
+  .node:last-child { border-bottom: 0; }
+  .node .k { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--ink); display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink); margin-top: 2px; }
+  .node.tx .k { background: var(--ink); color: #fff; }
+  .node.bad { background: var(--riskbg); }
+  .node .who { font-size: 12.5px; color: var(--ink); font-weight: 550; }
+  .node .who small { display: block; font-family: var(--mono); font-weight: 400; color: var(--muted); font-size: 11.5px; }
+  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 2px 10px; font-size: 12px; }
+  .kv span { color: var(--muted); }
+  .kv code { color: var(--ink); word-break: break-all; font-size: 11.5px; }
+  .kv .lk { color: var(--ok); } .kv .lk.bad { color: var(--risk); }
+  .opened { margin-top: 6px; padding: 8px 10px; background: var(--mark); font-size: 13px; color: var(--ink); border-left: 2px solid var(--ink); }
+  .verdict { margin: 18px 0 0; padding: 14px 18px; border-left: 2px solid; font-size: 14px; }
+  .verdict.ok { color: var(--ok); background: var(--okbg); } .verdict.bad { color: var(--risk); background: var(--riskbg); }
+  .verdict b { display: block; font-weight: 600; margin-bottom: 2px; }
+  .verdict ul { margin: 6px 0 0; padding-left: 18px; }
+  .acts { padding: 0 18px 18px; }
+  @media (max-width: 900px) {
+    .top { padding: 0 16px; } .firm span { display: none; }
+    main { padding: 28px 16px 72px; }
+    .private { grid-template-columns: 1fr; }
+    .node { grid-template-columns: 26px 1fr; } .node .kv { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="mark" href="index.html">Counsel</a>
+  <a class="back" href="index.html">Back to the agenda</a>
+  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
+</header>
+
+<main>
+  <div class="vh"><div class="eyebrow">Banque Horizon · one transaction, one conversation</div><h1>Words and money, linked without the content</h1>
+    <p class="lede">A transfer leaves a customer's account. The next morning she asks the bank's assistant why. Every record is sealed in two parts: a private body that stays at the bank, and a small header that carries a case tag and the fingerprints of the records it refers to. Counsel receives only the headers, and can still prove what belongs together, what answered what, and in which order.</p></div>
+
+  <div class="private">
+    <div class="box"><div class="box-h"><h2>Core banking</h2><span class="lock">Stays at the bank</span></div>
+      <div class="box-b"><div class="note" id="t-meta"></div><div class="tx" id="t-body"></div></div></div>
+    <div class="box"><div class="box-h"><h2>The bank's assistant</h2><span class="lock">Stays at the bank</span></div>
+      <div class="box-b"><div class="chat" id="chat"></div></div></div>
+  </div>
+
+  <div class="arrow">Only headers and receipts travel. No word, no amount, no name.</div>
+
+  <div class="box counsel">
+    <div class="box-h"><h2>What Counsel receives</h2><span class="note" id="tagline"></span></div>
+    <div class="graph" id="graph"></div>
+    <div class="acts">
+      <div class="row"><button class="btn" data-act="verify">Verify the links, without content</button>
+        <button class="btn ghost" data-act="disclose">Disclose the answer and the transfer</button>
+        <button class="btn ghost" data-act="edit" id="editBtn">Simulate an edit of the answer</button></div>
+      <div id="out"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* Fictional bank and customer. Each record: commit = SHA-256(random value + "\n" + body);
+   header = { n, kind, at, tag, refs, commit }; the sealed fingerprint is SHA-256(header). */
+const BANK_SECRET = "banque-horizon-demo-case-secret-7f3a9c";         // known only to the bank
+const CASE_KEY = "account ending 4471 · transfer INV-2209";
+const RECORDS = [
+  { n: 1, kind: "Transaction", who: "Core banking", at: "2026-10-03 18:12:07", refs: [],
+    body: "Transfer of 2 400 EUR from the account ending 4471 (Luna R.) to Garage Moreau SARL, reference INV-2209, ordered in the mobile app, executed on 3 October 2026 at 18:12.", salt: "8c2f5a1e9d7b3c6f0a4e8d2b5c9f1a73" },
+  { n: 2, kind: "Customer message", who: "Customer", role: "customer", at: "2026-10-04 09:31:12", refs: [],
+    body: "Why did 2 400 euros leave my account yesterday? I never ordered that.", salt: "1d6b9e3a7c0f4d8b2e5a9c3f6b0d4e81" },
+  { n: 3, kind: "AI action", who: "Assistant · tool call", role: "action", at: "2026-10-04 09:31:13", refs: [1, 2],
+    body: "Looked up the transfer of 3 October 2026 on the account ending 4471.", salt: "f4a8c2e6b0d3f7a1c5e9b2d6f0a4c8e2" },
+  { n: 4, kind: "AI answer", who: "Assistant · Horizon Assist", role: "assistant", at: "2026-10-04 09:31:15", refs: [1, 3],
+    body: "The 2 400 euros went to Garage Moreau SARL, reference INV-2209. The transfer was ordered from your mobile app on 3 October at 18:12. If you did not order it, I can open a dispute now.", salt: "3e7b1f5a9d2c6e0b4f8a1d5c9e3b7f04" },
+  { n: 5, kind: "Customer message", who: "Customer", role: "customer", at: "2026-10-04 09:32:40", refs: [4],
+    body: "Yes, please open a dispute.", salt: "a9d3f7b1e5c0a4d8f2b6e0c4a8d2f6b9" },
+  { n: 6, kind: "AI action", who: "Assistant · tool call", role: "action", at: "2026-10-04 09:32:41", refs: [1, 5],
+    body: "Opened dispute D-2026-1004-0187 on transfer INV-2209 and froze the claim for review.", salt: "5b0e4a8d2f6c1b5e9a3d7f1c5b9e3a62" }
+];
+/* Real receipts, production chain, sealed in this order (demo1, 4 October 2026). Do not edit RECORDS, BANK_SECRET or CASE_KEY. */
+const RECEIPTS = [
+  { id: "DG-48e306cad8dd43159f23196582cfd49c", seq: 178025 },
+  { id: "DG-e000a9c1979942d9a1d9efdb6c1f8a48", seq: 178026 },
+  { id: "DG-a737c8fd1dbe42a29e4ef8e90f808ddc", seq: 178027 },
+  { id: "DG-549b15f1abd04ecca7ecfdc03c335ea2", seq: 178028 },
+  { id: "DG-76ddbc6a5241407995bae5ea4af5727a", seq: 178029 },
+  { id: "DG-f67d82672dc84545abebfda2d967d54d", seq: 178030 }
+];
+
+/* ---------- SHA-256 ---------- */
+function sha256js(msg) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const len = msg.length, total = ((len + 9 + 63) >> 6) << 6, m = new Uint8Array(total);
+  m.set(msg); m[len] = 0x80;
+  const bits = len * 8, dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(bits / 0x100000000)); dv.setUint32(total - 4, bits >>> 0);
+  const W = new Uint32Array(64), r = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < total; o += 64) {
+    for (let i = 0; i < 16; i++) W[i] = dv.getUint32(o + i * 4);
+    for (let i = 16; i < 64; i++) {
+      const s0 = r(W[i-15], 7) ^ r(W[i-15], 18) ^ (W[i-15] >>> 3), s1 = r(W[i-2], 17) ^ r(W[i-2], 19) ^ (W[i-2] >>> 10);
+      W[i] = (W[i-16] + s0 + W[i-7] + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + W[i]) >>> 0;
+      const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  return H.map(x => x.toString(16).padStart(8, "0")).join("");
+}
+const enc = x => new TextEncoder().encode(x);
+const H = s => sha256js(enc(s));
+
+/* ---------- what the bank computed at the time ---------- */
+const TAG = H(BANK_SECRET + "\n" + CASE_KEY);                         // same for every record of the case, reveals nothing
+const HEADERS = [], FPS = [];
+RECORDS.forEach(r => {
+  const header = { n: r.n, kind: r.kind, at: r.at, tag: TAG, refs: r.refs.map(k => FPS[k - 1]), commit: H(r.salt + "\n" + r.body) };
+  HEADERS.push(header); FPS.push(H(JSON.stringify(header)));
+});
+
+/* ---------- what Counsel holds: headers, receipts, and whatever gets disclosed ---------- */
+let disclosed = false, edited = false, result = null;
+const shownBody = r => (edited && r.n === 4) ? r.body.replace("18:12", "21:40").replace("mobile app", "branch") : r.body;
+const $ = id => document.getElementById(id);
+const VERIFY = id => `https://www.recognitium.com/verify/${encodeURIComponent(id)}`;
+const fmtSeq = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function renderPrivate() {
+  const t = RECORDS[0];
+  $("t-meta").textContent = `${t.at} · executed`;
+  $("t-body").textContent = t.body;
+  $("chat").innerHTML = RECORDS.slice(1).map(r => `<div class="msg ${r.role}"><div class="meta">${r.at.slice(11)} · ${r.who}</div><div class="bub">${esc(r.body)}</div></div>`).join("");
+}
+
+function renderGraph() {
+  $("tagline").innerHTML = `Case tag <code>${TAG.slice(0, 16)}…</code>`;
+  $("graph").innerHTML = HEADERS.map((h, i) => {
+    const rc = RECEIPTS[i], bad = result && result.badNodes.includes(i);
+    const open = disclosed && (i === 0 || i === 3);
+    return `<div class="node${i === 0 ? " tx" : ""}${bad ? " bad" : ""}"><div class="k">${h.n}</div>
+      <div class="who">${h.kind}<small>${h.at}</small></div>
+      <div class="kv"><span>Fingerprint</span><code>${FPS[i]}</code>
+        <span>Commitment</span><code>${h.commit}</code>
+        <span>Case tag</span><code>${h.tag === TAG ? "same as the case" : "DIFFERENT"}</code>
+        <span>Links to</span><span>${h.refs.length ? h.refs.map(fp => { const k = FPS.indexOf(fp); return `<span class="lk">record ${k + 1}</span>`; }).join(", ") : "nothing"}</span>
+        ${rc ? `<span>Receipt</span><code><a href="${VERIFY(rc.id)}" target="_blank" rel="noopener">${rc.id}</a> · sequence ${fmtSeq(rc.seq)}</code>` : ""}
+      </div>${open ? `<div></div><div></div><div class="opened">${esc(shownBody(RECORDS[i]))}</div>` : ""}</div>`;
+  }).join("");
+}
+
+function verifyLinks() {
+  /* Without any content: every fingerprint is its header, every link points to an earlier record of the same case, sealed before it. */
+  const issues = [], badNodes = [];
+  HEADERS.forEach((h, i) => {
+    if (H(JSON.stringify(h)) !== FPS[i]) { issues.push(`Record ${i + 1}: its header does not match its fingerprint.`); badNodes.push(i); }
+    if (h.tag !== TAG) { issues.push(`Record ${i + 1} belongs to another case.`); badNodes.push(i); }
+    h.refs.forEach(fp => {
+      const k = FPS.indexOf(fp);
+      if (k < 0) { issues.push(`Record ${i + 1} points to a fingerprint that was never sealed.`); badNodes.push(i); }
+      else if (RECEIPTS[k] && RECEIPTS[i] && RECEIPTS[k].seq >= RECEIPTS[i].seq) { issues.push(`Record ${i + 1} was sealed before the record it refers to.`); badNodes.push(i); }
+    });
+  });
+  return { issues, badNodes };
+}
+
+function verifyDisclosed() {
+  /* With two bodies opened: each matches its commitment, and the answer's facts match the transfer's. */
+  const issues = [], badNodes = [];
+  [0, 3].forEach(i => {
+    const r = RECORDS[i];
+    if (H(r.salt + "\n" + shownBody(r)) !== HEADERS[i].commit) { issues.push(`Record ${i + 1}: the disclosed text is not the one committed. It was changed after sealing.`); badNodes.push(i); }
+  });
+  const facts = s => s.match(/\d[\d :]*\d|INV-\d+|Garage Moreau|mobile app|branch/g) || [];
+  const flat = x => x.replace(/\s/g, "");
+  const tx = facts(RECORDS[0].body).map(flat).join(" "), ans = facts(shownBody(RECORDS[3]));
+  const unknown = ans.filter(f => !tx.includes(flat(f)));
+  if (unknown.length) { issues.push(`The answer states ${unknown.join(", ")}, which the transfer does not show.`); badNodes.push(3); }
+  return { issues, badNodes, checked: ans };
+}
+
+function show(kind) {
+  if (kind === "verify") {
+    result = verifyLinks();
+    $("out").innerHTML = result.issues.length
+      ? `<div class="verdict bad"><b>The links do not hold.</b><ul>${result.issues.map(x => `<li>${x}</li>`).join("")}</ul></div>`
+      : `<div class="verdict ok"><b>The links hold, and Counsel read no content.</b>All six records belong to the same case. The assistant's lookup and its answer both point to the transfer; the dispute points to the transfer and to the customer's request. Every link points to a record sealed before it${RECEIPTS[0] ? `, sequences ${fmtSeq(RECEIPTS[0].seq)} to ${fmtSeq(RECEIPTS[5].seq)}` : ""}.</div>`;
+  } else {
+    result = verifyDisclosed();
+    $("out").innerHTML = result.issues.length
+      ? `<div class="verdict bad"><b>Not consistent.</b><ul>${result.issues.map(x => `<li>${x}</li>`).join("")}</ul></div>`
+      : `<div class="verdict ok"><b>What the assistant said matches what the bank did.</b>Both disclosed texts match their commitments, word for word. Every fact in the answer (${result.checked.join(", ")}) appears in the transfer. The four other records stay closed.</div>`;
+  }
+  renderGraph();
+}
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const act = el.dataset.act;
+  if (act === "verify") return show("verify");
+  if (act === "disclose") { disclosed = true; return show("disclose"); }
+  if (act === "edit") {
+    edited = !edited; disclosed = true;
+    $("editBtn").textContent = edited ? "Undo the edit" : "Simulate an edit of the answer";
+    return show("disclose");
+  }
+});
+
+renderPrivate(); renderGraph();
+</script>
+</body>
+</html>
