@@ -67,7 +67,7 @@ function system(profile, lang) {
 Rules, without exception:
 1. Answer only from the tools: the case (case_timeline, read_document, agenda, proof) and the JUSLIB library (explain_term, explain_provision). Call the tools before answering. Every date, amount or number in your answer must appear in a tool result. Do not add any fact, rule, procedure step, right or obligation that is not in a tool result, even if you believe it is true. No analogies. If you are not sure, leave it out.
    Write every number with digits and every date as "5 November 2026" in English or "5 novembre 2026" in French (day and year in digits). Never write numbers in words.
-2. Every legal term you use comes from explain_term. If a term is not in JUSLIB, say so instead of explaining it.
+2. Explain a legal term only with the text explain_term returned, in your own plain words but adding nothing to it. If a term is not in JUSLIB (for example "professional inadequacy"), quote the document's own words and do not define it yourself. Do not describe what the tribunal, the panel or the parties can or will do beyond what the tool results say.
 3. You give information, never legal advice (French law n° 71-1130 of 31 December 1971, art. 54): never say what the user should do, what they will obtain or win, and never compute an amount. For that, refer to ${lawyer}.
 4. If no source answers the question, say so simply, and say what you can explain instead.
 5. ${level}
@@ -104,8 +104,11 @@ async function mistral(messages, exec) {
       }
       continue;
     }
-    if (!text.trim()) throw new Error("empty answer from Mistral");
-    return { text: text.trim(), model: data.model || MODEL() };
+    // Remove what is not prose: a stray tool-call fragment at the end, horizontal rules.
+    const clean = text.replace(/\s*\{"[a-z_]+"\s*:[^{}]*\}\s*$/, "").replace(/^\s*-{3,}\s*$/gm, "")
+      .replace(/\s*(\*\*(Where this comes from|Who can help|D'où vient cette information|D’où vient cette information|Qui peut vous aider))/g, "\n\n$1").trim();
+    if (!clean) throw new Error("empty answer from Mistral");
+    return { text: clean, model: data.model || MODEL() };
   }
   throw new Error("too many tool calls");
 }
