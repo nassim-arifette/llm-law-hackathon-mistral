@@ -4,6 +4,10 @@ LLM x Law Hackathon Paris #2 (Mistral AI, Stanford CodeX, Sciences Po), 4 Octobe
 
 Counsel is the lawyer's application for disputes about AI decisions. Underneath, Recognitium seals every AI decision and every bank action where they happen, and binds them together. Article 12 of the AI Act makes logging mandatory for high-risk AI; it does not say how to make logs trustworthy. That is what this does.
 
+## The new app
+
+`app/` holds the application built from the product specification: one shared case, three sections (Assistant, Agenda, Traçabilité), three account types. Run `node app/server.mjs` and open http://localhost:8791. Details in [app/README.md](app/README.md). The pages below are the earlier prototype.
+
 ## Open it
 
 No server, no install, no internet needed (except to open the public receipt links). Double-click `index.html`, full screen, at least 1000 px wide.

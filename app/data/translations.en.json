@@ -1,0 +1,37 @@
+{
+  "note": "Unofficial English translation for display. Not sealed: the sealed original of each event is the French text in case.json.",
+  "case": {
+    "title": "Karim B. v. Horizon Logistique SAS",
+    "court": "Paris employment tribunal (conseil de prud'hommes), Commerce section",
+    "reference": "RG F 26/04417 (fictional)",
+    "stage": "Conciliation",
+    "fictional": "Every person, company, document and log in this case is fictional."
+  },
+  "events": {
+    "E1": { "title": "AI performance score computed (PerfScore v2)",
+      "text": "Automated performance evaluation of Mr Karim B., order picker, by the PerfScore v2 system: score of 41 out of 100, alert threshold 50. Main factors: picking rate 18% below target over 3 months, picking errors reported.",
+      "label": null },
+    "E2": { "title": "Report of the human review of the score",
+      "text": "The warehouse manager reviewed the score of 41 out of 100 during an evaluation meeting. The manager notes 6 picking errors over the quarter and proposes starting a procedure for professional inadequacy." },
+    "E3": { "title": "Internal HR note",
+      "text": "Check the length of service and the statutory severance calculation before sending the notice of the pre-dismissal meeting." },
+    "E4": { "title": "Notice of the pre-dismissal meeting",
+      "text": "Registered letter with acknowledgment of receipt inviting Mr Karim B. to a meeting prior to a possible dismissal, on 18 June 2026 at 14:00, at the company's head office." },
+    "E5": { "title": "Pre-dismissal meeting held",
+      "text": "Pre-dismissal meeting held on 18 June 2026 in the presence of Mr Karim B., assisted by an employee adviser. Reason given by the employer: professional inadequacy." },
+    "E6": { "title": "Dismissal letter",
+      "text": "Letter of dismissal for professional inadequacy, sent by registered mail with acknowledgment of receipt. Reason: insufficient results measured by the automated evaluation of 2 June 2026 and confirmed by the review of 5 June 2026. Notice period of 2 months." },
+    "E7": { "title": "Dismissal letter received",
+      "text": "Acknowledgment of receipt of the dismissal letter, signed by Mr Karim B. on 27 June 2026." },
+    "E8": { "title": "Application filed with the Paris employment tribunal",
+      "text": "Application by Mr Karim B. contesting his dismissal. Claims: damages for dismissal without genuine and serious cause; disclosure of the documentation and logs of the PerfScore v2 system used for the evaluation. 14 documents attached." },
+    "E9": { "title": "Summons before the conciliation and orientation panel",
+      "text": "The registry of the Paris employment tribunal summons the parties before the conciliation and orientation panel on 5 November 2026 at 9:30, Commerce section. The parties are invited to exchange their documents before the hearing." },
+    "E10": { "title": "Deadline set: send the documents to the employer",
+      "text": "Send the list and the 14 documents to the employer's lawyer by 29 October 2026, one week before the conciliation hearing.",
+      "label": "Send the 14 documents to the employer" },
+    "E11": { "title": "Deadline set: hand over the employer's documents",
+      "text": "Hand over to the company's lawyer the PerfScore v2 documentation and logs requested in the application, by 28 October 2026.",
+      "label": "Hand over the PerfScore v2 documentation to the lawyer" }
+  }
+}

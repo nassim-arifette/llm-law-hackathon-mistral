@@ -1,0 +1,639 @@
+{
+  "schema": "JUSLIB glossary export, v0.1.2 field names",
+  "corpus_version": "counsel-demo/2026.10.04-001",
+  "note": "Plain-language drafts written with AI for the hackathon demo. Every entry is unverified until a lawyer checks the article on Legifrance and validates the text.",
+  "sources": {
+    "code-travail": {
+      "label": "Code du travail",
+      "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006072050/"
+    },
+    "cpc": {
+      "label": "Code de procédure civile",
+      "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006070716/"
+    },
+    "ai-act": {
+      "label": "Règlement (UE) 2024/1689 sur l'intelligence artificielle",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+    }
+  },
+  "entries": [
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-CONSEIL-PRUDHOMMES-20261004-001",
+      "term": "conseil de prud'hommes",
+      "aliases": [
+        "prud'hommes",
+        "prudhommes",
+        "cph"
+      ],
+      "explained_text": {
+        "fr": "Le tribunal qui juge les litiges entre un salarié et son employeur liés au contrat de travail. Ses juges ne sont pas des magistrats professionnels : ce sont des représentants des salariés et des employeurs, en nombre égal.",
+        "en": "The court that hears disputes between an employee and their employer about the employment contract. Its judges are not professional judges: equal numbers of employee and employer representatives."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1411-1"
+        }
+      ],
+      "term_en": "employment tribunal",
+      "aliases_en": [
+        "labour court",
+        "labor court",
+        "employment court"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-REQUETE-20261004-001",
+      "term": "requête",
+      "aliases": [
+        "requete",
+        "saisine",
+        "saisir le conseil"
+      ],
+      "explained_text": {
+        "fr": "La demande écrite par laquelle on saisit le conseil de prud'hommes. Elle expose ce que l'on demande et pourquoi, et liste les pièces jointes.",
+        "en": "The written application that starts a case before the conseil de prud'hommes. It states what is claimed and why, and lists the documents attached."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "R1452-2"
+        }
+      ],
+      "term_en": "application to the tribunal",
+      "aliases_en": [
+        "claim form",
+        "originating application"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-BCO-20261004-001",
+      "term": "bureau de conciliation et d'orientation",
+      "aliases": [
+        "bureau de conciliation",
+        "bco",
+        "audience de conciliation"
+      ],
+      "explained_text": {
+        "fr": "La première étape devant les prud'hommes. Deux conseillers reçoivent les deux parties pour tenter de trouver un accord. S'il n'y en a pas, ils orientent l'affaire vers le jugement.",
+        "en": "The first stage before the prud'hommes. Two members meet both parties to try to reach an agreement. If there is none, they send the case on toward judgment."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1454-1"
+        }
+      ],
+      "term_en": "conciliation and orientation panel",
+      "aliases_en": [
+        "conciliation panel",
+        "conciliation hearing"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-CONCILIATION-20261004-001",
+      "term": "conciliation",
+      "aliases": [
+        "concilier"
+      ],
+      "explained_text": {
+        "fr": "La recherche d'un accord entre le salarié et l'employeur, avec l'aide des conseillers, avant tout jugement. C'est en principe la première étape devant les prud'hommes.",
+        "en": "The attempt, with the help of the court members, to reach an agreement between employee and employer before any judgment. It is in principle the first stage before the prud'hommes."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1454-1"
+        }
+      ],
+      "term_en": "conciliation",
+      "aliases_en": [
+        "settlement attempt"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-PV-CONCILIATION-20261004-001",
+      "term": "procès-verbal de conciliation",
+      "aliases": [
+        "proces-verbal de conciliation",
+        "pv de conciliation"
+      ],
+      "explained_text": {
+        "fr": "Le document qui constate l'accord trouvé en conciliation, ou l'absence d'accord. Quand il y a accord, il met fin au litige sur les points réglés.",
+        "en": "The record of the conciliation stage: it states the agreement reached, or that there was none. An agreement ends the dispute on the points it settles."
+      },
+      "cited_dispositions": [],
+      "term_en": "conciliation record",
+      "aliases_en": [
+        "settlement record"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-BUREAU-JUGEMENT-20261004-001",
+      "term": "bureau de jugement",
+      "aliases": [],
+      "explained_text": {
+        "fr": "La formation du conseil de prud'hommes qui juge l'affaire quand la conciliation n'a pas abouti. Elle entend les parties et rend le jugement.",
+        "en": "The panel of the conseil de prud'hommes that decides the case when conciliation has failed. It hears both sides and gives the judgment."
+      },
+      "cited_dispositions": [],
+      "term_en": "judgment panel",
+      "aliases_en": [
+        "trial panel"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-DEPARTAGE-20261004-001",
+      "term": "juge départiteur",
+      "aliases": [
+        "juge departiteur",
+        "départage",
+        "departage"
+      ],
+      "explained_text": {
+        "fr": "Un juge professionnel appelé quand les conseillers prud'hommes sont à égalité de voix. L'affaire est alors examinée à nouveau sous sa présidence.",
+        "en": "A professional judge called in when the prud'hommes members are split evenly. The case is then heard again with this judge presiding."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1454-2"
+        }
+      ],
+      "term_en": "tie-breaking judge",
+      "aliases_en": [
+        "casting judge"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-DEFENSEUR-SYNDICAL-20261004-001",
+      "term": "défenseur syndical",
+      "aliases": [
+        "defenseur syndical"
+      ],
+      "explained_text": {
+        "fr": "Une personne désignée par un syndicat, qui peut assister ou représenter un salarié devant les prud'hommes et la cour d'appel, sans honoraires.",
+        "en": "A person appointed by a trade union who can assist or represent an employee before the prud'hommes and the court of appeal, without fees."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1453-4"
+        }
+      ],
+      "term_en": "union advocate",
+      "aliases_en": [
+        "union representative",
+        "union defender"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-CONVOCATION-20261004-001",
+      "term": "convocation",
+      "aliases": [
+        "convoqué",
+        "convoque"
+      ],
+      "explained_text": {
+        "fr": "La lettre qui vous informe de la date, de l'heure et du lieu d'une audience ou d'un entretien, et de ce que vous devez préparer.",
+        "en": "The letter telling you the date, time and place of a hearing or a meeting, and what to prepare."
+      },
+      "cited_dispositions": [],
+      "term_en": "summons",
+      "aliases_en": [
+        "notice to appear",
+        "notice of hearing"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-PIECES-20261004-001",
+      "term": "pièces",
+      "aliases": [
+        "pieces",
+        "communication des pièces",
+        "communication des pieces",
+        "bordereau"
+      ],
+      "explained_text": {
+        "fr": "Les documents qui servent de preuve : contrat, bulletins de salaire, courriers. Chaque partie doit les transmettre à l'autre à temps, pour qu'elle puisse y répondre.",
+        "en": "The documents used as evidence: contract, payslips, letters. Each side must send them to the other in good time, so the other can answer."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "132"
+        }
+      ],
+      "term_en": "evidence documents",
+      "aliases_en": [
+        "evidence",
+        "exhibits",
+        "bundle of documents"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-CONCLUSIONS-20261004-001",
+      "term": "conclusions",
+      "aliases": [],
+      "explained_text": {
+        "fr": "Le document écrit dans lequel chaque partie présente ses demandes et ses arguments, en s'appuyant sur ses pièces.",
+        "en": "The written document in which each side sets out its claims and arguments, based on its evidence."
+      },
+      "cited_dispositions": [],
+      "term_en": "written submissions",
+      "aliases_en": [
+        "submissions",
+        "pleadings"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-AUDIENCE-20261004-001",
+      "term": "audience",
+      "aliases": [],
+      "explained_text": {
+        "fr": "La séance au tribunal où l'affaire est examinée et où les parties, ou leurs représentants, s'expriment devant les juges.",
+        "en": "The session in court where the case is examined and the parties, or their representatives, speak before the judges."
+      },
+      "cited_dispositions": [],
+      "term_en": "hearing",
+      "aliases_en": []
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-DELIBERE-20261004-001",
+      "term": "délibéré",
+      "aliases": [
+        "delibere",
+        "mis en délibéré"
+      ],
+      "explained_text": {
+        "fr": "Le temps pendant lequel les juges réfléchissent après l'audience, avant de rendre leur décision. La date de la décision est annoncée à l'audience.",
+        "en": "The time the judges take after the hearing to decide. The date of the decision is announced at the hearing."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "450"
+        }
+      ],
+      "term_en": "deliberation",
+      "aliases_en": [
+        "reserved judgment"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-JUGEMENT-20261004-001",
+      "term": "jugement",
+      "aliases": [],
+      "explained_text": {
+        "fr": "La décision rendue par le tribunal à la fin de l'affaire. Elle dit qui a raison sur chaque demande et ce que chacun doit faire ou payer.",
+        "en": "The decision the court gives at the end of the case. It says who is right on each claim and what each side must do or pay."
+      },
+      "cited_dispositions": [],
+      "term_en": "judgment",
+      "aliases_en": [
+        "judgement",
+        "ruling"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-NOTIFICATION-20261004-001",
+      "term": "notification",
+      "aliases": [
+        "notifié",
+        "notifie"
+      ],
+      "explained_text": {
+        "fr": "La transmission officielle d'un acte ou d'une décision à une personne. Beaucoup de délais commencent à courir à partir de la notification.",
+        "en": "The official delivery of a document or decision to a person. Many time limits start running from the notification."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "651"
+        }
+      ],
+      "term_en": "notification",
+      "aliases_en": [
+        "notified"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-SIGNIFICATION-20261004-001",
+      "term": "signification",
+      "aliases": [
+        "signifié",
+        "signifie"
+      ],
+      "explained_text": {
+        "fr": "Une notification faite par un commissaire de justice (anciennement huissier de justice). Elle donne une date certaine à la remise de l'acte.",
+        "en": "A notification delivered by a commissaire de justice (formerly a bailiff). It gives a certain date to the delivery."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "651"
+        }
+      ],
+      "term_en": "formal service by a court officer",
+      "aliases_en": [
+        "formal service"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-EXECUTION-PROVISOIRE-20261004-001",
+      "term": "exécution provisoire",
+      "aliases": [
+        "execution provisoire"
+      ],
+      "explained_text": {
+        "fr": "La possibilité de faire appliquer un jugement tout de suite, même si l'autre partie fait appel.",
+        "en": "The possibility of enforcing a judgment right away, even if the other side appeals."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "R1454-28"
+        }
+      ],
+      "term_en": "provisional enforcement",
+      "aliases_en": [
+        "immediate enforcement"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-APPEL-20261004-001",
+      "term": "appel",
+      "aliases": [
+        "délai d'appel",
+        "delai d'appel",
+        "faire appel",
+        "cour d'appel"
+      ],
+      "explained_text": {
+        "fr": "Le recours qui permet de faire juger l'affaire une seconde fois par la cour d'appel. Le délai pour faire appel d'un jugement est en principe d'un mois à partir de sa notification.",
+        "en": "The remedy that has the case decided a second time by the court of appeal. The time limit to appeal a judgment is in principle one month from its notification."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "538"
+        }
+      ],
+      "term_en": "appeal",
+      "aliases_en": [
+        "court of appeal",
+        "appeal deadline"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-REFERE-20261004-001",
+      "term": "référé prud'homal",
+      "aliases": [
+        "refere prud'homal",
+        "référé",
+        "refere"
+      ],
+      "explained_text": {
+        "fr": "Une procédure rapide devant une formation spéciale des prud'hommes, pour les mesures urgentes ou pour les obligations qui ne sont pas sérieusement contestables, comme un salaire impayé.",
+        "en": "A fast procedure before a special panel of the prud'hommes, for urgent measures or for obligations that cannot seriously be disputed, such as unpaid wages."
+      },
+      "cited_dispositions": [],
+      "term_en": "summary proceedings",
+      "aliases_en": [
+        "interim relief",
+        "emergency procedure"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-RADIATION-20261004-001",
+      "term": "radiation",
+      "aliases": [],
+      "explained_text": {
+        "fr": "Le retrait d'une affaire de la liste des affaires en cours, par exemple quand les parties n'accomplissent pas les démarches demandées. L'affaire peut être reprise ensuite, sous conditions.",
+        "en": "Removal of a case from the list of pending cases, for example when the parties fail to take the required steps. The case can be revived later, under conditions."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "381"
+        }
+      ],
+      "term_en": "striking out",
+      "aliases_en": [
+        "struck out"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-DESISTEMENT-20261004-001",
+      "term": "désistement",
+      "aliases": [
+        "desistement",
+        "se désister",
+        "se desister"
+      ],
+      "explained_text": {
+        "fr": "La décision de la personne qui a engagé l'action d'y renoncer. Il met fin à l'instance.",
+        "en": "The decision by the person who started the case to drop it. It ends the proceedings."
+      },
+      "cited_dispositions": [
+        {
+          "source": "cpc",
+          "article": "394"
+        }
+      ],
+      "term_en": "withdrawal of the claim",
+      "aliases_en": [
+        "discontinuance"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-PRESCRIPTION-20261004-001",
+      "term": "prescription",
+      "aliases": [
+        "prescrit",
+        "délai pour contester",
+        "delai pour contester"
+      ],
+      "explained_text": {
+        "fr": "Le délai au-delà duquel on ne peut plus agir en justice. Pour contester un licenciement, ce délai est en principe de 12 mois à partir de la notification de la rupture.",
+        "en": "The time limit after which legal action is no longer possible. To contest a dismissal, it is in principle 12 months from the notification of the termination."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1471-1"
+        }
+      ],
+      "term_en": "limitation period",
+      "aliases_en": [
+        "statute of limitations",
+        "time limit to contest"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-SANS-CAUSE-20261004-001",
+      "term": "licenciement sans cause réelle et sérieuse",
+      "aliases": [
+        "licenciement sans cause reelle et serieuse",
+        "sans cause réelle et sérieuse",
+        "sans cause reelle et serieuse",
+        "barème",
+        "bareme",
+        "barème macron",
+        "bareme macron"
+      ],
+      "explained_text": {
+        "fr": "Un licenciement dont le motif n'est pas jugé réel ou suffisamment sérieux. Le salarié peut alors obtenir une indemnité, dont le montant est encadré par un barème fixé par la loi, selon son ancienneté.",
+        "en": "A dismissal whose stated reason is found not to be genuine or serious enough. The employee may then obtain compensation, within a scale set by law according to length of service."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1235-3"
+        }
+      ],
+      "term_en": "unfair dismissal",
+      "aliases_en": [
+        "without genuine and serious cause",
+        "compensation scale",
+        "macron scale"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-INDEMNITE-LEGALE-20261004-001",
+      "term": "indemnité légale de licenciement",
+      "aliases": [
+        "indemnite legale de licenciement",
+        "indemnité de licenciement",
+        "indemnite de licenciement"
+      ],
+      "explained_text": {
+        "fr": "La somme minimale que l'employeur doit verser au salarié licencié qui a au moins 8 mois d'ancienneté, sauf faute grave ou lourde. Elle dépend du salaire et de l'ancienneté.",
+        "en": "The minimum amount the employer must pay a dismissed employee with at least 8 months of service, except for serious or gross misconduct. It depends on pay and length of service."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1234-9"
+        }
+      ],
+      "term_en": "statutory severance pay",
+      "aliases_en": [
+        "severance pay",
+        "statutory severance",
+        "severance"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-ENTRETIEN-PREALABLE-20261004-001",
+      "term": "entretien préalable",
+      "aliases": [
+        "entretien prealable"
+      ],
+      "explained_text": {
+        "fr": "Le rendez-vous obligatoire où l'employeur expose au salarié les raisons du licenciement envisagé et écoute ses explications, avant toute décision.",
+        "en": "The mandatory meeting where the employer explains the reasons for the dismissal being considered and hears the employee, before any decision."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1232-2"
+        }
+      ],
+      "term_en": "pre-dismissal meeting",
+      "aliases_en": [
+        "preliminary meeting"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-FR-LETTRE-LICENCIEMENT-20261004-001",
+      "term": "lettre de licenciement",
+      "aliases": [],
+      "explained_text": {
+        "fr": "La lettre, envoyée en recommandé avec avis de réception, qui notifie le licenciement au salarié et en énonce le ou les motifs.",
+        "en": "The letter, sent by registered mail with acknowledgment of receipt, that notifies the employee of the dismissal and states its reason or reasons."
+      },
+      "cited_dispositions": [
+        {
+          "source": "code-travail",
+          "article": "L1232-6"
+        }
+      ],
+      "term_en": "dismissal letter",
+      "aliases_en": [
+        "termination letter",
+        "letter of dismissal"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-EU-IA-HAUT-RISQUE-20261004-001",
+      "term": "système d'IA à haut risque",
+      "aliases": [
+        "systeme d'ia a haut risque",
+        "ia à haut risque",
+        "ia a haut risque",
+        "haut risque"
+      ],
+      "explained_text": {
+        "fr": "Un système d'intelligence artificielle utilisé dans un domaine sensible, comme l'emploi ou le crédit. Le règlement européen sur l'IA lui impose des obligations de documentation, de journalisation et de contrôle humain.",
+        "en": "An artificial intelligence system used in a sensitive area, such as employment or credit. The EU AI Act imposes documentation, logging and human oversight obligations on it."
+      },
+      "cited_dispositions": [
+        {
+          "source": "ai-act",
+          "article": "6 et annexe III"
+        }
+      ],
+      "term_en": "high-risk AI system",
+      "aliases_en": [
+        "high-risk ai",
+        "high risk ai"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-EU-CONTROLE-HUMAIN-20261004-001",
+      "term": "contrôle humain",
+      "aliases": [
+        "controle humain",
+        "revue humaine"
+      ],
+      "explained_text": {
+        "fr": "L'obligation qu'une personne compétente puisse surveiller un système d'IA à haut risque, comprendre ses résultats et décider de ne pas les suivre.",
+        "en": "The obligation that a competent person can oversee a high-risk AI system, understand its outputs and decide not to follow them."
+      },
+      "cited_dispositions": [
+        {
+          "source": "ai-act",
+          "article": "14"
+        }
+      ],
+      "term_en": "human oversight",
+      "aliases_en": [
+        "human review"
+      ]
+    },
+    {
+      "juslib_id": "JUSLIB-GLOSSARY-EU-JOURNALISATION-20261004-001",
+      "term": "journalisation",
+      "aliases": [
+        "journal",
+        "logs"
+      ],
+      "explained_text": {
+        "fr": "L'enregistrement automatique des événements d'un système d'IA à haut risque pendant son fonctionnement, pour pouvoir retracer ce qu'il a fait.",
+        "en": "The automatic recording of events of a high-risk AI system while it operates, so that what it did can be traced."
+      },
+      "cited_dispositions": [
+        {
+          "source": "ai-act",
+          "article": "12"
+        }
+      ],
+      "term_en": "logging",
+      "aliases_en": [
+        "record-keeping",
+        "record keeping"
+      ]
+    }
+  ]
+}

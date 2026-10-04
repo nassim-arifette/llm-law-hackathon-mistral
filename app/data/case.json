@@ -1,0 +1,299 @@
+{
+  "case": {
+    "id": "CPH-PARIS-F-26-04417",
+    "title": "Karim B. c/ Horizon Logistique SAS",
+    "court": "Conseil de prud'hommes de Paris, section Commerce",
+    "reference": "RG F 26/04417 (fictif)",
+    "stage": "Conciliation",
+    "members": [
+      "individual",
+      "lawyer",
+      "company"
+    ],
+    "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+    "case_salt": "6485fd22a561b5156a683c2c934b9093",
+    "fictional": "Toutes les personnes, entreprises, documents et journaux de ce dossier sont fictifs."
+  },
+  "events": [
+    {
+      "id": "E1",
+      "seq": 1,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "company.ai_decision",
+        "actor": "company",
+        "at": "2026-06-02T09:14:00+02:00",
+        "links": [],
+        "commitment": "490e01f0854c9847c1176425c21f24460ad3de55af9d5b30fe6beab035f486fd",
+        "sources": []
+      },
+      "fingerprint": "a978fd770f0882c2d93950158ce2b294e7f85708f694e9581a08580ea86794cd",
+      "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+      "entry_hash": "81872650a4d3783b976ea89d3c3b0156410bf9b7360c18d0bb342d6831996e2e",
+      "body": "{\"title\":\"Score de performance calculé par l'IA (PerfScore v2)\",\"text\":\"Évaluation automatisée de la performance de M. Karim B., préparateur de commandes, par le système PerfScore v2 : score de 41 sur 100, seuil d'alerte 50. Facteurs principaux : cadence de préparation inférieure de 18 % à l'objectif sur 3 mois, erreurs de préparation signalées.\",\"data\":{\"kind\":\"ai_decision\",\"system\":\"PerfScore v2\",\"score\":41,\"threshold\":50}}",
+      "salt": "f89ec9aa2851d01bdd39821dd6d7f212",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E2",
+      "seq": 2,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "company.human_review",
+        "actor": "company",
+        "at": "2026-06-05T16:40:00+02:00",
+        "links": [
+          "a978fd770f0882c2d93950158ce2b294e7f85708f694e9581a08580ea86794cd"
+        ],
+        "commitment": "f601e5e53d1d356a6ef29de8c921e2b927d663ef506d7586ecc4d13090f52823",
+        "sources": []
+      },
+      "fingerprint": "c4350e42e009117985cc8b1cb2aeefa7f5483e9d819c461909a253531f76ee9b",
+      "prev": "81872650a4d3783b976ea89d3c3b0156410bf9b7360c18d0bb342d6831996e2e",
+      "entry_hash": "099ae197cb9e6829dad411d16fe9d7ad52bfcef09e6f7d8ef794357cce6a3f48",
+      "body": "{\"title\":\"Compte rendu de la revue humaine du score\",\"text\":\"Le responsable d'entrepôt a revu le score de 41 sur 100 lors d'un entretien d'évaluation. Il constate 6 erreurs de préparation sur le trimestre et propose d'engager une procédure pour insuffisance professionnelle.\",\"data\":{\"kind\":\"human_review\",\"errors\":6}}",
+      "salt": "11430619e00f668190e0361a539b3df3",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E3",
+      "seq": 3,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "company.internal_note",
+        "actor": "company",
+        "at": "2026-06-08T11:00:00+02:00",
+        "links": [
+          "c4350e42e009117985cc8b1cb2aeefa7f5483e9d819c461909a253531f76ee9b"
+        ],
+        "commitment": "6e894c36f93ace8d089d2370a6249a54cc04d8de89c9b8ccf58685ba1964cae1",
+        "sources": []
+      },
+      "fingerprint": "a0c4c0984ef620467f31b8ff82a56cbb63b3b025981cd6381467dcb705e6ef11",
+      "prev": "099ae197cb9e6829dad411d16fe9d7ad52bfcef09e6f7d8ef794357cce6a3f48",
+      "entry_hash": "15264571d24db635b98b6eddef0289285c88d21fd841f651adda1696bd49db58",
+      "body": "{\"title\":\"Note interne des ressources humaines\",\"text\":\"Vérifier l'ancienneté et le calcul de l'indemnité légale avant l'envoi de la convocation à entretien préalable.\",\"data\":{\"kind\":\"internal_note\"}}",
+      "salt": "5bd308a1b16bbb68b2329f6aa5079e90",
+      "visible_to": [
+        "company"
+      ]
+    },
+    {
+      "id": "E4",
+      "seq": 4,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "notification.sent",
+        "actor": "company",
+        "at": "2026-06-10T10:00:00+02:00",
+        "links": [
+          "c4350e42e009117985cc8b1cb2aeefa7f5483e9d819c461909a253531f76ee9b"
+        ],
+        "commitment": "843bec240963aed174f97161a334d78f226b2432efcf77563661b10e43f19771",
+        "sources": []
+      },
+      "fingerprint": "bfcad5c6f77a0194476f6bf0d19297190f318cc83231b9e46ad4887841dfa588",
+      "prev": "15264571d24db635b98b6eddef0289285c88d21fd841f651adda1696bd49db58",
+      "entry_hash": "f89b8eb166875703a7ddf4a6f1de5ab0a2916bb4d5c7bb09fe92bd88c15776d7",
+      "body": "{\"title\":\"Convocation à l'entretien préalable\",\"text\":\"Lettre recommandée avec avis de réception convoquant M. Karim B. à un entretien préalable à un éventuel licenciement, le 18 juin 2026 à 14 h, au siège de l'entreprise.\",\"data\":{\"kind\":\"convocation_entretien\",\"meeting_at\":\"2026-06-18T14:00:00+02:00\"}}",
+      "salt": "ce9cac89c3c3c38a4b22cbf3265c85fc",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E5",
+      "seq": 5,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "meeting.held",
+        "actor": "company",
+        "at": "2026-06-18T14:45:00+02:00",
+        "links": [
+          "bfcad5c6f77a0194476f6bf0d19297190f318cc83231b9e46ad4887841dfa588"
+        ],
+        "commitment": "671e01661071813f768a25305814973c8f78a1313adb84b4ca26269f931bee3c",
+        "sources": []
+      },
+      "fingerprint": "9a3ceb21b603cde9d01f005d61656f142f23c6bb8a8f7b49874adb647b7c7d0b",
+      "prev": "f89b8eb166875703a7ddf4a6f1de5ab0a2916bb4d5c7bb09fe92bd88c15776d7",
+      "entry_hash": "2a53a714ab2756c68730b87dd42add7ec0518f187ebefc05b85c38c30093848b",
+      "body": "{\"title\":\"Entretien préalable tenu\",\"text\":\"Entretien préalable tenu le 18 juin 2026 en présence de M. Karim B., assisté d'un conseiller du salarié. Motif exposé par l'employeur : insuffisance professionnelle.\",\"data\":{\"kind\":\"entretien_prealable\"}}",
+      "salt": "a39c4ceddbd5191966f09dd05b80b7e3",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E6",
+      "seq": 6,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "document.sent",
+        "actor": "company",
+        "at": "2026-06-25T09:30:00+02:00",
+        "links": [
+          "c4350e42e009117985cc8b1cb2aeefa7f5483e9d819c461909a253531f76ee9b",
+          "9a3ceb21b603cde9d01f005d61656f142f23c6bb8a8f7b49874adb647b7c7d0b"
+        ],
+        "commitment": "b66c8d3ca521fd595ea799c353c41c65dede8b91fcf5a1d23a4d00b1799b4b56",
+        "sources": []
+      },
+      "fingerprint": "11a5683838de8262afa5bb51e1ff6bf68bfe950b17afd4e6b67e3e9c2d282c0e",
+      "prev": "2a53a714ab2756c68730b87dd42add7ec0518f187ebefc05b85c38c30093848b",
+      "entry_hash": "0d807684cab14708cbe672e3fa2e9fbc7a21549ff06300bad63ded6567176868",
+      "body": "{\"title\":\"Lettre de licenciement\",\"text\":\"Lettre de licenciement pour insuffisance professionnelle, envoyée en recommandé avec avis de réception. Motif : résultats insuffisants mesurés par l'évaluation automatisée du 2 juin 2026 et confirmés par la revue du 5 juin 2026. Préavis de 2 mois.\",\"data\":{\"kind\":\"dismissal_letter\"}}",
+      "salt": "bd5bf972d8e3913d0f5a8471c0d7adb3",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E7",
+      "seq": 7,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "notification.received",
+        "actor": "individual",
+        "at": "2026-06-27T10:12:00+02:00",
+        "links": [
+          "11a5683838de8262afa5bb51e1ff6bf68bfe950b17afd4e6b67e3e9c2d282c0e"
+        ],
+        "commitment": "0081c067fc25da178edc67807741051466a42230b4d3ff5290147860fe347801",
+        "sources": []
+      },
+      "fingerprint": "a24867c9b27d53db71b666cb46364baa5af67b038db7e3442cde6b944762c095",
+      "prev": "0d807684cab14708cbe672e3fa2e9fbc7a21549ff06300bad63ded6567176868",
+      "entry_hash": "471ab4b2bce971199ca5dbc4f496f42911cfdb174d09f4200e3b34765788472d",
+      "body": "{\"title\":\"Lettre de licenciement reçue\",\"text\":\"Avis de réception de la lettre de licenciement signé par M. Karim B. le 27 juin 2026.\",\"data\":{\"kind\":\"dismissal_notified\",\"date\":\"2026-06-27\"}}",
+      "salt": "a65861be7df23d36036398973886bd18",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E8",
+      "seq": 8,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "document.filed",
+        "actor": "lawyer",
+        "at": "2026-09-15T15:20:00+02:00",
+        "links": [
+          "a24867c9b27d53db71b666cb46364baa5af67b038db7e3442cde6b944762c095"
+        ],
+        "commitment": "5988b1ffc1dbc9376d96252d57ac16730a1e8d88d3d70482f1ed220a1f938abd",
+        "sources": []
+      },
+      "fingerprint": "f4f6a174b3828d5a77d3a8132706cc2128854471695ed8774dd1a5f184375855",
+      "prev": "471ab4b2bce971199ca5dbc4f496f42911cfdb174d09f4200e3b34765788472d",
+      "entry_hash": "b1ef6d9e753155ef154ea8c3ad565ae405337444c95cc67402cc85f8512d8099",
+      "body": "{\"title\":\"Requête déposée au conseil de prud'hommes de Paris\",\"text\":\"Requête de M. Karim B. contestant son licenciement. Demandes : dommages et intérêts pour licenciement sans cause réelle et sérieuse ; communication de la documentation et des journaux du système PerfScore v2 ayant servi à l'évaluation. 14 pièces jointes.\",\"data\":{\"kind\":\"requete\",\"pieces\":14}}",
+      "salt": "ac9abd92e4151694ee99f39bd80f9408",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E9",
+      "seq": 9,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "notification.received",
+        "actor": "court",
+        "at": "2026-09-29T09:00:00+02:00",
+        "links": [
+          "f4f6a174b3828d5a77d3a8132706cc2128854471695ed8774dd1a5f184375855"
+        ],
+        "commitment": "9e0f6456f3cdb7034ef656f79d1d723e75dd24631528e8ed92333f01525291f5",
+        "sources": []
+      },
+      "fingerprint": "e214d8dc01e9a1807d1d784ebcbcfd3cb2125c7cf297d82168b5c59d8ee24265",
+      "prev": "b1ef6d9e753155ef154ea8c3ad565ae405337444c95cc67402cc85f8512d8099",
+      "entry_hash": "ea844af57aa761f30c2549f51ad5b58e8bce9cc21ea807f1699f0bd27749c6f5",
+      "body": "{\"title\":\"Convocation devant le bureau de conciliation et d'orientation\",\"text\":\"Le greffe du conseil de prud'hommes de Paris convoque les parties devant le bureau de conciliation et d'orientation le 5 novembre 2026 à 9 h 30, section Commerce. Les parties sont invitées à se communiquer leurs pièces avant l'audience.\",\"data\":{\"kind\":\"convocation_bco\",\"hearing_at\":\"2026-11-05T09:30:00+01:00\",\"place\":\"Conseil de prud'hommes de Paris, section Commerce\"}}",
+      "salt": "aca9f8649a15668a40cae892ba426f58",
+      "visible_to": [
+        "individual",
+        "lawyer",
+        "company"
+      ]
+    },
+    {
+      "id": "E10",
+      "seq": 10,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "deadline.set",
+        "actor": "lawyer",
+        "at": "2026-10-02T18:05:00+02:00",
+        "links": [
+          "e214d8dc01e9a1807d1d784ebcbcfd3cb2125c7cf297d82168b5c59d8ee24265"
+        ],
+        "commitment": "3b3c7b3a002d8bb8c34a3b1d4fcafe4a4f389a882e9bcfdac0a9ba95d6f99f42",
+        "sources": []
+      },
+      "fingerprint": "40274c84c8b2e19f114656f900f17bed51b7599c94c774a3814798d5b27f18ad",
+      "prev": "ea844af57aa761f30c2549f51ad5b58e8bce9cc21ea807f1699f0bd27749c6f5",
+      "entry_hash": "cdf4dc8af27ecfcd11eef4613d151fba2606da722c141643ba8c10a8986e05bb",
+      "body": "{\"title\":\"Échéance fixée : communiquer les pièces à l'employeur\",\"text\":\"Communiquer le bordereau et les 14 pièces à l'avocat de l'employeur au plus tard le 29 octobre 2026, une semaine avant l'audience de conciliation.\",\"data\":{\"kind\":\"task\",\"due\":\"2026-10-29\",\"label\":\"Communiquer les 14 pièces à l'employeur\",\"term\":\"pièces\"}}",
+      "salt": "30dfb09d60c57ffb166c39aa6153db4e",
+      "visible_to": [
+        "individual",
+        "lawyer"
+      ]
+    },
+    {
+      "id": "E11",
+      "seq": 11,
+      "header": {
+        "v": 1,
+        "case_tag": "241ef3abbc64398a9090ba85090f650fcc7fa9977b8cd2a9359afc9ea871a516",
+        "type": "deadline.set",
+        "actor": "company",
+        "at": "2026-10-02T18:30:00+02:00",
+        "links": [
+          "e214d8dc01e9a1807d1d784ebcbcfd3cb2125c7cf297d82168b5c59d8ee24265"
+        ],
+        "commitment": "3d8d0084aad9050bffa70a30eb21c5c72d2cfcd645082ac476ccf3afcd31d61b",
+        "sources": []
+      },
+      "fingerprint": "aafef3034960890cf7c5a7d3e3ff76769bd9daf5a160f2013027108b1c90275a",
+      "prev": "cdf4dc8af27ecfcd11eef4613d151fba2606da722c141643ba8c10a8986e05bb",
+      "entry_hash": "174e0da25d47011776345588d6ce29a27bf461a60d0de9e63251920d10bd0eca",
+      "body": "{\"title\":\"Échéance fixée : transmettre les pièces de l'employeur\",\"text\":\"Transmettre à l'avocat de l'entreprise la documentation et les journaux de PerfScore v2 demandés dans la requête, au plus tard le 28 octobre 2026.\",\"data\":{\"kind\":\"task\",\"due\":\"2026-10-28\",\"label\":\"Transmettre la documentation de PerfScore v2 à l'avocat\",\"term\":\"journalisation\"}}",
+      "salt": "6507f24b258c43d2e06f1d8c714b085c",
+      "visible_to": [
+        "company"
+      ]
+    }
+  ]
+}

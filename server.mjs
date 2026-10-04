@@ -81,6 +81,8 @@ async function serveFile(req, res) {
 }
 
 createServer((req, res) => {
+  // The menu links to index.html#/...; serving the app at "/" would make the first click a reload that wipes the demo state.
+  if (req.method === "GET" && req.url === "/") { res.writeHead(302, { location: "/index.html" }); return res.end(); }
   if (req.url === "/api/health") return json(res, 200, { mistral: Boolean(KEY), model: MODEL, keyLength: KEY.length });
   if (req.url === "/api/explain" && req.method === "POST") return explain(req, res);
   if (req.method === "GET") return serveFile(req, res);
