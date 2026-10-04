@@ -106,6 +106,7 @@ async function mistral(messages, exec) {
     }
     // Remove what is not prose: a stray tool-call fragment at the end, horizontal rules.
     const clean = text.replace(/\s*\{"[a-z_]+"\s*:[^{}]*\}\s*$/, "").replace(/^\s*-{3,}\s*$/gm, "")
+      .replace(/\s*\((?:event|événement|pièce|document)?\s*E\d+\)/gi, "").replace(/\b(?:event|événement)\s+E\d+,?\s*/gi, "")
       .replace(/\s*(\*\*(Where this comes from|Who can help|D'où vient cette information|D’où vient cette information|Qui peut vous aider))/g, "\n\n$1").trim();
     if (!clean) throw new Error("empty answer from Mistral");
     return { text: clean, model: data.model || MODEL() };
@@ -336,32 +337,26 @@ async function rules(profile, message, history, lang, exec) {
 }
 
 /* ---------- one turn ---------- */
+// Each exchange is ONE entry in Traceability: the question, the answer, the tools used and the sources, sealed together.
 export async function chat(profile, message, history = [], uiLang = "en") {
   const lang = langOf(message, uiLang), citizen = L.PROFILES[profile].level === "citizen";
-  const lastAnswer = L.all().filter(ev => ev.header.type === "ai.answer" && L.canSee(ev, profile)).at(-1);
-  const q = L.append({ type: "ai.question", actor: profile, body: { title: "Question to the Assistant", text: message },
-    links: lastAnswer ? [lastAnswer.fingerprint] : [], visible_to: [profile] });
-
-  const calls = [], touchedEvents = new Set(), touchedTerms = new Set(), weak = [], sourceTexts = [message, new Date().toISOString()];
+  const used = [], touchedEvents = new Set(), touchedTerms = new Set(), weak = [], sourceTexts = [message, new Date().toISOString()], cards = [];
   const exec = async (name, args) => {
     const r = await runTool(profile, name, args, lang);
     r.events.forEach(id => touchedEvents.add(id)); r.terms.forEach(h => touchedTerms.add(h)); weak.push(...r.weak);
     sourceTexts.push(JSON.stringify(r.result));
-    const read = [...new Set([...r.events, ...r.weak.map(w => w.event)])];
-    const ev = L.append({ type: "ai.tool_call", actor: "ai", visible_to: [profile],
-      body: { title: `Tool call: ${name}`, text: JSON.stringify(args), data: { tool: name, args, result: r.result } },
-      links: [q.fingerprint, ...read.map(id => L.byId(id).fingerprint)], sources: [...new Set([...r.terms, ...r.weak.map(w => w.term).filter(Boolean)])] });
-    calls.push(ev);
+    for (const x of [r.result, ...(r.result.explanations || [])]) if (x?.entry_hash && x.library) cards.push(x);
+    used.push({ tool: name, args });
     return r.result;
   };
 
-  let text = null, by = "rules", model = "rules", note = null, refused = null;
+  let text = null, by = "rules", model = "rules", note = null, withheld = null;
   // Money and "what should I do" questions always get the fixed, checked refusal: a model's wording could slip into advice.
   const guarded = RX.money.test(G.norm(message)) || RX.advice.test(G.norm(message));
   if (KEY() && !guarded) {
     try {
       const prior = history.slice(-6).filter(h => h && h.text).map(h => ({ role: h.role === "user" ? "user" : "assistant", content: String(h.text).slice(0, 2000) }));
-      // Retrieval first: the agenda, the timeline and the terms the question names are fetched (and sealed) before the model writes,
+      // Retrieval first: the agenda, the timeline and the terms the question names are fetched before the model writes,
       // so a model that calls too few tools still answers from the case.
       const context = { agenda: await exec("agenda", {}), timeline: await exec("case_timeline", {}),
         terms: await Promise.all(G.detect(message).slice(0, 3).map(e => exec("explain_term", { term: e.term }))) };
@@ -370,9 +365,7 @@ export async function chat(profile, message, history = [], uiLang = "en") {
       const check = figureCheck(r.text, sourceTexts);
       if (check.ok) { text = r.text; by = "mistral"; model = r.model; }
       else {
-        refused = L.append({ type: "ai.answer.refused", actor: "ai", visible_to: [profile],
-          body: { title: "Mistral answer withheld", text: r.text, data: { model: r.model, missing: check.missing } },
-          links: [q.fingerprint, ...calls.map(c => c.fingerprint)], sources: [...touchedTerms] });
+        withheld = { model: r.model, text: r.text, missing: check.missing };
         note = lang === "fr" ? `Réponse de Mistral retenue : ${check.missing.join(", ")} n'apparaît dans aucune source. Réponse produite par les règles.`
           : `Mistral's answer was withheld: ${check.missing.join(", ")} appears in no source. Answer produced by the rules.`;
       }
@@ -389,18 +382,18 @@ export async function chat(profile, message, history = [], uiLang = "en") {
     if (w.term && named.has(w.term)) touchedTerms.add(w.term);
   }
 
-  const answer = L.append({ type: "ai.answer", actor: "ai", visible_to: [profile],
-    body: { title: "Answer from the Assistant", text, data: { by, model, lang, check, plain } },
-    links: [q.fingerprint, ...calls.map(c => c.fingerprint), ...(refused ? [refused.fingerprint] : [])], sources: [...touchedTerms] });
-
-  const termCards = [...touchedTerms].map(h => G.byHash(h)).filter(Boolean).map(e => G.card(e, lang));
-  // The cards the tools actually returned carry JUSLIB's own explanation; prefer them.
-  for (const c of calls) { const res = L.parsed(c).data.result; for (const x of [res, ...(res.explanations || [])]) { const i = termCards.findIndex(t => t.entry_hash === x?.entry_hash); if (i >= 0 && x.library) termCards[i] = x; } }
+  const termCards = [...touchedTerms].map(h => G.byHash(h)).filter(Boolean).map(e => cards.find(c => c.entry_hash === e.entry_hash) || G.card(e, lang));
   // Terms that came along with the agenda: ask JUSLIB for them too, so every card shows where its text comes from.
   for (const [i, tc] of termCards.entries()) if (!tc.library?.version && !tc.core) { const e = G.byHash(tc.entry_hash), lib = await J.explain(e.juslib_id, lang, L.PROFILES[profile].level); if (lib) termCards[i] = G.card(e, lang, lib); }
   const eventCards = [...touchedEvents].map(L.byId).filter(Boolean).map(ev => ({ id: ev.id, title: L.shown(ev, lang).title, at: ev.header.at,
     fingerprint: ev.fingerprint, receipt: L.receipts()[ev.fingerprint] || null }));
+
+  const entry = L.append({ type: "ai.exchange", actor: profile, visible_to: [profile],
+    body: { title: message, text, data: { question: message, answer: text, by, model, lang, check, plain, withheld, tools: used,
+      sources: { documents: eventCards.map(e => ({ id: e.id, title: e.title })), terms: termCards.map(t => ({ term: t.term, juslib_id: t.juslib_id })) } } },
+    links: eventCards.map(e => e.fingerprint), sources: [...touchedTerms] });
+
   return { text, by, model, note, check, plain, lang,
     sources: { terms: termCards, events: eventCards },
-    sealed: { question: q.id, calls: calls.map(c => c.id), answer: answer.id, refused: refused && refused.id, seq: answer.seq, fingerprint: answer.fingerprint } };
+    sealed: { id: entry.id, seq: entry.seq, fingerprint: entry.fingerprint } };
 }

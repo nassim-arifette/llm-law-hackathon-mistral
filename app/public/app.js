@@ -18,6 +18,17 @@ const VERIFY_URL = id => `https://www.recognitium.com/verify/${id}`;
 /* ---------- words ---------- */
 const STR = {
   en: {
+    traceIntro: "Everything that happened in this case, in order: documents, dates, and every question to the Assistant with its answer. Nothing can be changed afterwards without it showing.",
+    okTitle: "Nothing has been changed", okBody: (n, a) => `${n} entries checked in your browser just now. ${a} case documents are also sealed on Recognitium, a public register.`,
+    badTitle: n => `${n} entr${n > 1 ? "ies were" : "y was"} changed after being recorded`, checkAgain: "Check again",
+    fAll: "All", fDocs: "Documents", fAgenda: "Agenda", fAssistant: "Assistant",
+    youAsked: "You asked", someoneAsked: w => `${w} asked`, answered: "answered by the Assistant", openChat: "Open in the chat",
+    addedToAgenda: "Added to the Agenda", savedTrace: "Saved in Traceability", basedOn: "Based on",
+    proofTitle: "Technical proof", sealedPublic: id => `Sealed on Recognitium, receipt ${id}`, chainedOnly: "Recorded in this case's chain (not yet on Recognitium).",
+    openReceipt: "open the public receipt", simulateDemo: "Simulate a change (demo)", changed: "Changed", unchanged: "Unchanged",
+    privateChat: n => `Private chat of another member · ${n} entr${n > 1 ? "ies" : "y"}`, privateNote: "Recorded, but its content is not shared with you.",
+    hiddenShort: "Recorded, but its content is not shared with you.", addDoc: "Add a document", exportShort: "Export",
+    withheldNote: "A first answer was withheld because it contained a figure without a source.",
     newChat: "New chat", assistant: "Assistant", agenda: "Agenda", trace: "Traceability", caseLabel: "Case", chats: "Chats", noChats: "No chats yet.",
     stage: "Stage", switchAccount: "Switch account (demo)", reset: "Reset the demo", language: "Language",
     rulesMode: "rules mode · Mistral not connected", juslibOn: v => `JUSLIB ${v}`, juslibOff: "JUSLIB offline · local glossary",
@@ -69,6 +80,17 @@ const STR = {
       "document.filed": "Document filed", "deadline.set": "Deadline", "ai.question": "Question to the Assistant", "ai.tool_call": "Tool call", "ai.answer": "Assistant answer", "ai.answer.refused": "Answer withheld" }
   },
   fr: {
+    traceIntro: "Tout ce qui s'est passé dans ce dossier, dans l'ordre : les documents, les dates, et chaque question posée à l'Assistant avec sa réponse. Rien ne peut être modifié après coup sans que cela se voie.",
+    okTitle: "Rien n'a été modifié", okBody: (n, a) => `${n} entrées vérifiées à l'instant dans votre navigateur. ${a} documents du dossier sont aussi scellés sur Recognitium, un registre public.`,
+    badTitle: n => `${n} entrée${n > 1 ? "s ont" : " a"} été modifiée${n > 1 ? "s" : ""} après avoir été enregistrée${n > 1 ? "s" : ""}`, checkAgain: "Vérifier à nouveau",
+    fAll: "Tout", fDocs: "Documents", fAgenda: "Agenda", fAssistant: "Assistant",
+    youAsked: "Vous avez demandé", someoneAsked: w => `${w} a demandé`, answered: "réponse de l'Assistant", openChat: "Ouvrir dans la conversation",
+    addedToAgenda: "Ajouté à l'Agenda", savedTrace: "Enregistré dans Traçabilité", basedOn: "Sources",
+    proofTitle: "Preuve technique", sealedPublic: id => `Scellé sur Recognitium, reçu ${id}`, chainedOnly: "Enregistré dans la chaîne du dossier (pas encore sur Recognitium).",
+    openReceipt: "ouvrir le reçu public", simulateDemo: "Simuler une modification (démo)", changed: "Modifié", unchanged: "Inchangé",
+    privateChat: n => `Conversation privée d'un autre membre · ${n} entrée${n > 1 ? "s" : ""}`, privateNote: "Enregistrée, mais son contenu ne vous est pas partagé.",
+    hiddenShort: "Enregistré, mais son contenu ne vous est pas partagé.", addDoc: "Ajouter un document", exportShort: "Exporter",
+    withheldNote: "Une première réponse a été retenue car elle contenait un chiffre sans source.",
     newChat: "Nouvelle conversation", assistant: "Assistant", agenda: "Agenda", trace: "Traçabilité", caseLabel: "Dossier", chats: "Conversations", noChats: "Aucune conversation pour l'instant.",
     stage: "Étape", switchAccount: "Changer de compte (démo)", reset: "Réinitialiser la démo", language: "Langue",
     rulesMode: "mode règles · Mistral non connecté", juslibOn: v => `JUSLIB ${v}`, juslibOff: "JUSLIB hors ligne · glossaire local",
@@ -165,7 +187,11 @@ const I = {
   down: icon('<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>'),
   plus: icon('<path d="M12 5v14M5 12h14"/>'), reset: icon('<path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'),
   globe: icon('<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>'),
-  lib: icon('<path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l3.5-1 3 15-3.5 1z"/>')
+  lib: icon('<path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l3.5-1 3 15-3.5 1z"/>'),
+  cal: icon('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+  chat: icon('<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>'),
+  lock: icon('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>'),
+  alert: icon('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>')
 };
 
 /* ---------- data ---------- */
@@ -275,7 +301,7 @@ function renderMsg(m, i) {
   if (m.error) return `<div class="msg ai"><div class="mark">C</div><div class="body"><div class="note">${esc(m.error)}</div></div></div>`;
   const r = m.meta, tags = [];
   tags.push(r.by === "mistral" ? `<span class="tag">Mistral · ${esc(r.model)}</span>` : `<span class="tag">${t().rules}</span>`);
-  tags.push(`<button class="tag ok" data-act="turn" data-i="${i}">${I.shield}${t().sealed(r.sealed.seq)}</button>`);
+  tags.push(`<button class="tag ok" data-act="goto-trace" data-id="${r.sealed.id || r.sealed.answer}">${I.shield}${t().savedTrace}</button>`);
   tags.push(`<span class="tag warn">${t().aiWarn}</span>`);
   if (r.plain) tags.push(`<span class="tag${r.plain.ok ? "" : " warn"}" title="${esc(r.plain.sentences + " sentences")}">${esc((r.plain.ok ? t().plain : t().plainWarn)(r.plain.avg_words, r.plain.longest))}</span>`);
   if (!r.check.ok) tags.push(`<span class="tag bad">${esc(t().noSource(r.check.missing.join(", ")))}</span>`);
@@ -331,9 +357,9 @@ function renderAgenda() {
         <div class="when">${esc(fmtDate(it.date))}${time ? ` ${w.at} ${time}` : ""}${it.place ? " · " + esc(it.place) : ""}${it.set_by ? " · " + esc(w.setBy(it.set_by)) : ""}</div>
         ${it.term ? `<div class="explain">${esc(it.term.explained_text)}</div>` : it.reason ? `<div class="explain">${esc(it.reason)}</div>` : ""}
         <dl class="why">
-          <dt>${w.why}</dt><dd><button class="link" data-act="event" data-id="${it.started_by.id}">${esc(it.started_by.title)}</button>, ${esc(stamp(it.started_by.at))}${receipt}</dd>
+          <dt>${w.why}</dt><dd><button class="link" data-act="goto-trace" data-id="${it.started_by.id}">${esc(it.started_by.title)}</button>, ${esc(stamp(it.started_by.at))}${receipt}</dd>
           <dt>${w.rule}</dt><dd>${esc(it.rule.label)}${it.rule.source ? ` · <a href="${esc(it.rule.source.url)}" target="_blank" rel="noopener">${esc(it.rule.source.label)}</a> <span style="color:var(--ink-3)">(${esc(it.rule.source.status)})</span>` : ""}</dd>
-          ${it.met ? `<dt>${w.status}</dt><dd>${esc(it.met.label)}: <button class="link" data-act="event" data-id="${it.met.by.id}">${esc(it.met.by.title)}</button></dd>` : ""}
+          ${it.met ? `<dt>${w.status}</dt><dd>${esc(it.met.label)}: <button class="link" data-act="goto-trace" data-id="${it.met.by.id}">${esc(it.met.by.title)}</button></dd>` : ""}
         </dl>
       </div>
       <div class="side-col">${status}${it.to_confirm ? `<span class="tag">${w.confirm}</span>` : ""}
@@ -344,78 +370,84 @@ function renderAgenda() {
 }
 
 /* ---------- traceability ---------- */
-function groups() {
-  const out = [];
-  for (const ev of S.events) {
-    if (!isAi(ev)) { out.push({ kind: "event", ev }); continue; }
-    const last = out.at(-1);
-    if (!ev.body) { if (last && last.kind === "private") last.evs.push(ev); else out.push({ kind: "private", evs: [ev] }); }
-    else if (ev.header.type === "ai.question" || !last || last.kind !== "turn") out.push({ kind: "turn", evs: [ev] });
-    else last.evs.push(ev);
-  }
-  return out;
-}
-function pinClass(evs) { const rs = evs.map(e => S.verify[e.id]).filter(Boolean); return rs.some(r => !r.ok) ? " bad" : rs.length === evs.length ? " ok" : ""; }
-const receiptTag = ev => ev.receipt
-  ? `<a class="tag ok" href="${VERIFY_URL(ev.receipt.receipt_id)}" target="_blank" rel="noopener">${I.shield}${t().receiptTag(esc(ev.receipt.receipt_id.slice(0, 11)))}</a>`
-  : `<span class="tag">${t().chained}</span>`;
+// One plain timeline: documents, agenda dates and every exchange with the Assistant. The proof is one click away, never in the way.
+const kindOf = ev => ev.header.type.startsWith("ai.") ? "assistant" : ev.header.type === "deadline.set" ? "agenda" : "document";
+const agendaFrom = id => S.agenda.filter(it => it.started_by.id === id);
+const fmtLocal = (iso, opts) => new Intl.DateTimeFormat(S.lang === "en" ? "en-GB" : "fr-FR", { ...opts, timeZone: "Europe/Paris" }).format(new Date(iso));
+const dayOf = iso => fmtLocal(iso, { day: "numeric", month: "long", year: "numeric" });
+const timeOf = iso => fmtLocal(iso, { hour: "numeric", minute: "2-digit" }).replace(":", S.lang === "fr" ? " h " : ":");
+const clip = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
 const resultLine = r => r ? (r.ok ? `<div class="result ok">${I.check} ${t().okLine(r.body_ok === null)}</div>` : `<div class="result bad">${esc(problemText(r))}</div>`) : "";
+const KIND_ICON = () => ({ document: I.doc, agenda: I.cal, assistant: I.chat });
 
-function renderEvent(ev) {
-  const w = t(), b = bodyOf(ev), open = S.open.has(ev.id), edited = ev.id in S.edits, orig = S.originals.has(ev.id);
-  const links = ev.header.links.map(fp => S.events.find(e => e.fingerprint === fp)).filter(Boolean);
-  const text = edited ? (ev.translation && !orig ? S.edits[ev.id].shown : S.edits[ev.id].original) : ev.translation && !orig ? ev.translation.text : b?.text;
-  return `<div class="ev${pinClass([ev])}"><div class="rail"><span class="pin"></span></div><div>
-    <div class="ev-head" data-act="toggle" data-id="${ev.id}"><span class="t${b ? "" : " muted"}">${esc(titleOf(ev))}</span><span class="d">${esc(stamp(ev.header.at))}</span></div>
-    <div class="ev-sub"><span class="tag">${esc(S.boot.actors[ev.header.actor] || ev.header.actor)}</span><span class="tag">${esc(w.TYPE[ev.header.type] || ev.header.type)}</span>${receiptTag(ev)}<span class="fp">#${ev.seq} · ${ev.fingerprint.slice(0, 12)}…</span></div>
-    ${open ? `<div class="ev-body">
-      ${b ? `<div class="txt${edited ? " edited" : ""}">${esc(text)}</div>${edited ? `<div class="result bad">${w.edited}</div>` : ""}
-        ${ev.translation ? `<div class="result" style="color:var(--ink-3)">${orig ? "" : w.translated + " "}<button class="link" data-act="original" data-id="${ev.id}">${orig ? w.hideOriginal : w.showOriginal}</button></div>` : ""}`
-          : `<div class="txt" style="color:var(--ink-2)">${w.hidden}</div>`}
-      <dl class="kv"><dt>${w.fingerprint}</dt><dd>${ev.fingerprint}</dd><dt>${w.commitment}</dt><dd>${ev.header.commitment}</dd>
-        ${links.length ? `<dt>${w.linked}</dt><dd>${links.map(l => `#${l.seq} ${esc(titleOf(l))}`).join("<br>")}</dd>` : ""}
-        ${ev.receipt ? `<dt>${w.receiptK}</dt><dd>${esc(ev.receipt.receipt_id)} · ${w.sequence} ${ev.receipt.sequence}</dd>` : ""}</dl>
-      <div class="ev-actions"><button class="btn" data-act="verify" data-id="${ev.id}">${I.check}${w.verify}</button>
-        ${b ? `<button class="btn" data-act="tamper" data-id="${ev.id}">${edited ? w.undo : w.simulate}</button>` : ""}
-        ${ev.receipt ? `<a class="btn" href="${VERIFY_URL(ev.receipt.receipt_id)}" target="_blank" rel="noopener">${I.out}${w.publicReceipt}</a>` : ""}</div>
-      ${resultLine(S.verify[ev.id])}
-    </div>` : resultLine(S.verify[ev.id] && !S.verify[ev.id].ok ? S.verify[ev.id] : null)}
-  </div></div>`;
+function renderRow(ev) {
+  const w = t(), k = kindOf(ev), b = bodyOf(ev), open = S.open.has(ev.id), r = S.verify[ev.id];
+  const who = S.boot.actors[ev.header.actor] || ev.header.actor;
+  let title, meta, detail;
+  if (k === "assistant") {
+    const d = b.data;
+    title = `${ev.header.actor === S.profile ? w.youAsked : w.someoneAsked(who)}: “${esc(clip(d.question, 90))}”`;
+    meta = `${timeOf(ev.header.at)} · ${w.answered}`;
+    const based = [...d.sources.documents.map(x => x.title), ...d.sources.terms.map(x => x.term)];
+    detail = `<div class="qa"><div class="q">${esc(d.question)}</div><div class="answer">${md(d.answer)}</div>
+      ${d.withheld ? `<p class="hint">${w.withheldNote}</p>` : ""}
+      ${based.length ? `<p class="hint"><b>${w.basedOn}:</b> ${based.map(esc).join(" · ")}</p>` : ""}
+      ${ev.header.actor === S.profile ? `<button class="link" data-act="open-chat-from" data-q="${esc(d.question)}">${w.openChat}</button>` : ""}</div>`;
+  } else {
+    title = esc(titleOf(ev));
+    meta = `${timeOf(ev.header.at)} · ${esc(who)}`;
+    const edited = ev.id in S.edits, orig = S.originals.has(ev.id);
+    const text = !b ? null : edited ? (ev.translation && !orig ? S.edits[ev.id].shown : S.edits[ev.id].original) : ev.translation && !orig ? ev.translation.text : b.text;
+    detail = b ? `<p class="txt${edited ? " edited" : ""}">${esc(text)}</p>${ev.translation ? `<p class="hint">${orig ? "" : w.translated + " "}<button class="link" data-act="original" data-id="${ev.id}">${orig ? w.hideOriginal : w.showOriginal}</button></p>` : ""}`
+      : `<p class="hint">${w.hiddenShort}</p>`;
+  }
+  const chips = agendaFrom(ev.id).map(it => `<button class="chip" data-act="goto-agenda">${I.cal}${w.addedToAgenda}: ${esc(it.title)} · ${esc(fmtDate(it.date))}</button>`).join("");
+  const status = r ? (r.ok ? `<span class="st ok" title="${w.unchanged}">${I.check}</span>` : `<span class="st bad">${I.alert}${w.changed}</span>`) : "";
+  const proof = `<details class="proof"${r && !r.ok ? " open" : ""}><summary>${w.proofTitle}</summary>
+    <p>${ev.receipt ? `${esc(w.sealedPublic(ev.receipt.receipt_id.slice(0, 11)))} · <a href="${VERIFY_URL(ev.receipt.receipt_id)}" target="_blank" rel="noopener">${w.openReceipt}</a>` : w.chainedOnly}</p>
+    <p class="mono">${ev.fingerprint}</p>
+    ${r && !r.ok ? `<p class="result bad">${esc(problemText(r))}</p>` : ""}
+    ${b && k !== "assistant" ? `<button class="btn small" data-act="tamper" data-id="${ev.id}">${ev.id in S.edits ? w.undo : w.simulateDemo}</button>` : ""}</details>`;
+  return `<div class="trow${open ? " open" : ""}${S.focus === ev.id ? " focus" : ""}${r && !r.ok ? " bad" : ""}" id="tr-${ev.id}">
+    <button class="trow-head" data-act="toggle" data-id="${ev.id}"><span class="kind ${k}">${KIND_ICON()[k]}</span>
+      <span class="trow-main"><span class="trow-title">${title}</span><span class="trow-meta">${meta}</span></span>${status}</button>
+    ${chips ? `<div class="trow-chips">${chips}</div>` : ""}
+    ${open ? `<div class="trow-body">${detail}${proof}</div>` : ""}</div>`;
 }
-function renderTurn(g) {
-  const w = t(), q = g.evs.find(e => e.header.type === "ai.question"), a = g.evs.find(e => e.header.type === "ai.answer");
-  const calls = g.evs.filter(e => e.header.type === "ai.tool_call"), refused = g.evs.find(e => e.header.type === "ai.answer.refused");
-  const key = "turn-" + g.evs[0].id, open = S.open.has(key), first = g.evs[0], qt = q ? bodyOf(q).text : "";
-  return `<div class="ev${pinClass(g.evs)}"><div class="rail"><span class="pin"></span></div><div>
-    <div class="ev-head" data-act="toggle" data-id="${key}"><span class="t">${w.exchange}${qt ? ` · “${esc(qt.length > 60 ? qt.slice(0, 59) + "…" : qt)}”` : ""}</span><span class="d">${esc(stamp(first.header.at))}</span></div>
-    <div class="ev-sub"><span class="tag">${w.nEvents(g.evs.length)}</span><span class="tag">${w.nCalls(calls.length)}</span>${refused ? `<span class="tag bad">${w.withheld}</span>` : ""}<span class="fp">#${first.seq} – #${g.evs.at(-1).seq}</span></div>
-    ${open ? `<div class="ev-body">${a ? `<div class="txt">${esc(bodyOf(a).text)}</div>` : ""}
-      <dl class="kv">${g.evs.map(e => `<dt>#${e.seq} ${esc(w.TYPE[e.header.type])}</dt><dd>${e.header.type === "ai.tool_call" ? esc(bodyOf(e).data.tool) + " · " : ""}${e.fingerprint.slice(0, 24)}…${S.verify[e.id] ? (S.verify[e.id].ok ? " ✓" : " ✗") : ""}</dd>`).join("")}</dl>
-      <div class="ev-actions"><button class="btn" data-act="verify-group" data-key="${key}">${I.check}${w.verifyExchange}</button></div>
-      ${S.verify[key] ? resultLine(S.verify[key]) : ""}</div>` : ""}
-  </div></div>`;
-}
-const renderPrivate = g => `<div class="ev${pinClass(g.evs)}"><div class="rail"><span class="pin"></span></div><div>
-  <div class="ev-head"><span class="t muted">${t().privateN(g.evs.length)}</span><span class="d">${esc(stamp(g.evs[0].header.at))}</span></div>
-  <div class="ev-sub"><span class="tag">${t().headersOnly}</span><span class="fp">#${g.evs[0].seq} – #${g.evs.at(-1).seq}</span></div></div></div>`;
 
 function renderLedger() {
   const w = t();
   if (!S.events) { $("ledgerCol").innerHTML = `<h1>${w.trace}</h1><p class="lede">${w.loading}</p>`; return; }
-  const c = S.caseCheck, gs = groups();
-  const shown = gs.filter(g => S.filter === "all" || (S.filter === "case" ? g.kind === "event" : g.kind !== "event"));
-  let html = `<h1>${w.trace}</h1><p class="lede">${w.traceLede}</p>
-    <div class="toolbar"><button class="btn primary" data-act="verify-all">${I.check}${w.verifyAll}</button>
-      <a class="btn" href="/api/export" data-act="export">${I.down}${w.export}</a>
-      ${S.profile !== "individual" ? `<button class="btn" data-act="intake">${I.plus}${w.sendEvent}</button>` : ""}</div>`;
-  if (c) html += c.ok
-    ? `<div class="banner ok"><b>${w.intact}</b><p>${w.intactBody(c.n, c.disclosed, c.anchored)}</p></div>`
-    : `<div class="banner bad"><b>${w.broken(c.bad.length)}</b><p>${c.bad.map(x => `#${x.ev.seq} ${esc(titleOf(x.ev))}: ${esc(problemText(x.r))}`).join("<br>")}</p></div>`;
-  if (S.intake) html += intakeForm();
-  html += `<div class="tabs">${w.tabs.map(([k, l]) => `<button class="${S.filter === k ? "on" : ""}" data-act="filter" data-k="${k}">${l}</button>`).join("")}</div>
-    <div class="tl">${shown.map(g => g.kind === "event" ? renderEvent(g.ev) : g.kind === "turn" ? renderTurn(g) : renderPrivate(g)).join("") || `<p class="lede" style="margin-top:16px">${w.nothing}</p>`}</div>
-    <p class="fp" style="margin-top:20px">${w.head(S.ledger.head, S.ledger.length)}</p>`;
-  $("ledgerCol").innerHTML = html;
+  const c = S.caseCheck;
+  const count = k => S.events.filter(ev => (k === "all" || kindOf(ev) === k) && (kindOf(ev) !== "assistant" || ev.body)).length;
+  const rows = [];
+  for (const ev of S.events.filter(ev => S.filter === "all" || kindOf(ev) === S.filter)) {
+    const day = dayOf(ev.header.at), last = rows.at(-1);
+    if (kindOf(ev) === "assistant" && !ev.body) { if (last && last.priv && last.day === day) last.n++; else rows.push({ priv: true, n: 1, day }); continue; }
+    rows.push({ ev, day });
+  }
+  let list = "", lastDay = null;
+  for (const r of rows) {
+    if (r.day !== lastDay) { list += `<div class="day">${esc(r.day)}</div>`; lastDay = r.day; }
+    list += r.priv
+      ? `<div class="trow priv"><div class="trow-head"><span class="kind assistant">${I.lock}</span><span class="trow-main"><span class="trow-title">${w.privateChat(r.n)}</span><span class="trow-meta">${w.privateNote}</span></span></div></div>`
+      : renderRow(r.ev);
+  }
+  $("ledgerCol").innerHTML = `<h1>${w.trace}</h1><p class="lede">${w.traceIntro}</p>
+    ${c ? `<div class="status ${c.ok ? "ok" : "bad"}"><span class="status-icon">${c.ok ? I.check : I.alert}</span>
+      <div><b>${c.ok ? w.okTitle : w.badTitle(c.bad.length)}</b><span>${c.ok ? w.okBody(c.n, c.anchored) : c.bad.map(x => esc(titleOf(x.ev))).join(" · ")}</span></div>
+      <button class="btn" data-act="verify-all">${w.checkAgain}</button></div>` : ""}
+    <div class="bar"><div class="filters">${[["all", w.fAll], ["document", w.fDocs], ["agenda", w.fAgenda], ["assistant", w.fAssistant]].map(([k, l]) =>
+      `<button class="${S.filter === k ? "on" : ""}" data-act="filter" data-k="${k}">${l}<span>${count(k)}</span></button>`).join("")}</div>
+      <div class="bar-right">${S.profile !== "individual" ? `<button class="link" data-act="intake">${I.plus}${w.addDoc}</button>` : ""}<a class="link" href="/api/export" data-act="export">${I.down}${w.exportShort}</a></div></div>
+    ${S.intake ? intakeForm() : ""}
+    <div class="tlist">${list || `<p class="lede">${w.nothing}</p>`}</div>`;
+}
+function scrollToFocus() {
+  if (!S.focus) return;
+  const el = $("tr-" + S.focus);
+  if (el) el.scrollIntoView({ block: "center" });
+  setTimeout(() => { S.focus = null; document.querySelectorAll(".trow.focus").forEach(x => x.classList.remove("focus")); }, 2500);
 }
 function intakeForm() {
   const w = t();
@@ -455,19 +487,8 @@ async function eventDrawer(id) {
     <div class="k">${w.recReceipt}</div>${ev.receipt ? `<p style="margin:4px 0"><a href="${VERIFY_URL(ev.receipt.receipt_id)}" target="_blank" rel="noopener">${esc(ev.receipt.receipt_id)}</a><br><span style="color:var(--ink-3);font-size:13px">${esc(w.seqSealed(ev.receipt.sequence, stamp(ev.receipt.sealed_at)))}</span></p>` : `<p style="margin:4px 0;color:var(--ink-2)">${w.localOnly}</p>`}
     <div class="k">${w.fingerprint}</div><div class="mono">${ev.fingerprint}</div>
     <div class="k">${w.position}</div><div class="mono">#${ev.seq} · ${ev.entry_hash}</div>
-    <p style="margin-top:20px"><a href="#/tracabilite" data-act="goto-event" data-id="${ev.id}">${w.seeInTrace}</a></p>`);
+    <p style="margin-top:20px"><button class="link" data-act="goto-trace" data-id="${ev.id}">${w.seeInTrace}</button></p>`);
 }
-async function turnDrawer(m) {
-  await loadEvents();
-  const w = t(), s = m.meta.sealed;
-  const evs = [s.question, ...s.calls, ...(s.refused ? [s.refused] : []), s.answer].map(id => S.events.find(e => e.id === id)).filter(Boolean);
-  const rs = await Promise.all(evs.map(verifyOne)), n = evs.at(-1).header.sources.length;
-  openDrawer(w.sealedExchange, `<h2>${w.recorded}</h2><p>${w.recordedBody}</p>
-    ${evs.map((e, i) => `<div class="k">#${e.seq} · ${esc(w.TYPE[e.header.type])}${e.header.type === "ai.tool_call" ? " · " + esc(bodyOf(e).data.tool) : ""}</div><div class="mono">${e.fingerprint}</div>${rs[i].ok ? `<div class="result ok">${I.check} ${w.intactShort}</div>` : resultLine(rs[i])}`).join("")}
-    <div class="k">${w.citedSources}</div><p style="margin:4px 0">${w.nExpl(n)}</p>
-    <div class="warnbox">${w.localWarn}</div>`);
-}
-
 /* ---------- routing and events ---------- */
 async function route() {
   const v = (location.hash.match(/^#\/(\w+)/) || [])[1];
@@ -476,7 +497,13 @@ async function route() {
   renderShell();
   if (S.view === "assistant") { renderThread(); setTimeout(() => $("input").focus(), 0); }
   if (S.view === "agenda") { await loadAgenda(); renderAgenda(); renderShell(); }
-  if (S.view === "tracabilite") { renderLedger(); if (!S.events) await loadEvents(); renderLedger(); }
+  // Traceability checks itself on every visit, so the first thing the reader sees is whether anything changed.
+  if (S.view === "tracabilite") { renderLedger(); if (!S.events) await loadEvents(); await verifyCase(); renderLedger(); scrollToFocus(); }
+}
+// Opens one entry in Traceability, from the chat, the Agenda or a document.
+function gotoTrace(id) {
+  S.focus = id; S.open.add(id); S.filter = "all"; $("drawer").hidden = true;
+  if (S.view === "tracabilite") { renderLedger(); scrollToFocus(); } else location.hash = "#/tracabilite";
 }
 async function reload() { S.boot = await api("/api/bootstrap"); S.events = null; S.caseCheck = null; S.verify = {}; S.edits = {}; await loadAgenda(); return route(); }
 
@@ -499,8 +526,13 @@ document.addEventListener("click", async e => {
     case "ask": location.hash = "#/assistant"; await route(); if (conv() && conv().messages.length && el.closest(".item")) newConv(); return send(el.dataset.q);
     case "term": { const m = conv().messages[+el.dataset.i]; return termDrawer(m.meta.sources.terms[+el.dataset.j]); }
     case "event": e.preventDefault(); return eventDrawer(el.dataset.id);
-    case "turn": return turnDrawer(conv().messages[+el.dataset.i]);
-    case "goto-event": S.open.add(el.dataset.id); S.filter = "all"; $("drawer").hidden = true; if (S.view === "tracabilite") renderLedger(); return;
+    case "goto-trace": e.preventDefault(); return gotoTrace(el.dataset.id);
+    case "goto-agenda": location.hash = "#/agenda"; return;
+    case "open-chat-from": {
+      const c = convs().find(c => c.messages.some(m => m.role === "user" && m.text === el.dataset.q));
+      if (c) { S.current[S.profile] = c.id; saveConvs(); }
+      location.hash = "#/assistant"; return;
+    }
     case "close-drawer": $("drawer").hidden = true; return;
     case "open-side": $("app").classList.add("side-open"); return;
     case "close-side": $("app").classList.remove("side-open"); return;
@@ -508,20 +540,13 @@ document.addEventListener("click", async e => {
     case "original": { const k = el.dataset.id; S.originals.has(k) ? S.originals.delete(k) : S.originals.add(k); return renderLedger(); }
     case "filter": S.filter = el.dataset.k; return renderLedger();
     case "verify": { const ev = S.events.find(x => x.id === el.dataset.id); S.verify[ev.id] = await verifyOne(ev); return renderLedger(); }
-    case "verify-group": {
-      const g = groups().find(g => "turn-" + g.evs[0].id === el.dataset.key);
-      const rs = await Promise.all(g.evs.map(async ev => (S.verify[ev.id] = await verifyOne(ev))));
-      S.verify[el.dataset.key] = { ok: rs.every(r => r.ok), body_ok: true, problems: [...new Set(rs.flatMap(r => r.problems))] };
-      return renderLedger();
-    }
     case "verify-all": await verifyCase(); return renderLedger();
     case "tamper": {
       const ev = S.events.find(x => x.id === el.dataset.id);
       if (ev.id in S.edits) delete S.edits[ev.id];
       else { const b = bodyOf(ev); S.edits[ev.id] = { original: bump(b.text), shown: bump(ev.translation ? ev.translation.text : b.text) }; }
-      S.verify[ev.id] = await verifyOne(ev);
-      if (S.caseCheck) await verifyCase();
-      return renderLedger();
+      await verifyCase();
+      renderLedger(); window.scrollTo(0, 0); document.querySelector("#view-tracabilite").scrollTop = 0; return;
     }
     case "intake": S.intake = !S.intake; return renderLedger();
     case "export": return;
@@ -535,7 +560,7 @@ document.addEventListener("submit", async e => {
     const f = new FormData(e.target);
     try {
       const r = await api("/api/events", { method: "POST", body: JSON.stringify({ type: f.get("type"), title: f.get("title"), text: f.get("text"), links: f.get("link") ? [f.get("link")] : [], share: f.get("share") === "on" }) });
-      S.intake = false; await loadEvents(); S.boot.ledger = S.ledger; S.open.add(r.event.id); S.caseCheck = null;
+      S.intake = false; await loadEvents(); S.boot.ledger = S.ledger; S.open.add(r.event.id); await verifyCase();
       renderLedger(); renderShell();
     } catch (err) { alert(err.message); }
   }

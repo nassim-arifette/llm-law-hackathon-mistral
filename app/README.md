@@ -6,7 +6,9 @@ The application from the specification: one case shared by an individual, their 
 - **Agenda**: hearings, deadlines and tasks, each computed from a sealed event, a rule and its official source.
 - **Traceability**: every event of the case in sealed order. Verify one event, the whole case, simulate an edit, export the evidence file. The company and the lawyer can send new events, sealed on arrival.
 
-Every Assistant turn is sealed too: the question, each tool call and the answer, linked by fingerprint.
+The three sections are linked. Each answer in the chat has "Saved in Traceability", which opens its entry. Each date in the Agenda links to the document that set it. In Traceability, an entry that set a date shows "Added to the Agenda" and leads back to it. Traceability checks the whole case when it opens and says, first, whether anything has changed; the fingerprints and receipts stay under "Technical proof".
+
+Every exchange with the Assistant is one entry in Traceability: the question, the answer, the tools used and the sources, recorded together and chained to the case. The tool calls are kept inside that entry, not as separate entries.
 
 ## Run it
 
