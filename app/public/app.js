@@ -204,7 +204,8 @@ const problemText = r => r.problems.map(p => t()[p]).join(" ");
 
 /* ---------- markdown, lite ---------- */
 function md(text) {
-  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,4}\s*(.+)$/, "<b>$1</b>");
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[^*\w])\*([^*\n]+?)\*(?!\w)/g, "$1<i>$2</i>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>').replace(/^#{1,4}\s*(.+)$/, "<b>$1</b>");
   return text.trim().split(/\n{2,}/).map(block => {
     let html = "", list = [], para = [];
     const flush = () => {

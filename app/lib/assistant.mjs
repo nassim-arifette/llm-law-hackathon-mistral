@@ -28,9 +28,13 @@ export const langOf = (message, ui) => FR.test(message) && !EN.test(message) ? "
 
 /* ---------- figure check: every number in an answer must come from a source it read ---------- */
 const numbers = s => (String(s).replace(/(\d)[\s  .,](?=\d{3}\b)/g, "$1").match(/\d+(?:[.,]\d+)?/g) || []).map(n => String(parseFloat(n.replace(",", "."))));
+// Numbers written out in words would slip past the check, so they count as a failure.
+const NUMBER_WORDS = /\b(thousand|hundred|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|mille|cent|vingt|trente|quarante|cinquante|soixante|quatorze|quinze|seize|douze|treize|onze)\b/i;
 function figureCheck(answer, sourceTexts) {
   const allowed = new Set(sourceTexts.flatMap(numbers));
   const missing = [...new Set(numbers(answer).filter(n => parseFloat(n) > 3 && !allowed.has(n)))];
+  const words = answer.match(NUMBER_WORDS);
+  if (words) missing.push(`"${words[0]}" (a number written in words)`);
   return { ok: missing.length === 0, missing };
 }
 
@@ -48,40 +52,47 @@ export function plainCheck(text) {
 /* ---------- system prompt ---------- */
 function system(profile, lang) {
   const p = L.PROFILES[profile], c = L.caseInfo("en");
-  const lawyer = profile === "individual" ? "his lawyer, Me Claire Laurent" : "the lawyer in charge of the case";
+  const lawyer = profile === "individual" ? "the user's lawyer, Me Claire Laurent (a woman)" : "the lawyer in charge of the case";
+  const helps = lang === "fr" ? "**Qui peut vous aider :** votre avocate, Me Claire Laurent." : "**Who can help:** your lawyer, Me Claire Laurent.";
   const level = p.level === "citizen"
     ? `The reader is not a lawyer. Write in plain language, following ISO 24495-1 and ISO 24495-2 (legal communication):
    - Start with "**In short:**" and the direct answer in one or two sentences.
    - Then the details under short bold labels (for example "**What it means for you:**", "**Your dates:**").
    - Sentences of 20 words or fewer on average, never more than 30. One idea per sentence. Active voice. Speak to the reader as "you".
    - Everyday words. When a legal term is needed, use the term once and explain it right away in everyday words, from explain_term.
-   - Give dates in full and say what each date means for the reader.
-   - End with "**Where this comes from:**" naming the documents and the official sources used, then "**Who can help:** ${lawyer}."`
+   - When the question touches something with a date in the agenda (a hearing, a deadline), give the reader's own date and what it is for, as the agenda states it.
+   - End with "**Where this comes from:**" naming the documents and the official sources used, then exactly this line: ${helps}`
     : "EXPERT level: exact legal terms and article references (saying they are to be checked on Légifrance or EUR-Lex). Concise.";
   return `You are the Counsel Assistant. You are talking to ${p.name} (${L.pick(p.role, "en")}) about the existing case "${c.title}", ${c.court}, current stage: ${c.stage}. Today is ${fmtDate(new Date().toISOString(), "en")}.
 Rules, without exception:
-1. Answer only from the tools: the case (case_timeline, read_document, agenda, proof) and the JUSLIB library (explain_term, explain_provision). Call the tools before answering. Every date, amount or number in your answer must appear in a tool result.
+1. Answer only from the tools: the case (case_timeline, read_document, agenda, proof) and the JUSLIB library (explain_term, explain_provision). Call the tools before answering. Every date, amount or number in your answer must appear in a tool result. Do not add any fact, rule, procedure step, right or obligation that is not in a tool result, even if you believe it is true. No analogies. If you are not sure, leave it out.
+   Write every number with digits and every date as "5 November 2026" in English or "5 novembre 2026" in French (day and year in digits). Never write numbers in words.
 2. Every legal term you use comes from explain_term. If a term is not in JUSLIB, say so instead of explaining it.
 3. You give information, never legal advice (French law n° 71-1130 of 31 December 1971, art. 54): never say what the user should do, what they will obtain or win, and never compute an amount. For that, refer to ${lawyer}.
 4. If no source answers the question, say so simply, and say what you can explain instead.
 5. ${level}
-6. Answer in ${lang === "fr" ? "French (labels: **En bref :**, **Ce que cela veut dire pour vous :**, **Vos dates :**, **D'où vient cette information :**, **Qui peut vous aider :**)" : "English"} (the language of the question), in 180 words at most, without headings. Write dates in words (for example 5 November 2026). Documents are in French; quote their English translation when answering in English. Do not show technical ids (E6, fingerprints): the interface shows the sources next to your answer.`;
+6. Answer in ${lang === "fr" ? "French (labels: **En bref :**, **Ce que cela veut dire pour vous :**, **Vos dates :**, **D'où vient cette information :**, **Qui peut vous aider :**)" : "English"} (the language of the question), in 180 words at most, without headings or links. Documents are in French; quote their English translation when answering in English. Do not show technical ids (E6, fingerprints): the interface shows the sources next to your answer.`;
 }
 
 /* ---------- Mistral loop ---------- */
 async function mistral(messages, exec) {
   for (let round = 0; round < 6; round++) {
-    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 30000);
     let r, data;
-    try {
-      r = await fetch(`${BASE()}/v1/chat/completions`, {
-        method: "POST", signal: ctrl.signal,
-        headers: { "content-type": "application/json", authorization: `Bearer ${KEY()}` },
-        body: JSON.stringify({ model: MODEL(), temperature: 0.2, max_tokens: 700, messages, tools: TOOLS, tool_choice: "auto" })
-      });
-      data = await r.json().catch(() => ({}));
-    } finally { clearTimeout(timer); }
-    if (!r.ok) throw new Error(`Mistral answered ${r.status}${r.status === 401 ? " (key refused)" : ""}`);
+    // One answer takes several calls; on a rate limit (429), wait and try again.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 30000);
+      try {
+        r = await fetch(`${BASE()}/v1/chat/completions`, {
+          method: "POST", signal: ctrl.signal,
+          headers: { "content-type": "application/json", authorization: `Bearer ${KEY()}` },
+          body: JSON.stringify({ model: MODEL(), temperature: 0.2, max_tokens: 700, messages, tools: TOOLS, tool_choice: "auto" })
+        });
+        data = await r.json().catch(() => ({}));
+      } finally { clearTimeout(timer); }
+      if (r.status !== 429) break;
+      await new Promise(res => setTimeout(res, 1500 * (attempt + 1)));
+    }
+    if (!r.ok) throw new Error(`Mistral answered ${r.status}${r.status === 401 ? " (key refused)" : r.status === 403 ? ` (${data.message || "forbidden"}: set MISTRAL_MODEL to a model of your tier)` : r.status === 429 ? " (rate limited)" : ""}`);
     const msg = data.choices?.[0]?.message || {};
     const text = Array.isArray(msg.content) ? msg.content.map(c => c.text || "").join("") : (msg.content || "");
     if (msg.tool_calls?.length) {
@@ -342,10 +353,17 @@ export async function chat(profile, message, history = [], uiLang = "en") {
   };
 
   let text = null, by = "rules", model = "rules", note = null, refused = null;
-  if (KEY()) {
+  // Money and "what should I do" questions always get the fixed, checked refusal: a model's wording could slip into advice.
+  const guarded = RX.money.test(G.norm(message)) || RX.advice.test(G.norm(message));
+  if (KEY() && !guarded) {
     try {
       const prior = history.slice(-6).filter(h => h && h.text).map(h => ({ role: h.role === "user" ? "user" : "assistant", content: String(h.text).slice(0, 2000) }));
-      const r = await mistral([{ role: "system", content: system(profile, lang) }, ...prior, { role: "user", content: message }], exec);
+      // Retrieval first: the agenda, the timeline and the terms the question names are fetched (and sealed) before the model writes,
+      // so a model that calls too few tools still answers from the case.
+      const context = { agenda: await exec("agenda", {}), timeline: await exec("case_timeline", {}),
+        terms: await Promise.all(G.detect(message).slice(0, 3).map(e => exec("explain_term", { term: e.term }))) };
+      const sys = system(profile, lang) + `\n\nAlready retrieved for you from the tools (use them; call read_document or explain_term for anything else):\n${JSON.stringify(context)}`;
+      const r = await mistral([{ role: "system", content: sys }, ...prior, { role: "user", content: message }], exec);
       const check = figureCheck(r.text, sourceTexts);
       if (check.ok) { text = r.text; by = "mistral"; model = r.model; }
       else {

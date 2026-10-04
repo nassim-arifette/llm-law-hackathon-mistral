@@ -26,9 +26,9 @@ Without a key, the Assistant answers by rules, using the same tools, and says "r
 Set-Content -Path app\.env -Value "MISTRAL_API_KEY=<your key>" -Encoding ascii
 ```
 
-The key stays on the server. Mistral (`mistral-large-latest`, or `MISTRAL_MODEL`) receives the system rules, the question and the tool results it asks for, with six tools: `case_timeline`, `read_document`, `explain_term`, `explain_provision`, `agenda`, `proof`. If Mistral writes a number that no tool returned, the answer is withheld, sealed as withheld, and replaced by the rules answer.
+The key stays on the server. Before Mistral writes, Counsel fetches the agenda, the timeline and the terms the question names (each a sealed tool call) and gives them to the model; Mistral can then call the six tools for anything else: `case_timeline`, `read_document`, `explain_term`, `explain_provision`, `agenda`, `proof`. If Mistral writes a number that no tool returned, or writes a number in words, the answer is withheld, sealed as withheld, and replaced by the rules answer. Questions about money or about what to do always get the fixed rules answer, so no model wording can slip into legal advice.
 
-Tested against a stand-in that answers in Mistral's request and response format (tool calls, tool results, figure check, sealing). The first run against the real API is the next step.
+Choose the model with `MISTRAL_MODEL` in `app/.env`. Tested live on 4 October 2026 with `ministral-14b-latest`: the hackathon key's tier does not include `mistral-large` or `mistral-medium` (403 or a rate limit of 0 per minute). The default, when `MISTRAL_MODEL` is not set, is `mistral-large-latest`.
 
 ## JUSLIB (github.com/vgactech/JUSBIB)
 
