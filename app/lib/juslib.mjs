@@ -5,8 +5,8 @@
 // text against its canonical hash. JUSLIB's own core glossary (/v1/glossary) adds terms Counsel does not have.
 // If JUSLIB is not running, Counsel uses the same texts from data/glossary.json and says so.
 const BASE = (process.env.JUSLIB_URL || "http://127.0.0.1:8765").replace(/\/$/, "");
-const state = { on: false, version: null, url: BASE, imported: 0, core: [], ids: new Map(), error: null };
-export const status = () => ({ on: state.on, version: state.version, url: state.url, imported: state.imported, core_terms: state.core.length, error: state.error });
+const state = { on: false, version: null, url: BASE, imported: 0, core: [], ids: new Map(), translations: new Map(), error: null };
+export const status = () => ({ on: state.on, version: state.version, url: state.url, imported: state.imported, translations: state.translations.size, core_terms: state.core.length, error: state.error });
 
 async function call(method, path, body) {
   const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 4000);
@@ -23,14 +23,30 @@ export async function connect(entries, sources, corpusVersion) {
     const h = await call("GET", "/v1/health");
     if (!h.ok) throw new Error(`health ${h.status}`);
     state.version = h.data.version;
-    for (const e of entries) for (const lang of ["en", "fr"]) {
+    const translations = state.version >= "0.3.0";
+    const today = new Date().toISOString().slice(0, 10);
+    for (const e of entries) {
       const src = e.cited_dispositions[0] ? sources[e.cited_dispositions[0].source] : null;
-      const r = await call("POST", "/v1/corpus/import/unverified", {
-        title: e.term, document_type: "glossary_entry", jurisdiction: e.juslib_id.includes("-EU-") ? "EU" : "FR",
-        source_url: src ? src.url : "https://www.legifrance.gouv.fr/", connector_id: "counsel_glossary",
-        text_excerpt: e.explained_text[lang], language: lang, native_id: e.juslib_id, corpus_version: corpusVersion });
-      if (!r.ok) throw new Error(`import ${r.status}`);
-      state.ids.set(e.juslib_id + "|" + lang, r.data.juslib_id);
+      const sourceUrl = src ? src.url : "https://www.legifrance.gouv.fr/";
+      for (const lang of ["fr", "en"]) {
+        const r = await call("POST", "/v1/corpus/import/unverified", {
+          title: e.term, document_type: "glossary_entry", jurisdiction: e.juslib_id.includes("-EU-") ? "EU" : "FR",
+          source_url: sourceUrl, connector_id: "counsel_glossary",
+          text_excerpt: e.explained_text[lang], language: lang, native_id: e.juslib_id, corpus_version: corpusVersion });
+        if (!r.ok) throw new Error(`import ${r.status}`);
+        state.ids.set(e.juslib_id + "|" + lang, r.data.juslib_id);
+      }
+      // JUSLIB 0.3.0: the French text is a version of a provision; the English text is recorded as its translation,
+      // linked to that version by hash and never normative.
+      if (translations) {
+        const doc = state.ids.get(e.juslib_id + "|fr");
+        const p = await call("POST", "/v1/provision", { document_id: doc, number: e.cited_dispositions[0]?.article || null, label: e.term, language: "fr", corpus_version: corpusVersion });
+        const v = p.ok && await call("POST", "/v1/version", { provision_id: p.data.provision_id, document_id: doc, text: e.explained_text.fr,
+          source_url: sourceUrl, valid_from: today, language: "fr", connector_id: "counsel_glossary" });
+        const t = v && v.ok && await call("POST", "/v1/translation", { version_id: v.data.version_id, source_language: "fr", target_language: "en",
+          translated_text: e.explained_text.en, translation_type: "machine", translator: "Counsel glossary (AI draft)", source_url: sourceUrl });
+        if (t && t.ok) state.translations.set(e.juslib_id, { translation_id: t.data.translation_id, version_id: v.data.version_id });
+      }
     }
     state.imported = state.ids.size;
     const g = await call("GET", "/v1/glossary");
@@ -56,7 +72,15 @@ export async function explain(juslibId, lang, level) {
   try {
     const r = await call("POST", "/v1/explain", { source_entity_id: id, source_entity_type: "document", reading_level: level === "citizen" ? "citizen" : "intermediate", language: lang });
     if (!r.ok) return null;
-    return { document_id: id, explained_text: r.data.explained_text, production_type: r.data.production_type, confidence: r.data.confidence,
+    const out = { document_id: id, explained_text: r.data.explained_text, production_type: r.data.production_type, confidence: r.data.confidence,
       canonical_hash_verified: r.data.canonical_hash_verified, corpus_authenticated: r.data.corpus_authenticated, version: state.version };
+    // English: say that this text is a declared translation of the French version, and check its link to it.
+    const tr = lang === "en" && state.translations.get(juslibId);
+    if (tr) {
+      const [rec, chk] = await Promise.all([call("GET", `/v1/translation/${tr.translation_id}`), call("GET", `/v1/translation/${tr.translation_id}/integrity`)]);
+      if (rec.ok) out.translation = { id: tr.translation_id, of_version: tr.version_id, type: rec.data.translation_type,
+        source_version_hash: rec.data.source_version_hash, integrity_ok: !!(chk.ok && chk.data.integrity_ok), normative: false };
+    }
+    return out;
   } catch { return null; }
 }

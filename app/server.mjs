@@ -37,7 +37,7 @@ const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=
 const glossaryEntries = G.ENTRIES.filter(e => !e.core);
 async function connectJuslib() {
   const s = await J.connect(glossaryEntries, G.SOURCES, G.CORPUS_VERSION);
-  if (s.on) { G.addCore(J.coreTerms()); console.log(`JUSLIB ${s.version} connected at ${s.url}: ${s.imported} explanations imported, ${s.core_terms} core terms`); }
+  if (s.on) { G.addCore(J.coreTerms()); console.log(`JUSLIB ${s.version} connected at ${s.url}: ${s.imported} explanations imported, ${s.translations} English texts linked as translations, ${s.core_terms} core terms`); }
   else setTimeout(connectJuslib, 30000);
 }
 

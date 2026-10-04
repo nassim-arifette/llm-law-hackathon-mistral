@@ -89,7 +89,7 @@ export const card = (e, lang = "en", lib = null) => ({
   core_definition: e.core_definition ? e.core_definition[lang] || e.core_definition.fr : null,
   sources: e.cites.map(c => ({ label: c.label, url: c.url, status: lang === "en" ? `candidate article, to check on ${c.checkOn}` : `article candidat, à vérifier sur ${c.checkOn}` })),
   library: lib ? { name: "JUSLIB", version: lib.version, document_id: lib.document_id, production_type: lib.production_type, confidence: lib.confidence,
-    canonical_hash_verified: lib.canonical_hash_verified } : { name: e.core ? "JUSLIB core glossary" : "Counsel glossary file (JUSLIB not running)" },
+    canonical_hash_verified: lib.canonical_hash_verified, translation: lib.translation || null } : { name: e.core ? "JUSLIB core glossary" : "Counsel glossary file (JUSLIB not running)" },
   core: !!e.core, certainty_level: e.certainty_level, production_type: e.production_type,
   ai_generated_warning: e.core ? null : AI_WARNING[lang] || AI_WARNING.en, entry_hash: e.entry_hash
 });

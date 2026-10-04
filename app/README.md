@@ -46,9 +46,10 @@ When Counsel starts (or as soon as JUSLIB answers, retried every 30 seconds), it
 
 - imports its 29 glossary entries, in English and French, through `/v1/corpus/import/unverified`. These texts are drafts, not fetched by an official connector, so JUSLIB stores them as `client_provided` and never serves them at expert level;
 - explains each term through JUSLIB's plain-language engine (`/v1/explain`), which also checks the stored text against its canonical hash;
-- adds JUSLIB's own core glossary (`/v1/glossary`), such as nullity or legal remedy.
+- adds JUSLIB's own core glossary (`/v1/glossary`), such as nullity or legal remedy;
+- with JUSLIB 0.3.0 or later, records each French text as a version of a provision and its English text as a translation of that version (`/v1/translation`). JUSLIB links the translation to the version by hash and never treats it as a legal source; Counsel checks that link (`/v1/translation/{id}/integrity`) each time it shows an English explanation, and says so in the term panel.
 
-The header shows "JUSLIB 0.2.0" when it is connected. If JUSLIB is not running, Counsel uses the same texts from `data/glossary.json` (JUSLIB's field names) and each source card says so. `JUSLIB_URL` changes the address (default http://127.0.0.1:8765). JUSLIB is AGPL-3.0: Counsel calls it over HTTP and contains none of its code.
+The header shows the JUSLIB version when it is connected (0.3.0 at the time of writing). If JUSLIB is not running, Counsel uses the same texts from `data/glossary.json` (JUSLIB's field names) and each source card says so. `JUSLIB_URL` changes the address (default http://127.0.0.1:8765). JUSLIB is AGPL-3.0: Counsel calls it over HTTP and contains none of its code.
 
 ## Plain language for individuals
 

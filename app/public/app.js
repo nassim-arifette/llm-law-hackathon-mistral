@@ -68,6 +68,7 @@ const STR = {
     library: "JUSLIB library", officialSource: "Official source", noArticle: "Article to be identified.", certainty: "Certainty", unverified: "Unverified",
     production: "Production", prodAi: "AI-generated, to be validated by a lawyer", prodCore: "JUSLIB core glossary, rule-based",
     explainedBy: "Explained by", libOn: (v, id, ok) => `JUSLIB ${v} plain-language engine · document ${id}${ok ? " · integrity checked by hash" : ""}`, libOff: "Counsel glossary file (JUSLIB not running)",
+    transLine: ok => `This English text is recorded in JUSLIB as a translation of the French version, linked to it by hash${ok ? " (link checked)" : ""}. A translation is never the legal source.`,
     coreDef: "JUSLIB core definition", juslibId: "JUSLIB identifier", entryHash: "Fingerprint of the cited explanation",
     caseDoc: "Case document", recReceipt: "Recognitium receipt", seqSealed: (n, d) => `Sequence ${n} · sealed on ${d}`, localOnly: "Chained locally; anchoring pending.",
     position: "Position in the chain", seeInTrace: "See in Traceability",
@@ -130,6 +131,7 @@ const STR = {
     library: "Bibliothèque JUSLIB", officialSource: "Source officielle", noArticle: "Article à identifier.", certainty: "Certitude", unverified: "Non vérifié",
     production: "Production", prodAi: "Générée par IA, à valider par un juriste", prodCore: "Glossaire de base JUSLIB, par règles",
     explainedBy: "Expliqué par", libOn: (v, id, ok) => `Moteur de vulgarisation JUSLIB ${v} · document ${id}${ok ? " · intégrité vérifiée par empreinte" : ""}`, libOff: "Fichier glossaire de Counsel (JUSLIB non démarré)",
+    transLine: ok => `Ce texte anglais est enregistré dans JUSLIB comme traduction de la version française, liée par empreinte${ok ? " (lien vérifié)" : ""}. Une traduction n'est jamais la source juridique.`,
     coreDef: "Définition de base JUSLIB", juslibId: "Identifiant JUSLIB", entryHash: "Empreinte de l'explication citée",
     caseDoc: "Pièce du dossier", recReceipt: "Reçu Recognitium", seqSealed: (n, d) => `Séquence ${n} · scellé le ${d}`, localOnly: "Chaîné localement ; ancrage en attente.",
     position: "Position dans la chaîne", seeInTrace: "Voir dans Traçabilité",
@@ -470,6 +472,7 @@ function termDrawer(x) {
     ${x.core_definition ? `<div class="k">${w.coreDef}</div><p style="margin:4px 0">${esc(x.core_definition)}</p>` : ""}
     <div class="k">${w.officialSource}</div>${x.sources.length ? x.sources.map(s => `<p style="margin:4px 0"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a><br><span style="color:var(--ink-3);font-size:13px">${esc(s.status)}</span></p>`).join("") : `<p style="margin:4px 0;color:var(--ink-2)">${w.noArticle}</p>`}
     <div class="k">${w.explainedBy}</div><p style="margin:4px 0">${lib.version ? esc(w.libOn(lib.version, lib.document_id, lib.canonical_hash_verified)) : x.core ? w.prodCore : w.libOff}</p>
+    ${lib.translation ? `<p style="margin:4px 0;font-size:13px;color:var(--ink-2)">${esc(w.transLine(lib.translation.integrity_ok))}</p>` : ""}
     <div class="k">${w.certainty}</div><p style="margin:4px 0">${w.unverified}</p>
     <div class="k">${w.production}</div><p style="margin:4px 0">${x.core ? w.prodCore : w.prodAi}</p>
     ${x.ai_generated_warning ? `<div class="warnbox">${esc(x.ai_generated_warning)}</div>` : ""}

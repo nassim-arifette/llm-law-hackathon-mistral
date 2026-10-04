@@ -2,6 +2,10 @@
 
 LLM x Law Hackathon Paris #2 (Mistral AI, Stanford CodeX, Sciences Po), 4 October 2026.
 
+![Counsel demo: Mistral answers a person's questions about their case, every exchange is recorded in Traceability, and a changed document is caught](docs/demo/counsel-demo.gif)
+
+The demo in 55 seconds, with live answers from Mistral: [docs/demo/counsel-demo.mp4](docs/demo/counsel-demo.mp4). Every person, company and document in it is fictional.
+
 Counsel is the lawyer's application for disputes about AI decisions. Underneath, Recognitium seals every AI decision and every bank action where they happen, and binds them together. Article 12 of the AI Act makes logging mandatory for high-risk AI; it does not say how to make logs trustworthy. That is what this does.
 
 ## The new app
