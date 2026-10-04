@@ -14,11 +14,11 @@ Article 12 makes logging mandatory. It doesn't say how to make logs trustworthy.
 
 **The letter.** Now a refused applicant asks why. We drop his letter. Counsel reads the reference, the legal bases and the one-month deadline, and pulls his five AI actions, each with its own receipt. Everyone else stays a fingerprint. I change one word in a line: verification fails.
 
-**The explanation.** The law gives him the right to a clear explanation. Counsel drafts it in plain language, from the sealed lines only. I change the score from 412 to 432: refused, because the letter would contradict the evidence.
+**The explanation.** The law gives him the right to a clear explanation. Mistral drafts it live, in plain language, from the sealed lines only. I change the score from 412 to 432: Counsel refuses, because the letter would contradict the evidence, whoever wrote it.
 
 ## 1:40 · Close (20 s)
 
-Machines check every transition; people set the rules and review what is blocked. In production, Mistral runs on the firm's own servers.
+Machines check every transition; people set the rules and review what is blocked. Mistral writes, Recognitium proves, and nothing Mistral writes can contradict the record.
 
 We don't promise to win the case. A receipt proves when a record existed and that it hasn't changed, not that the AI was right. We make sure the evidence is believed.
 
@@ -30,7 +30,7 @@ Banks will spend the next ten years defending AI decisions. We give them, and th
 
 Two browser tabs, full screen, prepared before going on stage:
 - **Tab 1:** `binding.html`, tab "Live gate · machine speed".
-- **Tab 2:** `index.html`, after "Reset the demo".
+- **Tab 2:** http://localhost:8787 (relay running with the Mistral key, see the README; the left menu must say "Mistral connected"), after "Reset the demo". If the wifi fails, double-click `index.html` instead: the draft falls back to rules and the page says so.
 
 1. **Tab 1:** "Run the day's stream". Point at Blocked: 11, Verification: about 40 ms, and the green line "Matches receipt". Click the row "Cites a fingerprint that is not in the sealed chain", then "Verify inclusion".
 2. **Tab 2:** Evidence, then "Use the sample letter". Search bar: `DG-b7b28343`, Enter, "Verify this line", "Simulate an edit", "Verify this line".
