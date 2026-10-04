@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Counsel · Words and money</title>
+<title>Counsel · Disputed transfer</title>
 <style>
   :root {
     --ink: #0f1115; --body: #2b2f36; --muted: #6b7079; --faint: #a6aab1; --line: #ececef; --soft: #f7f7f8;
@@ -17,12 +17,6 @@
   button { font: inherit; cursor: pointer; color: inherit; }
   a { color: inherit; }
   code { font-family: var(--mono); font-size: 12px; }
-  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
-  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); text-decoration: none; }
-  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
-  .back:hover { color: var(--ink); }
-  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
-  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
   main { max-width: 1180px; margin: 0 auto; padding: 44px 56px 96px; }
   .eyebrow { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
   h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.015em; color: var(--ink); margin: 0; }
@@ -69,23 +63,21 @@
   .verdict ul { margin: 6px 0 0; padding-left: 18px; }
   .acts { padding: 0 18px 18px; }
   @media (max-width: 900px) {
-    .top { padding: 0 16px; } .firm span { display: none; }
     main { padding: 28px 16px 72px; }
     .private { grid-template-columns: 1fr; }
     .node { grid-template-columns: 26px 1fr; } .node .kv { grid-column: 1 / -1; }
   }
 </style>
+<link rel="stylesheet" href="shell.css">
 </head>
 <body>
-<header class="top">
-  <a class="mark" href="index.html">Counsel</a>
-  <a class="back" href="index.html">Back to the agenda</a>
-  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
-</header>
+<header class="top" id="top"></header>
+<div class="shell">
+<nav class="rail" id="rail"></nav>
 
 <main>
-  <div class="vh"><div class="eyebrow">Banque Horizon · one transaction, one conversation</div><h1>Words and money, linked without the content</h1>
-    <p class="lede">A transfer leaves a customer's account. The next morning she asks the bank's assistant why. Every record is sealed in two parts: a private body that stays at the bank, and a small header that carries a case tag and the fingerprints of the records it refers to. Counsel receives only the headers, and can still prove what belongs together, what answered what, and in which order.</p></div>
+  <div class="vh"><div class="eyebrow">Dispute · Banque Horizon · INV-2209</div><h1>Disputed transfer</h1>
+    <p class="lede">A transfer leaves a customer's account; the next morning she asks the bank's assistant why. Each record is sealed as a private body, which stays at the bank, and a small header that links it to the others. Counsel proves what belongs together, what answered what and in which order, without reading a word.</p></div>
 
   <div class="private">
     <div class="box"><div class="box-h"><h2>Core banking</h2><span class="lock">Stays at the bank</span></div>
@@ -107,7 +99,9 @@
     </div>
   </div>
 </main>
+</div>
 
+<script src="shell.js" data-page="transfer"></script>
 <script>
 /* Fictional bank and customer. Each record: commit = SHA-256(random value + "\n" + body);
    header = { n, kind, at, tag, refs, commit }; the sealed fingerprint is SHA-256(header). */

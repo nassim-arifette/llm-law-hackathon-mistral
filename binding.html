@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Counsel · Decision to money</title>
+<title>Counsel · Controls</title>
 <style>
   :root {
     --ink: #0f1115; --body: #2b2f36; --muted: #6b7079; --faint: #a6aab1; --line: #ececef; --soft: #f7f7f8;
@@ -17,12 +17,6 @@
   button { font: inherit; cursor: pointer; color: inherit; }
   a { color: inherit; }
   code { font-family: var(--mono); font-size: 12px; }
-  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
-  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); text-decoration: none; }
-  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
-  .back:hover { color: var(--ink); }
-  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
-  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
   main { max-width: 1080px; margin: 0 auto; padding: 44px 56px 96px; }
   .eyebrow { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
   h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.015em; color: var(--ink); margin: 0; }
@@ -84,26 +78,26 @@
   .path { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; max-height: 160px; overflow: auto; margin-top: 8px; word-break: break-all; }
   @media (max-width: 860px) {
     .facts, .rules { grid-template-columns: 1fr 1fr; } .facts > div + div, .rules div + div { border-left: 0; padding-left: 0; }
-    .top { padding: 0 16px; } .firm span { display: none; }
     main { padding: 28px 16px 72px; }
     .meta { grid-template-columns: 1fr; }
   }
 </style>
+<link rel="stylesheet" href="shell.css">
 </head>
 <body>
-<header class="top">
-  <a class="mark" href="index.html">Counsel</a>
-  <a class="back" href="index.html">Back to the agenda</a>
-  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
-</header>
+<header class="top" id="top"></header>
+<div class="shell">
+<nav class="rail" id="rail"></nav>
 
 <main>
-  <div class="vh"><div class="eyebrow">Banque Horizon · high-risk AI · credit</div><h1>From decision to money</h1>
-    <p class="lede">Each bank action carries, inside its own record, the fingerprints of the AI decision and the human review it relies on. Each step is sealed as it happens, so the chain also fixes their order. Nobody can later claim the money moved first, on another decision, or without a human.</p></div>
-  <div class="seg" id="seg"><button data-case="0" class="on">Approved loan · Luna R.</button><button data-case="1">Disbursement without approval</button><button data-case="2">Live gate · machine speed</button></div>
+  <div class="vh"><div class="eyebrow" id="eyebrow">Control · Banque Horizon · credit</div><h1 id="title">Decision to payment</h1>
+    <p class="lede" id="lede">Each bank action carries, inside its own record, the fingerprints of the AI decision and the human review it relies on. Each step is sealed as it happens, so the chain also fixes their order. Nobody can later claim the money moved first, on another decision, or without a human.</p></div>
+  <div class="seg" id="seg"><button data-case="0" class="on">Approved loan · Luna R.</button><button data-case="1">Payment without approval</button></div>
   <div id="case"></div>
 </main>
+</div>
 
+<script src="shell.js" data-page="decision"></script>
 <script>
 /* Fictional bank and customers. Each event: leaf = SHA-256(random value + "\n" + record).
    A bank action's record contains the leaves of the events it relies on ("binds"). */
@@ -322,8 +316,7 @@ function renderGate() {
   const g = gate, n = x => String(x).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   const b = gateSel !== null && g ? g.blocked[gateSel] : null, path = b ? proofFor(g.levels, b.idx) : null;
   $("case").innerHTML = `
-    <div class="case-h"><div><div class="eyebrow">Banque Horizon · Friday 2 October 2026 · core banking stream</div><h2 style="font-size:26px">Every state change, checked before it commits</h2>
-      <div class="note">A bank changes state faster than any human can check. The gate verifies each change against the sealed chain, with SHA-256 only, then seals the outcome.</div></div>
+    <div class="case-h"><div><div class="eyebrow">Friday 2 October 2026 · core banking stream</div><h2 style="font-size:26px">One day: 600 decisions, 438 payments</h2></div>
       <button class="btn" data-act="run">${g ? "Run the stream again" : "Run the day's stream"}</button></div>
     <div class="rules"><div><b>Exists</b>The cited decision is in the sealed chain</div><div><b>Approves</b>It is an approval, not a refusal</div><div><b>Matches</b>Same contract, amount not above</div><div><b>Before</b>Sealed before the request</div><div><b>Single use</b>Never used by another change</div></div>
     ${g ? `<div class="facts">
@@ -368,7 +361,19 @@ document.addEventListener("click", e => {
   }
 });
 
-render();
+/* Two entries in the menu: #decision (the two cases) and #gate (the live gate). */
+const LEDE_DECISION = $("lede").textContent;
+function mode() {
+  const gate = location.hash === "#gate";
+  if (gate) cur = 2; else if (cur === 2) cur = 0;
+  $("seg").style.display = gate ? "none" : "";
+  $("title").textContent = gate ? "Payment gate" : "Decision to payment";
+  $("lede").textContent = gate ? "A bank changes state faster than any human can check. Before each payment commits, the gate verifies the decision it cites against the sealed chain, with SHA-256 only, then seals the outcome. Machines check every transition; people set the rules and review what is blocked." : LEDE_DECISION;
+  Shell.setActive(gate ? "gate" : "decision");
+  render();
+}
+window.addEventListener("hashchange", mode);
+mode();
 </script>
 </body>
 </html>

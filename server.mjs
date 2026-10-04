@@ -16,7 +16,7 @@ const PORT = Number(process.env.PORT) || 8787;
 const KEY = (process.env.MISTRAL_API_KEY || "").trim().replace(/^["']|["']$/g, "");
 const MODEL = process.env.MISTRAL_MODEL || "mistral-large-latest";
 const BASE = process.env.MISTRAL_BASE || "https://api.mistral.ai";
-const TYPES = { ".html": "text/html; charset=utf-8", ".md": "text/markdown; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
+const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".md": "text/markdown; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
 
 const SYSTEM = `You write, on behalf of Banque Horizon, the answer to a customer who asked for an explanation of an automated credit decision (EU AI Act, Article 86: a clear and meaningful explanation of the role of the AI system and of the main elements of the decision).
 Rules:

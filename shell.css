@@ -1,0 +1,34 @@
+/* Counsel shell: one header and one menu on every page. Colours and fonts come from each page's :root. */
+.top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
+.mark { font-family: var(--serif); font-size: 21px; color: var(--ink); letter-spacing: -.01em; width: 204px; flex: none; text-decoration: none; }
+.go { flex: 1; max-width: 460px; position: relative; }
+.go input { width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 150px 0 14px; font: inherit; background: var(--soft); color: var(--ink); outline: none; transition: border-color .15s, background .15s; }
+.go input:focus { background: #fff; border-color: #d9dbe0; }
+.go input::placeholder { color: var(--faint); }
+#gostatus { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); pointer-events: none; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
+
+.shell { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: calc(100vh - 64px); }
+.shell > main { padding: 44px 56px 96px; max-width: 1180px; width: 100%; margin: 0; }
+.rail { border-right: 1px solid var(--line); padding: 20px 14px 24px; display: flex; flex-direction: column; gap: 1px; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
+.grp { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); padding: 20px 12px 6px; }
+.grp:first-child { padding-top: 6px; }
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13.5px; line-height: 1.35; }
+.nav small { display: block; font-family: var(--mono); font-size: 11px; color: var(--faint); font-weight: 400; margin-top: 1px; }
+.nav:hover { color: var(--ink); background: var(--soft); }
+.nav.on { color: var(--ink); background: var(--soft); font-weight: 550; }
+.nav i { font-style: normal; font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; flex: none; }
+.rail-foot { margin-top: auto; padding: 24px 12px 0; font-size: 12px; color: var(--faint); line-height: 1.6; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.rail-foot button { border: 0; background: none; padding: 0; color: var(--faint); text-decoration: underline; text-underline-offset: 3px; font: inherit; cursor: pointer; }
+#mstatus:empty { display: none; }
+
+@media (max-width: 960px) {
+  .top { padding: 0 16px; gap: 12px; } .mark { width: auto; } .firm span { display: none; }
+  .go input { padding-right: 14px; } #gostatus { display: none; }
+  .shell { grid-template-columns: 1fr; }
+  .shell > main { padding: 28px 16px 72px; }
+  .rail { position: static; height: auto; flex-direction: row; overflow-x: auto; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--line); gap: 4px; }
+  .grp, .rail-foot, .nav small { display: none; }
+  .nav { flex: none; }
+}

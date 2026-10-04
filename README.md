@@ -8,15 +8,22 @@ Counsel is the lawyer's application for disputes about AI decisions. Underneath,
 
 No server, no install, no internet needed (except to open the public receipt links). Double-click `index.html`, full screen, at least 1000 px wide.
 
-| Page | What it shows |
-|---|---|
-| `index.html` | The lawyer's workspace. **Week**: planning that never moves a client's deadline. **Evidence**: drop a dispute letter, Counsel finds the contested AI actions, verifies each against its receipt, drafts the plain-language explanation and refuses any figure that contradicts the log, exports a self-verifying evidence file. **AI journal**: every AI action inside Counsel, append-only and chained. |
-| `binding.html` | **Decision to money**. An AI approval, a human review and a disbursement bound by fingerprint, in sealed order; a payment with no decision behind it; and the **Live gate**: a day of 600 decisions and 438 payments checked before commit, 11 anomalies blocked, the whole day sealed as one Merkle root. |
-| `linked.html` | **Words and money**. A transfer, then the customer's conversation with the bank's assistant about it, including the assistant's tool calls. Each record is sealed as a public header (type, time, a case tag derived from a bank secret, the fingerprints of the records it refers to, and a commitment to the private body). Counsel verifies what belongs together, what answered what and in which order without reading any content; then the bank discloses two bodies and Counsel checks the assistant's answer against the transfer. |
-| `conversation.html` | **Chatbot dispute**. A customer says the bank's assistant promised 30 days; the bank disclosed 3 of 12 messages; the sealed answer says 14 days. Undisclosed messages stay fingerprints, salted so they cannot be guessed. |
-| `PITCH.md` | The 2-minute pitch, the demo clicks in order, and the answers to the jury's likely questions. |
+One menu on every page, in three groups:
 
-Before going on stage: "Reset the demo" in the left menu of `index.html`.
+| Group | Entry | What it shows |
+|---|---|---|
+| Practice | **Agenda** | The lawyer's week. Planning that never moves a client's deadline; an urgent matter is absorbed by delegation, not by moving another client. |
+| Practice | **Matters** | Each matter ranked on its own client's priorities; the approved strategy is fingerprinted. |
+| Practice | **AI journal** | Every AI action inside Counsel, append-only and chained; rewrite a past line and the integrity check names it. |
+| Disputes | **Credit refusal** · HZ-2026-04417 | Drop the applicant's letter: Counsel finds his 5 AI actions among 200, verifies each against its own receipt, drafts the plain-language explanation (live by Mistral through the relay), refuses any figure the log does not contain, and exports a self-verifying evidence file. |
+| Disputes | **Disputed transfer** · INV-2209 | A transfer, then the customer's conversation about it and the assistant's tool calls. Counsel proves what belongs together, what answered what and in which order without reading any content, then checks the disclosed answer against the disclosed transfer. |
+| Disputes | **Chatbot promise** · C-0903-1841 | The customer says the assistant promised 30 days; 3 of 12 messages disclosed; the sealed answer says 14 days. Undisclosed messages stay salted fingerprints. |
+| Controls | **Decision to payment** | An AI approval, a human review and a disbursement bound by fingerprint in sealed order; and a payment with no decision behind it. |
+| Controls | **Payment gate** | A day of 600 decisions and 438 payments checked before commit, 11 anomalies blocked, the whole day sealed as one Merkle root. |
+
+Files: `index.html` (Practice and Credit refusal), `linked.html`, `conversation.html`, `binding.html` (both Controls), `shell.js` and `shell.css` (the shared header and menu), `server.mjs` (the relay), `PITCH.md`.
+
+Before going on stage: "Reset the demo", at the bottom of the menu on the Practice pages.
 
 ## Live Mistral (the explanation draft)
 

@@ -19,25 +19,7 @@
   a { color: inherit; }
   code, .mono { font-family: var(--mono); font-size: 12px; }
 
-  /* frame */
-  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
-  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); letter-spacing: -.01em; width: 192px; flex: none; }
-  .go { flex: 1; max-width: 460px; position: relative; }
-  .go input { width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 150px 0 14px; font: inherit; background: var(--soft); color: var(--ink); outline: none; transition: border-color .15s, background .15s; }
-  .go input:focus { background: #fff; border-color: #d9dbe0; }
-  .go input::placeholder { color: var(--faint); }
-  #gostatus { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); pointer-events: none; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
-  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
-  .shell { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); }
-  .rail { border-right: 1px solid var(--line); padding: 28px 16px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 64px; height: calc(100vh - 64px); }
-  .nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex: none; border: 0; background: none; text-align: left; padding: 9px 12px; border-radius: 8px; color: var(--muted); }
-  .nav:hover { color: var(--ink); background: var(--soft); }
-  .nav.on { color: var(--ink); background: var(--soft); font-weight: 550; }
-  .nav i { font-style: normal; font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
-  .rail-foot { margin-top: auto; padding: 0 12px; font-size: 12px; color: var(--faint); line-height: 1.6; }
-  .rail-foot button { border: 0; background: none; padding: 0; color: var(--faint); text-decoration: underline; text-underline-offset: 3px; }
-  main { padding: 44px 56px 96px; max-width: 1180px; width: 100%; }
+
   .view { display: none; animation: fade .25s ease; }
   .view.on { display: block; }
   @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -187,50 +169,32 @@
   .field { width: 100%; height: 36px; border: 1px solid #dfe1e5; border-radius: 8px; padding: 0 12px; font: 12.5px var(--mono); outline: none; margin-top: 4px; }
 
   @media (max-width: 960px) {
-    .top { padding: 0 16px; gap: 12px; } .mark { width: auto; } .firm span { display: none; }
-    .shell { grid-template-columns: 1fr; }
-    .rail { position: static; height: auto; flex-direction: row; overflow-x: auto; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
-    .rail-foot { display: none; }
-    main { padding: 28px 16px 72px; }
     .cal { grid-template-columns: 1fr; } .day { border-right: 0; border-bottom: 1px solid var(--line); } .slots { height: auto; }
     .facts { grid-template-columns: 1fr 1fr; } .facts > div + div { border-left: 0; padding-left: 0; }
     .act, .lv { grid-template-columns: 64px 1fr; } .act .t, .act .r, .lv .t, .lv .f, .lv .r { display: none; }
     .sealbox { grid-template-columns: 1fr; } .notice ul { columns: 1; }
-    .go input { padding-right: 14px; } #gostatus { display: none; }
   }
 </style>
+<link rel="stylesheet" href="shell.css">
 </head>
 <body>
-<header class="top">
-  <div class="mark">Counsel</div>
-  <div class="go"><input id="goto" placeholder="Go to a receipt, a log line, a reference" autocomplete="off" spellcheck="false"><div id="gostatus"></div></div>
-  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
-</header>
+<header class="top" id="top"></header>
 
 <div class="shell">
-  <nav class="rail">
-    <button class="nav on" data-view="week">Week <i id="n-week"></i></button>
-    <button class="nav" data-view="files">Files <i id="n-files"></i></button>
-    <button class="nav" data-view="evidence">Evidence <i id="n-evidence"></i></button>
-    <button class="nav" data-view="journal">AI journal <i id="n-journal"></i></button>
-    <a class="nav" href="linked.html" style="text-decoration:none">Words and money <i></i></a>
-    <a class="nav" href="binding.html" style="text-decoration:none">Decision to money <i></i></a>
-    <a class="nav" href="conversation.html" style="text-decoration:none">Chatbot dispute <i></i></a>
-    <div class="rail-foot">Every AI action is sealed by Recognitium and verifiable offline.<br><br><span id="mstatus"></span><br><br><button data-act="reset">Reset the demo</button></div>
-  </nav>
+  <nav class="rail" id="rail"></nav>
 
   <main>
     <section class="view on" id="v-week">
       <div class="vh">
-        <div><div class="eyebrow">Monday 5 to Friday 9 October 2026</div><h1>This week</h1><p class="lede" id="summary"></p></div>
-        <button class="btn ghost" data-act="urgent" id="urgentBtn">Add an urgent file</button>
+        <div><div class="eyebrow">Agenda · 5 to 9 October 2026</div><h1>This week</h1><p class="lede" id="summary"></p></div>
+        <button class="btn ghost" data-act="urgent" id="urgentBtn">Add an urgent matter</button>
       </div>
       <div id="alert"></div>
       <div class="cal" id="grid"></div>
     </section>
 
     <section class="view" id="v-files">
-      <div class="vh"><div><div class="eyebrow">Cabinet Laurent</div><h1>Files</h1><p class="lede">Each file is ranked on its own client's priorities, never against another file.</p></div></div>
+      <div class="vh"><div><div class="eyebrow">Practice · Cabinet Laurent</div><h1>Matters</h1><p class="lede">Each matter is ranked on its own client's priorities, never against another.</p></div></div>
       <table class="tbl"><thead><tr><th>Client</th><th>Matter</th><th>Deadline</th><th>Hours</th><th>Status</th></tr></thead><tbody id="files"></tbody></table>
     </section>
 
@@ -238,7 +202,7 @@
 
     <section class="view" id="v-journal">
       <div class="vh">
-        <div><div class="eyebrow">Article 12-ready</div><h1>AI journal</h1><p class="lede">Every AI action, append-only. Each line carries the fingerprint of the line before: change one and every later line breaks.</p></div>
+        <div><div class="eyebrow">Practice · Article 12-ready</div><h1>AI journal</h1><p class="lede">Every AI action, append-only. Each line carries the fingerprint of the line before: change one and every later line breaks.</p></div>
         <div class="row"><button class="btn ghost" data-act="check">Check integrity</button><button class="btn ghost" data-act="alter">Rewrite a past line</button><button class="btn ghost" data-act="export">Export</button></div>
       </div>
       <div id="jcheck"></div>
@@ -254,6 +218,7 @@
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer"><div class="dr" id="dr"></div></aside>
 
+<script src="shell.js" data-page="index"></script>
 <script>
 /* Fictional firm, fictional clients. Hours are the lawyer's; deadlines are the clients'. */
 const DAYS = ["Mon 5", "Tue 6", "Wed 7", "Thu 8", "Fri 9"];
@@ -470,22 +435,21 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
 function setView(v) {
   state.view = v;
   document.querySelectorAll(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
-  document.querySelectorAll(".nav").forEach(x => x.classList.toggle("on", x.dataset.view === v));
+  Shell.setActive({ week: "agenda", files: "matters", evidence: "credit", journal: "journal" }[v]);
   window.scrollTo({ top: 0 });
 }
 
 function renderNav() {
   const p = plan(tasks());
-  $("n-week").textContent = p.list.some(t => t.late) ? "1 at risk" : "";
-  $("n-files").textContent = p.list.length;
-  $("n-evidence").textContent = state.horizon ? "1" : "";
+  $("n-agenda").textContent = p.list.some(t => t.late) ? "1 at risk" : "";
+  $("n-matters").textContent = p.list.length;
   $("n-journal").textContent = journal.length;
 }
 
 function renderWeek() {
   const p = plan(tasks());
   const total = p.list.reduce((s, t) => s + t.hours, 0), late = p.list.filter(t => t.late);
-  $("summary").innerHTML = `<b>${p.list.length} files</b>, ${total} of ${CAP * 5} hours planned. ` +
+  $("summary").innerHTML = `<b>${p.list.length} matters</b>, ${total} of ${CAP * 5} hours planned. ` +
     (late.length ? `<span class="st risk">One deadline at risk</span>` : `<span class="st ok">Every deadline holds</span>`);
   $("urgentBtn").disabled = state.urgent;
 
@@ -540,16 +504,16 @@ function renderAll() { renderWeek(); renderFiles(); renderEvidence(); renderNav(
 function renderEvidence() {
   const h = state.horizon;
   if (!h) {
-    $("evidence").innerHTML = `<div class="vh"><div><div class="eyebrow">Disputes about AI decisions</div><h1>Evidence</h1>
-      <p class="lede">Drop a client's dispute letter. Counsel reads it, finds the AI actions it concerns, and proves they have not changed since they happened.</p></div></div>
+    $("evidence").innerHTML = `<div class="vh"><div><div class="eyebrow">Dispute · Banque Horizon · HZ-2026-04417</div><h1>Credit refusal</h1>
+      <p class="lede">An applicant contests a loan refused by the bank's AI. Drop his letter: Counsel reads it, finds the AI actions it concerns, and proves they have not changed since they happened.</p></div></div>
       <div class="drop" id="drop"><h2>Drop a dispute letter here</h2><p>A text file or a pasted letter. Nothing leaves this machine: only fingerprints are ever sealed.</p>
       <button class="btn" data-act="sample">Use the sample letter · Banque Horizon</button></div>`;
     return;
   }
   const own = h.hits.filter(x => LINE_RECEIPTS[seqOf(x.l)]).length;
   $("evidence").innerHTML = `
-    <div class="vh"><div><div class="eyebrow">Banque Horizon · credit AI system CreditScore v3.2</div><h1>${h.ref}</h1>
-      <p class="lede">Request for an explanation of an automated credit refusal. Case file built in ${h.ms} ms from the letter alone.</p></div>
+    <div class="vh"><div><div class="eyebrow">Dispute · Banque Horizon · ${h.ref}</div><h1>Credit refusal</h1>
+      <p class="lede">The applicant asks for an explanation of a loan refused by CreditScore v3.2. Case file built in ${h.ms} ms from his letter alone.</p></div>
       <div class="row"><button class="btn" data-act="bundle">Download the evidence file</button><button class="btn ghost" data-act="explain">Explain to the applicant</button><button class="btn ghost" data-case="horizon">Strategy</button></div></div>
     <div class="facts">
       <div><span>Request</span><b>${h.bases.join(", ") || "Contestation"}</b></div>
@@ -792,9 +756,6 @@ function report(id, at) {
 
 /* ---------- events ---------- */
 document.addEventListener("click", async e => {
-  const nav = e.target.closest(".nav");
-  if (nav && nav.dataset.view) return setView(nav.dataset.view);
-  if (nav) return;
   const lineEl = e.target.closest("[data-line]");
   if (lineEl && !e.target.closest("[data-act]")) return focusLine(+lineEl.dataset.line);
   const el = e.target.closest("[data-act],[data-case]");
@@ -968,7 +929,15 @@ if (location.protocol.startsWith("http")) {
 }
 
 renderAll(); seed();
-if (location.hash.length > 1) { const q = decodeURIComponent(location.hash.slice(1)); $("goto").value = q; goTo(q); }
+/* Routes: #/agenda, #/matters, #/dispute, #/journal; any other hash is a search (receipt, line, reference). */
+const ROUTES = { agenda: "week", matters: "files", dispute: "evidence", journal: "journal" };
+function route() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (!h || h.startsWith("/")) return setView(ROUTES[h.slice(1)] || "week");
+  $("goto").value = h; goTo(h);
+}
+window.addEventListener("hashchange", route);
+setView("week"); route();
 </script>
 </body>
 </html>
