@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counsel · Decision to money</title>
+<style>
+  :root {
+    --ink: #0f1115; --body: #2b2f36; --muted: #6b7079; --faint: #a6aab1; --line: #ececef; --soft: #f7f7f8;
+    --ok: #136c4a; --okbg: #f1f8f4; --risk: #b42318; --riskbg: #fdf4f3; --mark: #fbf6e9;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: Inter, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--body); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  a { color: inherit; }
+  code { font-family: var(--mono); font-size: 12px; }
+  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
+  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
+  main { max-width: 1080px; margin: 0 auto; padding: 44px 56px 96px; }
+  .eyebrow { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.015em; color: var(--ink); margin: 0; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 21px; color: var(--ink); margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 8px 0 0; max-width: 700px; }
+  .note { font-size: 12.5px; color: var(--muted); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 500; display: inline-flex; align-items: center; text-decoration: none; transition: opacity .15s; }
+  .btn:hover { opacity: .86; }
+  .btn.ghost { background: #fff; color: var(--ink); border-color: #dfe1e5; }
+  .btn.ghost:hover { border-color: var(--faint); opacity: 1; }
+  .vh { margin-bottom: 32px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; margin-bottom: 28px; }
+  .seg button { border: 0; background: none; padding: 7px 16px; border-radius: 8px; color: var(--muted); }
+  .seg button.on { background: var(--soft); color: var(--ink); font-weight: 550; }
+  .case-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
+  .tl { position: relative; padding-left: 36px; }
+  .tl::before { content: ""; position: absolute; left: 11px; top: 14px; bottom: 14px; width: 1px; background: var(--line); }
+  .ev { position: relative; border: 1px solid var(--line); padding: 18px 20px; margin-bottom: 14px; background: #fff; }
+  .ev::before { content: ""; position: absolute; left: -30px; top: 22px; width: 11px; height: 11px; border-radius: 50%; background: #fff; border: 1.5px solid var(--ink); }
+  .ev.bank::before { background: var(--ink); }
+  .ev.bad { border-color: #f1c9c4; background: var(--riskbg); }
+  .ev.bad::before { border-color: var(--risk); background: var(--risk); }
+  .ev.edited { border-color: #f1c9c4; }
+  .ev-h { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .kind { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .when { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .what { font-family: var(--serif); font-size: 17px; color: var(--ink); margin: 6px 0 10px; line-height: 1.45; }
+  .meta { display: grid; grid-template-columns: 150px 1fr; gap: 4px 12px; font-size: 12.5px; }
+  .meta span { color: var(--muted); }
+  .meta code { color: var(--ink); word-break: break-all; }
+  .links { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; }
+  .lk { display: flex; gap: 8px; align-items: baseline; padding: 2px 0; }
+  .lk.ok { color: var(--ok); } .lk.bad { color: var(--risk); }
+  .lk code { color: inherit; opacity: .8; }
+  .verdict { margin: 8px 0 28px; padding: 14px 18px; border-left: 2px solid; font-size: 14px; }
+  .verdict.ok { color: var(--ok); background: var(--okbg); } .verdict.bad { color: var(--risk); background: var(--riskbg); }
+  .verdict b { display: block; font-weight: 600; margin-bottom: 2px; }
+  .plain { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 12px; }
+  .plain p { font-family: var(--serif); font-size: 17px; line-height: 1.6; color: var(--ink); max-width: 720px; margin: 8px 0 0; }
+  .facts { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 8px 0 28px; }
+  .facts > div { padding: 16px 18px 16px 0; }
+  .facts > div + div { padding-left: 18px; border-left: 1px solid var(--line); }
+  .facts span { display: block; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .facts b { font-family: var(--serif); font-weight: 400; font-size: 26px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .facts small { display: block; color: var(--faint); font-size: 12px; }
+  .rules { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border: 1px solid var(--line); margin-bottom: 24px; }
+  .rules div { padding: 12px 14px; font-size: 12.5px; color: var(--muted); }
+  .rules div + div { border-left: 1px solid var(--line); }
+  .rules b { display: block; color: var(--ink); font-weight: 550; font-size: 13px; }
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl th { text-align: left; font-weight: 500; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 0 14px 10px 0; border-bottom: 1px solid var(--line); }
+  .tbl td { padding: 11px 14px 11px 0; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+  .tbl tbody tr { cursor: pointer; } .tbl tbody tr:hover td { background: var(--soft); }
+  .tbl tr.on td { background: var(--mark); }
+  .tbl .m { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .reason { color: var(--risk); }
+  .proofbox { border: 1px solid var(--line); padding: 18px 20px; margin-top: 24px; }
+  .path { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; max-height: 160px; overflow: auto; margin-top: 8px; word-break: break-all; }
+  @media (max-width: 860px) {
+    .facts, .rules { grid-template-columns: 1fr 1fr; } .facts > div + div, .rules div + div { border-left: 0; padding-left: 0; }
+    .top { padding: 0 16px; } .firm span { display: none; }
+    main { padding: 28px 16px 72px; }
+    .meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="mark" href="index.html">Counsel</a>
+  <a class="back" href="index.html">Back to the agenda</a>
+  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
+</header>
+
+<main>
+  <div class="vh"><div class="eyebrow">Banque Horizon · high-risk AI · credit</div><h1>From decision to money</h1>
+    <p class="lede">Each bank action carries, inside its own record, the fingerprints of the AI decision and the human review it relies on. Each step is sealed as it happens, so the chain also fixes their order. Nobody can later claim the money moved first, on another decision, or without a human.</p></div>
+  <div class="seg" id="seg"><button data-case="0" class="on">Approved loan · Luna R.</button><button data-case="1">Disbursement without approval</button><button data-case="2">Live gate · machine speed</button></div>
+  <div id="case"></div>
+</main>
+
+<script>
+/* Fictional bank and customers. Each event: leaf = SHA-256(random value + "\n" + record).
+   A bank action's record contains the leaves of the events it relies on ("binds"). */
+const CASES = [
+  { ref: "HZ-2026-04521", who: "Luna R.", title: "Personal loan, 22 000 euros over 60 months", events: [
+    { n: 1, kind: "AI decision", at: "2026-09-05 10:12:41", system: "CreditScore v3.2", decision: "approve",
+      text: "Score 612 / 1000, threshold 450. Decision: approve. Main factors: stable income, debt-to-income ratio 22 %." },
+    { n: 2, kind: "Human review", at: "2026-09-05 11:03:17", system: "Credit analyst (agent 0147)", decision: "confirmed", bindsTo: [1],
+      text: "Approval confirmed after review of the file." },
+    { n: 3, kind: "Bank action", at: "2026-09-06 09:00:02", system: "Core banking", bank: true, bindsTo: [1, 2],
+      text: "Disbursement of 22 000 EUR to the account ending 4471, loan contract HZ-2026-04521." } ],
+    salts: ["3e8a1f6c0d9b2e7a4c5f8b1d6e0a9c32", "b72d4e9a1c6f3b8e0d5a2c7f9e1b4d68", "0f6c3a9e2d7b1f4c8e5a0d3b6f9c2e15"] },
+  { ref: "HZ-2026-04588", who: "File HZ-2026-04588", title: "Personal loan, 9 500 euros over 36 months", events: [
+    { n: 1, kind: "AI decision", at: "2026-09-18 14:22:09", system: "CreditScore v3.2", decision: "refuse",
+      text: "Score 391 / 1000, threshold 450. Decision: refuse. Main factors: debt-to-income ratio 47 %, recent payment incidents." },
+    { n: 2, kind: "Bank action", at: "2026-09-18 16:40:55", system: "Core banking", bank: true, bindsTo: [],
+      text: "Disbursement of 9 500 EUR to the account ending 2290, loan contract HZ-2026-04588." } ],
+    salts: ["d41c7e2a9f0b6d3e8c1a5f2b7e4d0c96", "6a0e3d8b2f5c9e1a7d4b0f6c3e8a2d51"] }
+];
+/* Real receipts, production chain, sealed in this order (demo1, 4 October 2026). Do not edit the events or random values. */
+const RECEIPTS = [
+  [{ id: "DG-684d2f282b074c3c92c96477c3667d82", seq: 177829, ns: "1791112142610661445" },
+   { id: "DG-5aff103b1080432a9a9199a37414d94c", seq: 177830, ns: "1791112143783005655" },
+   { id: "DG-b34d0e2a1d8542bda21ecfee4ba1b6a5", seq: 177831, ns: "1791112144918829860" }],
+  [{ id: "DG-ecfeb9b0c8854c5e8738f6a73da0c3c7", seq: 177832, ns: "1791112146118352904" },
+   { id: "DG-bfef67c50137499c9078c299ecd894c8", seq: 177833, ns: "1791112147284500848" }]
+];
+
+/* ---------- SHA-256 ---------- */
+function sha256js(msg) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const len = msg.length, total = ((len + 9 + 63) >> 6) << 6, m = new Uint8Array(total);
+  m.set(msg); m[len] = 0x80;
+  const bits = len * 8, dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(bits / 0x100000000)); dv.setUint32(total - 4, bits >>> 0);
+  const W = new Uint32Array(64), r = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < total; o += 64) {
+    for (let i = 0; i < 16; i++) W[i] = dv.getUint32(o + i * 4);
+    for (let i = 16; i < 64; i++) {
+      const s0 = r(W[i-15], 7) ^ r(W[i-15], 18) ^ (W[i-15] >>> 3), s1 = r(W[i-2], 17) ^ r(W[i-2], 19) ^ (W[i-2] >>> 10);
+      W[i] = (W[i-16] + s0 + W[i-7] + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + W[i]) >>> 0;
+      const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  return H.map(x => x.toString(16).padStart(8, "0")).join("");
+}
+const enc = x => new TextEncoder().encode(x);
+
+/* What the bank sealed at the time: each record includes the fingerprints of the events it binds to. */
+const record = (ev, binds) => JSON.stringify({ n: ev.n, kind: ev.kind, at: ev.at, system: ev.system, decision: ev.decision || null, text: ev.text, binds });
+const SEALED = CASES.map(c => {
+  const leaves = [];
+  c.events.forEach((ev, i) => {
+    const binds = (ev.bindsTo || []).map(k => leaves[k - 1]);
+    leaves.push(sha256js(enc(c.salts[i] + "\n" + record(ev, binds))));
+  });
+  return leaves;
+});
+
+let cur = 0;
+const edits = [{}, {}];
+const $ = id => document.getElementById(id);
+const VERIFY = id => `https://www.recognitium.com/verify/${encodeURIComponent(id)}`;
+const fmtSeq = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const nsUTC = ns => new Date(+ns.slice(0, -9) * 1000).toISOString().slice(0, 19).replace("T", " ") + "." + ns.slice(-9) + " UTC";
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const day = at => { const [y, m, d] = at.slice(0, 10).split("-"); return `${+d} ${MONTHS[+m - 1]} ${y}`; };
+
+/* The lawyer's check: recompute each event from what was disclosed, then test every link and the order. */
+function check(ci) {
+  const c = CASES[ci], seals = SEALED[ci], now = [], out = [];
+  c.events.forEach((ev0, i) => {
+    const ev = edits[ci][ev0.n] ? { ...ev0, text: edits[ci][ev0.n] } : ev0;
+    const binds = (ev.bindsTo || []).map(k => seals[k - 1]); // the fingerprints written inside the record when it was sealed
+    const leaf = sha256js(enc(c.salts[i] + "\n" + record(ev, binds)));
+    now.push(leaf);
+    const intact = leaf === seals[i];
+    const links = (ev.bindsTo || []).map(k => {
+      const r = RECEIPTS[ci][k - 1], mine = RECEIPTS[ci][i];
+      const still = now[k - 1] === seals[k - 1];
+      const before = !r || !mine || r.seq < mine.seq;
+      return { k, ok: still && before, still, before };
+    });
+    out.push({ ev, leaf, intact, links });
+  });
+  const findings = [];
+  out.forEach(o => { if (!o.intact) findings.push(`Step ${o.ev.n} (${o.ev.kind}) was changed after it was sealed.`); });
+  out.forEach(o => o.links.forEach(l => { if (!l.still) findings.push(`Step ${o.ev.n} relies on step ${l.k}, which no longer matches the version it was bound to.`); }));
+  out.filter(o => o.ev.kind === "Bank action").forEach(o => {
+    const bound = (o.ev.bindsTo || []).map(k => c.events[k - 1]);
+    const approved = bound.some(b => b.kind === "AI decision" && b.decision === "approve");
+    const human = bound.some(b => b.kind === "Human review");
+    if (!approved) {
+      const any = c.events.find(e => e.kind === "AI decision");
+      findings.push(`Money moved without a recorded approval. The disbursement references no decision${any ? `, and the only AI decision on file was to ${any.decision}` : ""}.`);
+    } else if (!human) findings.push("Money moved on an AI decision with no recorded human review.");
+  });
+  return { out, findings };
+}
+
+function render() {
+  document.querySelectorAll("#seg button").forEach(b => b.classList.toggle("on", +b.dataset.case === cur));
+  if (cur === 2) return renderGate();
+  const c = CASES[cur], { out, findings } = check(cur), ok = !findings.length;
+  const plain = ok
+    ? `Your loan of 22 000 euros was approved by our credit system on ${day(c.events[0].at)} at ${c.events[0].at.slice(11, 16)}, confirmed by a credit analyst at ${c.events[1].at.slice(11, 16)} the same day, and paid into your account on ${day(c.events[2].at)} at ${c.events[2].at.slice(11, 16)}. The three steps are linked to each other and sealed, in this order.`
+    : cur === 1 && !Object.keys(edits[1]).length
+      ? `On ${day(c.events[1].at)} at ${c.events[1].at.slice(11, 16)}, 9 500 euros were paid out on file ${c.ref}. The only AI decision on file, at ${c.events[0].at.slice(11, 16)} the same day, was a refusal, and no human review is recorded. The payment does not refer to any decision. This needs an explanation before anyone answers the customer.`
+      : `The record no longer holds together: at least one step was changed after it was sealed. Nothing in it can be relied on until the bank produces the original.`;
+  $("case").innerHTML = `
+    <div class="case-h"><div><div class="eyebrow">${c.ref}</div><h2 style="font-size:26px">${c.who}</h2><div class="note">${c.title}</div></div>
+      <div class="row"><button class="btn" data-act="verify">Verify the links</button>${cur === 0 ? `<button class="btn ghost" data-act="edit">${edits[0][1] ? "Undo the edit" : "Simulate an edit of the AI decision"}</button>` : ""}</div></div>
+    <div id="verdict"></div>
+    <div class="tl">${out.map((o, i) => {
+      const r = RECEIPTS[cur][i], bad = !o.intact || o.links.some(l => !l.ok) || (o.ev.kind === "Bank action" && findings.some(f => f.startsWith("Money")));
+      return `<div class="ev${o.ev.bank ? " bank" : ""}${bad ? " bad" : ""}">
+        <div class="ev-h"><span class="kind">Step ${o.ev.n} · ${o.ev.kind}</span><span class="when">${o.ev.at} · ${o.ev.system}</span></div>
+        <div class="what">${o.ev.text}</div>
+        <div class="meta"><span>Fingerprint</span><code>${o.leaf}</code>
+          ${r ? `<span>Receipt</span><code><a href="${VERIFY(r.id)}" target="_blank" rel="noopener">${r.id}</a></code><span>Chain sequence</span><code>${fmtSeq(r.seq)}</code><span>Sealed at</span><code>${nsUTC(r.ns)}</code>` : ""}</div>
+        ${o.ev.kind !== "AI decision" ? `<div class="links">${o.links.length ? o.links.map(l => `<div class="lk ${l.ok ? "ok" : "bad"}">${l.ok ? "Bound to" : "Broken link to"} step ${l.k} <code>${SEALED[cur][l.k - 1].slice(0, 16)}</code>${l.ok ? (RECEIPTS[cur][l.k - 1] ? ", sealed before it" : "") : !l.still ? ", which changed since" : ", sealed after it"}</div>`).join("")
+          : `<div class="lk bad">Bound to nothing: this record carries no decision fingerprint.</div>`}</div>` : ""}
+      </div>`; }).join("")}</div>
+    <div class="plain"><div class="eyebrow">${ok ? "In plain language, for the customer" : "In plain language, for the lawyer"}</div><p>${plain}</p></div>`;
+}
+
+/* ---------- the live gate: every state change verified before it commits, at machine speed ---------- */
+/* The sealed Merkle root of the whole stream (production chain, demo1). Do not edit STREAM: this seals its exact output. */
+const GATE_RECEIPT = { id: "DG-8f5ff1f17f434b2b8f0dbffca1412d92", seq: 177848, ns: "1791112545607752342", hash: "1626b50c6e28f115cee43d2d900f74a02517ea09e7704222335007d08d3494d3" };
+const STREAM = (() => {
+  let s = 4102026;
+  const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const hex = n => Array.from({ length: n }, () => "0123456789abcdef"[Math.floor(rnd() * 16)]).join("");
+  const t0 = Date.UTC(2026, 9, 2, 7, 0, 0);
+  const fmt = ms => new Date(ms + 2 * 3600e3).toISOString().slice(0, 19).replace("T", " ");
+  const decisions = [], ev = [];
+  let t = t0;
+  for (let i = 0; i < 600; i++) {
+    t += 2000 + Math.floor(rnd() * 8000);
+    const amount = (3 + Math.floor(rnd() * 37)) * 500, score = 300 + Math.floor(rnd() * 600);
+    const d = { i, kind: "AI decision", t, at: fmt(t), contract: "HZ-2026-" + String(10000 + i).padStart(5, "0"), amount, score, decision: score >= 450 ? "approve" : "refuse", salt: hex(32) };
+    d.leaf = sha256js(enc(d.salt + "\n" + JSON.stringify({ kind: d.kind, at: d.at, contract: d.contract, amount: d.amount, score: d.score, decision: d.decision })));
+    decisions.push(d); ev.push(d);
+  }
+  const req = (t, d, extra = {}) => ({ kind: "State change", t, contract: d ? d.contract : "HZ-2026-" + (90000 + Math.floor(rnd() * 999)), amount: d ? d.amount : (4 + Math.floor(rnd() * 20)) * 500,
+    account: "…" + (1000 + Math.floor(rnd() * 8999)), ref: d ? d.leaf : null, salt: hex(32), ...extra });
+  decisions.filter(d => d.decision === "approve").forEach(d => ev.push(req(d.t + 30000 + Math.floor(rnd() * 270000), d)));
+  [37, 211, 404].forEach(k => { const d = decisions.filter(x => x.decision === "approve")[k % 300]; ev.push(req(d.t + 900000, d)); });       // replay
+  [88, 150].forEach(k => { const d = decisions.filter(x => x.decision === "approve")[k]; ev.push(req(d.t + 400000, d, { amount: d.amount + 2500 })); }); // above the approval
+  [12, 140].forEach(k => { const d = decisions.filter(x => x.decision === "refuse")[k]; ev.push(req(d.t + 120000, d)); });                   // cites a refusal
+  [t0 + 1800000, t0 + 3600000].forEach(tt => ev.push(req(tt, null)));                                                                        // cites nothing
+  ev.push(req(t0 + 2400000, null, { ref: sha256js(enc("not a sealed decision")) }));                                                         // cites a forged fingerprint
+  { const d = decisions[520]; ev.push(req(decisions[400].t + 1000, d)); }                                                                    // cites a decision sealed later
+  ev.sort((a, b) => a.t - b.t || (a.kind === "AI decision" ? -1 : 1));
+  ev.forEach(e => { e.at = fmt(e.t); });
+  return { decisions, ev };
+})();
+
+function runGate() {
+  const t0 = performance.now();
+  const sealed = new Map(), used = new Set(), records = [], blocked = [];
+  let committed = 0;
+  for (const e of STREAM.ev) {
+    if (e.kind === "AI decision") { sealed.set(e.leaf, e); records.push(e.leaf); continue; }
+    let reason = null;
+    const d = e.ref ? sealed.get(e.ref) : null;
+    if (!e.ref) reason = "Cites no decision";
+    else if (!d) reason = STREAM.decisions.some(x => x.leaf === e.ref) ? "Cites a decision sealed after the request" : "Cites a fingerprint that is not in the sealed chain";
+    else if (d.decision !== "approve") reason = "Cites a refusal";
+    else if (d.contract !== e.contract || e.amount > d.amount) reason = "Amount above the approved amount";
+    else if (used.has(e.ref)) reason = "Decision already used";
+    if (!reason) { used.add(e.ref); committed++; }
+    const rec = { kind: e.kind, at: e.at, contract: e.contract, amount: e.amount, account: e.account, binds: e.ref ? [e.ref] : [], outcome: reason ? "refused" : "committed", reason };
+    const leaf = sha256js(enc(e.salt + "\n" + JSON.stringify(rec)));
+    records.push(leaf);
+    if (reason) blocked.push({ ...rec, leaf, idx: records.length - 1 });
+  }
+  const levels = [records];
+  while (levels[levels.length - 1].length > 1) {
+    const L = levels[levels.length - 1], up = [];
+    for (let i = 0; i < L.length; i += 2) up.push(sha256js(enc(L[i] + (L[i + 1] || L[i]))));
+    levels.push(up);
+  }
+  const ms = performance.now() - t0;
+  return { changes: STREAM.ev.length - STREAM.decisions.length, decisions: STREAM.decisions.length, committed, blocked, records, levels, root: levels[levels.length - 1][0], ms };
+}
+
+function proofFor(levels, idx) {
+  const path = [];
+  for (let l = 0; l < levels.length - 1; l++) {
+    const L = levels[l], sib = idx ^ 1;
+    path.push({ hash: L[sib] !== undefined ? L[sib] : L[idx], left: (idx & 1) === 1 });
+    idx >>= 1;
+  }
+  return path;
+}
+const climb = (leaf, path) => path.reduce((h, p) => sha256js(enc(p.left ? p.hash + h : h + p.hash)), leaf);
+
+let gate = null, gateSel = null;
+function renderGate() {
+  const g = gate, n = x => String(x).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const b = gateSel !== null && g ? g.blocked[gateSel] : null, path = b ? proofFor(g.levels, b.idx) : null;
+  $("case").innerHTML = `
+    <div class="case-h"><div><div class="eyebrow">Banque Horizon · Friday 2 October 2026 · core banking stream</div><h2 style="font-size:26px">Every state change, checked before it commits</h2>
+      <div class="note">A bank changes state faster than any human can check. The gate verifies each change against the sealed chain, with SHA-256 only, then seals the outcome.</div></div>
+      <button class="btn" data-act="run">${g ? "Run the stream again" : "Run the day's stream"}</button></div>
+    <div class="rules"><div><b>Exists</b>The cited decision is in the sealed chain</div><div><b>Approves</b>It is an approval, not a refusal</div><div><b>Matches</b>Same contract, amount not above</div><div><b>Before</b>Sealed before the request</div><div><b>Single use</b>Never used by another change</div></div>
+    ${g ? `<div class="facts">
+      <div><span>State changes</span><b>${n(g.changes)}</b><small>after ${n(g.decisions)} AI decisions</small></div>
+      <div><span>Committed</span><b>${n(g.committed)}</b><small>each bound to its decision</small></div>
+      <div><span>Blocked</span><b style="color:var(--risk)">${g.blocked.length}</b><small>sealed with their reason</small></div>
+      <div><span>Verification</span><b>${g.ms < 1000 ? Math.round(g.ms) + " ms" : (g.ms / 1000).toFixed(1) + " s"}</b><small>for the whole day, in this browser</small></div>
+      <div><span>Rate</span><b>${n(Math.round(g.records.length / (g.ms / 1000)))}</b><small>records per second</small></div></div>
+    <div class="verdict ${GATE_RECEIPT.id && g.root !== GATE_RECEIPT.hash ? "bad" : "ok"}"><b>${n(g.records.length)} records, one seal.</b>Merkle root <code>${g.root}</code>${GATE_RECEIPT.id ? `<br>${g.root === GATE_RECEIPT.hash ? "Matches" : "Does NOT match"} receipt <a href="${VERIFY(GATE_RECEIPT.id)}" target="_blank" rel="noopener">${GATE_RECEIPT.id}</a>, chain sequence ${fmtSeq(GATE_RECEIPT.seq)}.` : ""}</div>
+    <div class="sec-h" style="display:flex;justify-content:space-between;align-items:baseline;margin:8px 0 12px"><h2>Blocked before they committed</h2><span class="note">Each goes to a human queue. Click one for its proof.</span></div>
+    <table class="tbl"><thead><tr><th>Time</th><th>Contract</th><th>Amount</th><th>Reason</th></tr></thead><tbody>
+      ${g.blocked.map((x, i) => `<tr data-b="${i}" class="${gateSel === i ? "on" : ""}"><td class="m">${x.at}</td><td class="m">${x.contract}</td><td class="m">${n(x.amount)} EUR</td><td class="reason">${x.reason}</td></tr>`).join("")}</tbody></table>
+    ${b ? `<div class="proofbox"><div class="eyebrow">Proof for this refusal, without disclosing the other ${n(g.records.length - 1)} records</div>
+      <div class="meta"><span>Record fingerprint</span><code>${b.leaf}</code><span>Position</span><code>${n(b.idx + 1)} of ${n(g.records.length)}</code><span>Inclusion path</span><code>${path.length} hashes</code></div>
+      <div class="path">${path.map((p, k) => `${k + 1}. ${p.left ? "left " : "right"} ${p.hash}`).join("<br>")}</div>
+      <div class="row" style="margin-top:14px"><button class="btn" data-act="incl">Verify inclusion</button></div><div id="inclres"></div></div>` : ""}`
+    : `<p class="note">${n(STREAM.decisions.length)} AI decisions and ${n(STREAM.ev.length - STREAM.decisions.length)} core banking requests from one day, with a few anomalies hidden inside: replays, amounts above the approval, payments citing refusals, citing nothing, citing a forged fingerprint, or citing a decision sealed later.</p>`}`;
+}
+
+document.addEventListener("click", e => {
+  const s = e.target.closest("#seg button");
+  if (s) { cur = +s.dataset.case; return render(); }
+  const tr = e.target.closest("tr[data-b]");
+  if (tr) { gateSel = +tr.dataset.b; return renderGate(); }
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  if (el.dataset.act === "run") { gate = runGate(); gateSel = null; return renderGate(); }
+  if (el.dataset.act === "incl") {
+    const b = gate.blocked[gateSel], ok = climb(b.leaf, proofFor(gate.levels, b.idx)) === gate.root;
+    $("inclres").innerHTML = `<div class="verdict ${ok ? "ok" : "bad"}" style="margin:14px 0 0">${ok ? `<b>Included.</b>Climbing ${proofFor(gate.levels, b.idx).length} hashes from this record reaches the sealed root. This refusal was recorded that day, and cannot be removed without breaking the seal.` : "<b>Not included.</b>"}</div>`;
+    return;
+  }
+  if (el.dataset.act === "edit") {
+    if (edits[0][1]) delete edits[0][1]; else edits[0][1] = CASES[0].events[0].text.replace("612", "512");
+    render(); return;
+  }
+  if (el.dataset.act === "verify") {
+    const { findings } = check(cur);
+    $("verdict").innerHTML = findings.length
+      ? `<div class="verdict bad"><b>${findings.length === 1 ? "One finding" : findings.length + " findings"}</b>${findings.join("<br>")}</div>`
+      : `<div class="verdict ok"><b>Every link holds.</b>The AI decision, the human review and the payment are each unchanged; each one carries the fingerprint of the step before it, and the chain sealed them in this order.</div>`;
+  }
+});
+
+render();
+</script>
+</body>
+</html>

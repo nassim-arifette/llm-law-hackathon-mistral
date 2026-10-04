@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counsel · Conversation</title>
+<style>
+  :root {
+    --ink: #0f1115; --body: #2b2f36; --muted: #6b7079; --faint: #a6aab1; --line: #ececef; --soft: #f7f7f8;
+    --ok: #136c4a; --okbg: #f1f8f4; --risk: #b42318; --riskbg: #fdf4f3; --mark: #fbf6e9;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: Inter, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--body); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  a { color: inherit; }
+  code { font-family: var(--mono); font-size: 12px; }
+  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
+  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
+  main { max-width: 1180px; margin: 0 auto; padding: 44px 56px 96px; }
+  .eyebrow { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.015em; color: var(--ink); margin: 0; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 21px; color: var(--ink); margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 8px 0 0; max-width: 680px; }
+  .note { font-size: 12.5px; color: var(--muted); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 500; display: inline-flex; align-items: center; text-decoration: none; transition: opacity .15s; }
+  .btn:hover { opacity: .86; }
+  .btn.ghost { background: #fff; color: var(--ink); border-color: #dfe1e5; }
+  .btn.ghost:hover { border-color: var(--faint); opacity: 1; }
+  .vh { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .facts > div { padding: 18px 20px 18px 0; }
+  .facts > div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+  .facts span { display: block; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .facts b { color: var(--ink); font-weight: 550; }
+  .facts small { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
+  .finding { margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
+  .finding > div { padding: 20px 24px; }
+  .finding > div + div { border-left: 1px solid var(--line); }
+  .finding .q { font-family: var(--serif); font-size: 19px; color: var(--ink); line-height: 1.4; margin-top: 6px; }
+  .finding .rec { background: var(--okbg); }
+  .finding .rec .eyebrow { color: var(--ok); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; margin-top: 44px; align-items: start; }
+  .sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+  .chat { border: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 82%; cursor: pointer; transition: box-shadow .15s; }
+  .msg .meta { font-size: 11.5px; color: var(--faint); margin-bottom: 4px; font-family: var(--mono); }
+  .msg .bub { padding: 12px 16px; border: 1px solid var(--line); background: #fff; color: var(--ink); line-height: 1.55; }
+  .msg.user { align-self: flex-end; }
+  .msg.user .bub { background: var(--soft); }
+  .msg.user .meta { text-align: right; }
+  .msg.tool, .msg.system { align-self: center; max-width: 92%; }
+  .msg.tool .bub, .msg.system .bub { border-style: dashed; font-family: var(--mono); font-size: 12px; color: var(--muted); background: #fff; }
+  .msg.hidden .bub { border-style: dashed; background: #fff; color: var(--faint); font-family: var(--mono); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .msg .rid { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  .msg.user .rid { text-align: right; }
+  .msg.sel .bub { box-shadow: 0 0 0 2px var(--ink); }
+  .msg.edited .bub { border-color: #f1c9c4; background: var(--riskbg); }
+  .side { position: sticky; top: 88px; }
+  .panel { border: 1px solid var(--line); padding: 20px; }
+  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 4px 0; font-size: 13px; }
+  .kv span { color: var(--muted); }
+  .kv code { word-break: break-all; color: var(--ink); }
+  .res { margin-top: 14px; padding: 10px 14px; font-size: 13.5px; border-left: 2px solid; }
+  .res.ok { color: var(--ok); background: var(--okbg); } .res.bad { color: var(--risk); background: var(--riskbg); }
+  .salt { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+  @media (max-width: 960px) {
+    .top { padding: 0 16px; } .firm span { display: none; }
+    main { padding: 28px 16px 72px; }
+    .facts { grid-template-columns: 1fr 1fr; } .facts > div + div { border-left: 0; padding-left: 0; }
+    .finding { grid-template-columns: 1fr; } .finding > div + div { border-left: 0; border-top: 1px solid var(--line); }
+    .layout { grid-template-columns: 1fr; } .side { position: static; } .msg { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="mark" href="index.html">Counsel</a>
+  <a class="back" href="index.html">Back to the agenda</a>
+  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
+</header>
+
+<main>
+  <div class="vh">
+    <div><div class="eyebrow">Banque Horizon · customer assistant Horizon Assist</div><h1>Conversation C-0903-1841</h1>
+      <p class="lede">A customer says the bank's chatbot told her she could cancel her loan within 30 days. The bank disclosed the contested exchange only. The rest of the conversation reaches you as fingerprints.</p></div>
+    <button class="btn" data-act="all">Verify the whole conversation</button>
+  </div>
+
+  <div class="facts">
+    <div><span>Claim</span><b>Cancel within 30 days, no fees</b><small>Letter of 1 October 2026</small></div>
+    <div><span>Conversation</span><b>3 September 2026, 18:41</b><small id="f-count"></small></div>
+    <div><span>Disclosed</span><b id="f-disc"></b><small>The rest as fingerprints only</small></div>
+    <div><span>Conversation seal</span><b id="f-head"></b><small id="f-seq"></small></div>
+  </div>
+  <div id="allres"></div>
+
+  <div class="finding">
+    <div><div class="eyebrow">What the customer says</div><div class="q">"Your assistant told me I could cancel within 30 days without paying anything."</div></div>
+    <div class="rec"><div class="eyebrow">What the sealed record shows</div><div class="q" id="recorded"></div></div>
+  </div>
+
+  <div class="layout">
+    <div><div class="sec-h"><h2>The conversation, as the bank disclosed it</h2><span class="note">Click a message</span></div><div class="chat" id="chat"></div></div>
+    <aside class="side"><div class="panel" id="panel"></div>
+      <div class="salt">Each message is sealed together with a random value that the bank keeps. A disclosed message comes with its value, so anyone can check it. An undisclosed message cannot be guessed from its fingerprint, even if it is short.</div></aside>
+  </div>
+</main>
+
+<script>
+/* Fictional bank, fictional customer. One record per message; each sealed as
+   leaf = SHA-256(salt + "\n" + record), link = SHA-256(previous link + leaf). */
+const MSGS = [
+  { n: 1, at: "2026-09-03 18:41:02", role: "system", text: "Instructions v4.1 · answer only from the customer's contract and the published terms; cite the clause." },
+  { n: 2, at: "2026-09-03 18:41:09", role: "user", text: "Hello, I have a question about the personal loan I signed yesterday." },
+  { n: 3, at: "2026-09-03 18:41:11", role: "assistant", model: "assistant v7 · instructions v4.1", text: "Hello. I can help with your personal loan. Could you give me your client number?" },
+  { n: 4, at: "2026-09-03 18:41:30", role: "user", text: "Sure, it is 88 214 507." },
+  { n: 5, at: "2026-09-03 18:41:32", role: "assistant", model: "assistant v7 · instructions v4.1", text: "Thank you. I found your loan HZ-2026-03980, signed on 2 September 2026." },
+  { n: 6, at: "2026-09-03 18:42:05", role: "user", text: "Can I still cancel it without paying anything?" },
+  { n: 7, at: "2026-09-03 18:42:06", role: "tool", text: "Retrieved clause 9 of contract HZ-2026-03980 · Right of withdrawal" },
+  { n: 8, at: "2026-09-03 18:42:08", role: "assistant", model: "assistant v7 · instructions v4.1", text: "Yes. For a consumer loan you have 14 calendar days from the signature of the contract to withdraw, without giving a reason and without any fee (clause 9 of your contract; Code de la consommation, article L312-19). For your loan, the last day is 16 September 2026." },
+  { n: 9, at: "2026-09-03 18:43:40", role: "user", text: "And if I find a better rate next month?" },
+  { n: 10, at: "2026-09-03 18:43:42", role: "assistant", model: "assistant v7 · instructions v4.1", text: "After 16 September you can still repay early. Early repayment fees may apply, up to 1 % of the amount repaid (clause 11)." },
+  { n: 11, at: "2026-09-03 18:44:15", role: "user", text: "Thank you, that is all." },
+  { n: 12, at: "2026-09-03 18:44:16", role: "assistant", model: "assistant v7 · instructions v4.1", text: "You are welcome. Have a good evening." }
+];
+const SALTS = ["5b1e0f7c9a2d4e36b8c1f0a7d3e9b264", "c47a19e2f05b8d3a61e7c2094fb8d5a1", "0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b", "a3f1c8e7d2b9046f5e1a7c3d8b2f9e04",
+  "7d2e9b4a1c6f8e0d3b5a7c9e2f4d6b81", "f08b3c6e1a9d4f7b2e5c8a0d3f6b9e12", "2b7e4a9d1f3c6e8b0a5d7f2c4e9b1a36", "9c4f1e7b3a8d2f6e0c5b9a4d7e1f3c82",
+  "e6a2d9f4b1c7e3a0f8d5b2c9e6a4f1d7", "4f8c2e6a0d9b3f7c1e5a8d2b6f0c9e43", "b9d3f7a1e5c2b8f4d0a6e3c9f1b7d5a2", "1a6e3c8f2d7b9e4a0f5c1d8b3e6a9f27"];
+const DISCLOSED = [6, 7, 8]; // the contested exchange: the question, the clause the assistant read, the answer
+/* Real receipts, production chain (demo1, 4 October 2026). Do not edit MSGS or SALTS: these seal their exact bytes. */
+const RECEIPTS = {
+  6: { id: "DG-344efa975b90498686baa1c0a0c11fb1", seq: 177729, ns: "1791109259184153372" },
+  7: { id: "DG-ba9bc2d7295043c684c80f2be080ca0c", seq: 177730, ns: "1791109260556502624" },
+  8: { id: "DG-6ec2f26285bf4be3a44d351ac76f9a40", seq: 177731, ns: "1791109261663461385" }
+};
+const HEAD_RECEIPT = { id: "DG-4fa30a91d307455ebc14db54e4a2c946", seq: 177732, ns: "1791109263269472415" };
+
+/* ---------- SHA-256 ---------- */
+function sha256js(msg) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const len = msg.length, total = ((len + 9 + 63) >> 6) << 6, m = new Uint8Array(total);
+  m.set(msg); m[len] = 0x80;
+  const bits = len * 8, dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(bits / 0x100000000)); dv.setUint32(total - 4, bits >>> 0);
+  const W = new Uint32Array(64), r = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < total; o += 64) {
+    for (let i = 0; i < 16; i++) W[i] = dv.getUint32(o + i * 4);
+    for (let i = 16; i < 64; i++) {
+      const s0 = r(W[i-15], 7) ^ r(W[i-15], 18) ^ (W[i-15] >>> 3), s1 = r(W[i-2], 17) ^ r(W[i-2], 19) ^ (W[i-2] >>> 10);
+      W[i] = (W[i-16] + s0 + W[i-7] + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + W[i]) >>> 0;
+      const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  return H.map(x => x.toString(16).padStart(8, "0")).join("");
+}
+const enc = x => new TextEncoder().encode(x);
+const ZERO = "0".repeat(64);
+const record = m => JSON.stringify({ n: m.n, at: m.at, role: m.role, model: m.model || null, text: m.text });
+const leafOf = (m, salt) => sha256js(enc(salt + "\n" + record(m)));
+
+/* What the bank computed at the time, and what the lawyer receives. */
+const LEAVES = MSGS.map((m, i) => leafOf(m, SALTS[i]));
+const HEAD = LEAVES.reduce((h, l) => sha256js(enc(h + l)), ZERO);
+const isOpen = n => DISCLOSED.includes(n);
+const edits = {};
+let sel = 8;
+
+const $ = id => document.getElementById(id);
+const VERIFY = id => `https://www.recognitium.com/verify/${encodeURIComponent(id)}`;
+const fmtSeq = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const nsUTC = ns => new Date(+ns.slice(0, -9) * 1000).toISOString().slice(0, 19).replace("T", " ") + "." + ns.slice(-9) + " UTC";
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const ROLE = { system: "Instructions", user: "Customer", assistant: "Horizon Assist", tool: "Tool call" };
+
+function shown(m) { return edits[m.n] ? { ...m, text: edits[m.n] } : m; }
+
+function renderChat() {
+  $("chat").innerHTML = MSGS.map((m, i) => {
+    const r = RECEIPTS[m.n];
+    if (!isOpen(m.n)) return `<div class="msg ${m.role} hidden${sel === m.n ? " sel" : ""}" data-n="${m.n}"><div class="meta">${m.n} · ${ROLE[m.role]}</div><div class="bub">Not disclosed · ${LEAVES[i]}</div></div>`;
+    const s = shown(m);
+    return `<div class="msg ${m.role}${sel === m.n ? " sel" : ""}${edits[m.n] ? " edited" : ""}" data-n="${m.n}"><div class="meta">${m.n} · ${ROLE[m.role]} · ${m.at.slice(11)}${m.model ? " · " + m.model : ""}</div>
+      <div class="bub">${esc(s.text)}</div>${r ? `<div class="rid">${r.id.slice(0, 11)}</div>` : ""}</div>`;
+  }).join("");
+}
+
+function renderPanel(res) {
+  const i = MSGS.findIndex(m => m.n === sel), m = MSGS[i], r = RECEIPTS[m.n];
+  if (!isOpen(m.n)) {
+    $("panel").innerHTML = `<div class="eyebrow">Message ${m.n} · ${ROLE[m.role]}</div><h2>Not disclosed</h2>
+      <div class="kv" style="margin-top:12px"><span>Fingerprint</span><code>${LEAVES[i]}</code></div>
+      <div class="kv"><span>Covered by</span><code>${HEAD_RECEIPT.id || "the conversation seal"}</code></div>
+      <p class="note">Its content and its random value stay at the bank. The fingerprint is enough to check that it sits, unchanged, at position ${m.n} of the conversation.</p>
+      <div id="pres">${res || ""}</div>
+      <div class="row" style="margin-top:14px"><button class="btn" data-act="verify">Verify its place</button>${HEAD_RECEIPT.id ? `<a class="btn ghost" href="${VERIFY(HEAD_RECEIPT.id)}" target="_blank" rel="noopener">Public receipt</a>` : ""}</div>`;
+    return;
+  }
+  const fp = leafOf(shown(m), SALTS[i]);
+  $("panel").innerHTML = `<div class="eyebrow">Message ${m.n} · ${ROLE[m.role]} · disclosed</div><h2>${m.at.slice(11)} on 3 September</h2>
+    <div class="kv" style="margin-top:12px"><span>Random value</span><code>${SALTS[i]}</code></div>
+    <div class="kv"><span>Fingerprint now</span><code>${fp}</code></div>
+    <div class="kv"><span>Sealed fingerprint</span><code>${LEAVES[i]}</code></div>
+    ${r ? `<div class="kv"><span>Receipt</span><code>${r.id}</code></div><div class="kv"><span>Chain sequence</span><code>${fmtSeq(r.seq)}</code></div><div class="kv"><span>Sealed at</span><code>${nsUTC(r.ns)}</code></div>` : ""}
+    <div id="pres">${res || ""}</div>
+    <div class="row" style="margin-top:14px"><button class="btn" data-act="verify">Verify this message</button>
+      ${r ? `<a class="btn ghost" href="${VERIFY(r.id)}" target="_blank" rel="noopener">Public receipt</a>` : ""}
+      <button class="btn ghost" data-act="edit">${edits[m.n] ? "Undo the edit" : "Simulate an edit"}</button></div>`;
+}
+
+function renderFacts() {
+  $("f-count").textContent = `${MSGS.length} messages`;
+  $("f-disc").textContent = `${DISCLOSED.length} of ${MSGS.length} messages`;
+  $("f-head").textContent = HEAD_RECEIPT.id ? HEAD_RECEIPT.id.slice(0, 11) : HEAD.slice(0, 12);
+  $("f-seq").innerHTML = HEAD_RECEIPT.id ? `<a href="${VERIFY(HEAD_RECEIPT.id)}" target="_blank" rel="noopener">Chain sequence ${fmtSeq(HEAD_RECEIPT.seq)}</a>` : "Fingerprint of the whole conversation";
+  const a = shown(MSGS.find(m => m.n === 8)).text;
+  const days = (a.match(/(\d+) calendar days/) || [])[1], last = (a.match(/last day is ([^.]+)/) || [])[1];
+  $("recorded").textContent = edits[8] ? "Nothing reliable: the answer shown has changed since it was sealed, and its fingerprint no longer matches." : days ? `${days} days, not 30. The last day was ${last}, and the assistant cited clause 9 of the contract.` : "The disclosed answer no longer matches its seal.";
+}
+
+function verifyAll() {
+  /* The lawyer recomputes each disclosed leaf from its text and random value, takes the others as given, and rebuilds the chain. */
+  const leaves = MSGS.map((m, i) => isOpen(m.n) ? leafOf(shown(m), SALTS[i]) : LEAVES[i]);
+  const head = leaves.reduce((h, l) => sha256js(enc(h + l)), ZERO);
+  const bad = MSGS.filter((m, i) => isOpen(m.n) && leaves[i] !== LEAVES[i]).map(m => m.n);
+  return { ok: head === HEAD && !bad.length, bad };
+}
+
+document.addEventListener("click", e => {
+  const msg = e.target.closest(".msg");
+  if (msg) { sel = +msg.dataset.n; renderChat(); renderPanel(); return; }
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const act = el.dataset.act, i = MSGS.findIndex(m => m.n === sel), m = MSGS[i];
+  if (act === "verify") {
+    let res;
+    if (!isOpen(m.n)) {
+      const v = verifyAll();
+      res = `<div class="res ${v.ok ? "ok" : "bad"}">${v.ok ? `Match. This fingerprint sits at position ${m.n} of the sealed conversation.` : "The conversation no longer matches its seal."}</div>`;
+    } else {
+      const ok = leafOf(shown(m), SALTS[i]) === LEAVES[i];
+      res = `<div class="res ${ok ? "ok" : "bad"}">${ok ? `Match. This message is, word for word, what was sealed${RECEIPTS[m.n] ? " in " + RECEIPTS[m.n].id : ""}.` : "No match. This message was changed after it was sealed."}</div>`;
+    }
+    return renderPanel(res);
+  }
+  if (act === "edit") {
+    if (edits[m.n]) delete edits[m.n];
+    else edits[m.n] = m.text.replace("14 calendar days", "30 calendar days").replace("16 September", "2 October").replace("without paying anything", "within a month").replace("clause 9", "clause 7");
+    renderChat(); renderPanel(); renderFacts(); return;
+  }
+  if (act === "all") {
+    const v = verifyAll();
+    $("allres").innerHTML = `<div class="res ${v.ok ? "ok" : "bad"}" style="margin-top:20px">${v.ok
+      ? `Verified. The ${DISCLOSED.length} disclosed messages are unchanged, and the chain of all ${MSGS.length} messages matches the conversation seal. Nothing was inserted, removed or reordered.`
+      : `Not verified. Message ${v.bad.join(", ")} changed after sealing, so the conversation no longer matches its seal.`}</div>`;
+  }
+});
+
+renderChat(); renderPanel(); renderFacts();
+</script>
+</body>
+</html>

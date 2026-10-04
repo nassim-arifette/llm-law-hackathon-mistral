@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counsel</title>
+<style>
+  :root {
+    --ink: #0f1115; --body: #2b2f36; --muted: #6b7079; --faint: #a6aab1; --line: #ececef; --soft: #f7f7f8;
+    --ok: #136c4a; --okbg: #f1f8f4; --risk: #b42318; --riskbg: #fdf4f3; --mark: #fbf6e9;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: Inter, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+    --hour: 40px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--body); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  a { color: inherit; }
+  code, .mono { font-family: var(--mono); font-size: 12px; }
+
+  /* frame */
+  .top { height: 64px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); z-index: 20; }
+  .mark { font-family: var(--serif); font-size: 21px; color: var(--ink); letter-spacing: -.01em; width: 192px; flex: none; }
+  .go { flex: 1; max-width: 460px; position: relative; }
+  .go input { width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 150px 0 14px; font: inherit; background: var(--soft); color: var(--ink); outline: none; transition: border-color .15s, background .15s; }
+  .go input:focus { background: #fff; border-color: #d9dbe0; }
+  .go input::placeholder { color: var(--faint); }
+  #gostatus { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); pointer-events: none; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .firm { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+  .av { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11.5px; color: var(--ink); font-weight: 600; }
+  .shell { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); }
+  .rail { border-right: 1px solid var(--line); padding: 28px 16px; display: flex; flex-direction: column; gap: 2px; position: sticky; top: 64px; height: calc(100vh - 64px); }
+  .nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex: none; border: 0; background: none; text-align: left; padding: 9px 12px; border-radius: 8px; color: var(--muted); }
+  .nav:hover { color: var(--ink); background: var(--soft); }
+  .nav.on { color: var(--ink); background: var(--soft); font-weight: 550; }
+  .nav i { font-style: normal; font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .rail-foot { margin-top: auto; padding: 0 12px; font-size: 12px; color: var(--faint); line-height: 1.6; }
+  .rail-foot button { border: 0; background: none; padding: 0; color: var(--faint); text-decoration: underline; text-underline-offset: 3px; }
+  main { padding: 44px 56px 96px; max-width: 1180px; width: 100%; }
+  .view { display: none; animation: fade .25s ease; }
+  .view.on { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* type */
+  .eyebrow { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.015em; color: var(--ink); margin: 0; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 21px; color: var(--ink); margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 8px 0 0; max-width: 640px; }
+  .lede b { color: var(--ink); font-weight: 550; }
+  .vh { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .sec { margin-top: 44px; }
+  .sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+  .note { font-size: 12.5px; color: var(--muted); }
+
+  /* controls */
+  .btn { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 500; transition: opacity .15s; display: inline-flex; align-items: center; text-decoration: none; }
+  .btn:hover { opacity: .86; }
+  .btn.ghost { background: #fff; color: var(--ink); border-color: #dfe1e5; }
+  .btn.ghost:hover { border-color: var(--faint); opacity: 1; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .st { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); }
+  .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+  .st.ok { color: var(--ok); } .st.ok::before { background: var(--ok); }
+  .st.risk { color: var(--risk); } .st.risk::before { background: var(--risk); }
+
+  /* notices */
+  .notice { border: 1px solid var(--line); border-left: 2px solid var(--ink); padding: 16px 20px; margin-bottom: 28px; }
+  .notice.risk { border-left-color: var(--risk); }
+  .notice.ok { border-left-color: var(--ok); }
+  .notice h3 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; color: var(--ink); }
+  .notice p { margin: 0 0 12px; color: var(--muted); }
+  .notice ul { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 32px; }
+  .notice li { font-size: 13px; padding: 3px 0; color: var(--body); break-inside: avoid; }
+  .notice li span { color: var(--muted); }
+
+  /* week */
+  .cal { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--line); }
+  .day { border-right: 1px solid var(--line); min-width: 0; }
+  .day:last-child { border-right: 0; }
+  .day-h { padding: 14px 14px 12px; border-bottom: 1px solid var(--line); min-height: 104px; }
+  .day-h .dn { display: flex; align-items: baseline; gap: 8px; }
+  .day-h .dw { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .day-h .dd { font-family: var(--serif); font-size: 26px; color: var(--ink); line-height: 1; }
+  .day-h .ld { font-size: 12px; color: var(--faint); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .day-h .dl { font-size: 11.5px; color: var(--risk); margin-top: 6px; line-height: 1.4; }
+  .day-h .dl.soft { color: var(--muted); }
+  .slots { padding: 10px; height: calc(var(--hour) * 7 + 20px); }
+  .blk { margin-bottom: 4px; padding: 6px 9px; border: 1px solid var(--line); border-left: 2px solid; background: #fff; overflow: hidden; cursor: pointer; transition: background .15s; font-size: 12px; line-height: 1.35; }
+  .blk:hover { background: var(--soft); }
+  .blk b { display: block; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .blk span { color: var(--muted); }
+  .blk.late { border-color: #f1c9c4; border-left-color: var(--risk); background: var(--riskbg); }
+  .assoc { margin: 0 10px 10px; padding: 6px 9px; border: 1px dashed #d9dbe0; font-size: 12px; color: var(--muted); }
+
+  /* tables */
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl th { text-align: left; font-weight: 500; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 0 16px 10px 0; border-bottom: 1px solid var(--line); }
+  .tbl td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .tbl tbody tr { cursor: pointer; transition: background .15s; }
+  .tbl tbody tr:hover td { background: var(--soft); }
+  .tbl .c { color: var(--ink); font-weight: 550; display: flex; align-items: center; gap: 10px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* evidence */
+  .drop { border: 1px dashed #d4d6db; padding: 72px 32px; text-align: center; transition: border-color .15s, background .15s; }
+  .drop.over { border-color: var(--ink); background: var(--soft); }
+  .drop h2 { font-size: 26px; }
+  .drop p { color: var(--muted); max-width: 520px; margin: 8px auto 24px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .facts > div { padding: 18px 20px 18px 0; }
+  .facts > div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+  .facts span { display: block; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .facts b { color: var(--ink); font-weight: 550; }
+  .facts small { display: block; color: var(--faint); font-size: 12px; margin-top: 2px; }
+  .acts { border-top: 1px solid var(--line); }
+  .act { display: grid; grid-template-columns: 72px 150px 1fr 120px; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13.5px; transition: background .15s; }
+  .act:hover { background: var(--soft); }
+  .act .s, .act .t { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .act .r { font-family: var(--mono); font-size: 12px; color: var(--ink); text-align: right; padding-top: 2px; }
+  .proofline { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; padding: 14px 0; color: var(--ok); font-size: 13.5px; }
+  .proofline.bad { color: var(--risk); }
+  .proofline a { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .logview { height: 320px; overflow-y: auto; border: 1px solid var(--line); position: relative; }
+  .lv { display: grid; grid-template-columns: 64px 138px 116px 1fr 110px; gap: 12px; padding: 7px 16px; font-size: 12.5px; cursor: pointer; border-bottom: 1px solid #f3f3f5; }
+  .lv:hover { background: var(--soft); }
+  .lv .s, .lv .t, .lv .f { font-family: var(--mono); font-size: 11.5px; color: var(--faint); padding-top: 1px; }
+  .lv.own .f { color: var(--ink); }
+  .lv .r { font-family: var(--mono); font-size: 11.5px; color: var(--faint); text-align: right; padding-top: 1px; }
+  .lv.own .r { color: var(--ink); }
+  .lv.hit { background: var(--mark); box-shadow: inset 2px 0 0 var(--ink); }
+  .lv.hidden .t { color: var(--faint); font-family: var(--sans); font-size: 12px; }
+  .lv.hidden .fp { font-family: var(--mono); font-size: 11.5px; color: #c4c7cc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ldet { border: 1px solid var(--line); border-top: 0; padding: 20px; }
+  .kv { display: grid; grid-template-columns: 160px 1fr; gap: 12px; padding: 4px 0; font-size: 13px; }
+  .kv span { color: var(--muted); }
+  .kv code { word-break: break-all; color: var(--ink); }
+  .res { margin-top: 14px; padding: 10px 14px; font-size: 13.5px; border-left: 2px solid; }
+  .res.ok { color: var(--ok); background: var(--okbg); } .res.bad { color: var(--risk); background: var(--riskbg); }
+
+  /* explanation */
+  .xgrid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 32px; align-items: start; }
+  .letter { width: 100%; min-height: 420px; border: 1px solid var(--line); padding: 32px 36px; font: 15.5px/1.7 var(--serif); color: var(--ink); resize: vertical; outline: none; background: #fff; }
+  .letter:focus { border-color: #d9dbe0; }
+  .letter[readonly] { background: var(--soft); color: var(--body); }
+  .srcs { border-top: 1px solid var(--line); }
+  .src { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; cursor: pointer; }
+  .src:hover { background: var(--soft); }
+  .src b { display: block; color: var(--ink); font-weight: 550; }
+  .src code { color: var(--muted); font-size: 11.5px; }
+
+  /* journal */
+  .jt td { font-size: 13px; padding: 11px 16px 11px 0; cursor: default; }
+  .jt tbody tr { cursor: default; }
+  .jt tbody tr:hover td { background: none; }
+  .jt .h { font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+  .jt tr.broken td { background: var(--riskbg) !important; }
+  .jt tr.hit td { background: var(--mark) !important; }
+  .who { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .who.ai { color: var(--ink); font-weight: 600; }
+  .sealbox { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 20px; display: grid; grid-template-columns: 1fr 320px; gap: 32px; }
+  .sealbox input { width: 100%; height: 36px; border: 1px solid #dfe1e5; border-radius: 8px; padding: 0 12px; font: 12.5px var(--mono); outline: none; }
+  .sealbox input:focus { border-color: var(--faint); }
+
+  /* drawer */
+  .scrim { position: fixed; inset: 0; background: rgba(15,17,21,.16); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 30; }
+  .scrim.on { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(540px, 100vw); background: #fff; z-index: 31; border-left: 1px solid var(--line); transform: translateX(100%); transition: transform .28s cubic-bezier(.2,.7,.2,1); overflow-y: auto; }
+  .drawer.on { transform: none; }
+  .dr { padding: 36px 36px 48px; }
+  .x { float: right; border: 0; background: none; font-size: 22px; color: var(--faint); line-height: 1; padding: 0; }
+  .x:hover { color: var(--ink); }
+  .w { display: grid; grid-template-columns: 120px 1fr 18px; align-items: center; gap: 14px; margin: 8px 0; font-size: 13px; }
+  .w input { width: 100%; accent-color: var(--ink); }
+  .w output { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .opt { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .opt .t { display: flex; justify-content: space-between; gap: 12px; color: var(--ink); }
+  .opt .t em { font-style: normal; font-size: 12px; color: var(--muted); }
+  .opt.best .t { font-weight: 600; }
+  .bar { height: 2px; background: var(--line); margin: 10px 0 8px; }
+  .bar i { display: block; height: 100%; background: var(--ink); transition: width .25s; }
+  .crit { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--faint); }
+  .hash { font-family: var(--mono); font-size: 12px; word-break: break-all; color: var(--ink); margin: 6px 0 14px; }
+  .hash.bad { color: var(--risk); }
+  .field { width: 100%; height: 36px; border: 1px solid #dfe1e5; border-radius: 8px; padding: 0 12px; font: 12.5px var(--mono); outline: none; margin-top: 4px; }
+
+  @media (max-width: 960px) {
+    .top { padding: 0 16px; gap: 12px; } .mark { width: auto; } .firm span { display: none; }
+    .shell { grid-template-columns: 1fr; }
+    .rail { position: static; height: auto; flex-direction: row; overflow-x: auto; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .rail-foot { display: none; }
+    main { padding: 28px 16px 72px; }
+    .cal { grid-template-columns: 1fr; } .day { border-right: 0; border-bottom: 1px solid var(--line); } .slots { height: auto; }
+    .facts { grid-template-columns: 1fr 1fr; } .facts > div + div { border-left: 0; padding-left: 0; }
+    .act, .lv { grid-template-columns: 64px 1fr; } .act .t, .act .r, .lv .t, .lv .f, .lv .r { display: none; }
+    .sealbox { grid-template-columns: 1fr; } .notice ul { columns: 1; }
+    .go input { padding-right: 14px; } #gostatus { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="mark">Counsel</div>
+  <div class="go"><input id="goto" placeholder="Go to a receipt, a log line, a reference" autocomplete="off" spellcheck="false"><div id="gostatus"></div></div>
+  <div class="firm"><span>Cabinet Laurent</span><div class="av">CL</div></div>
+</header>
+
+<div class="shell">
+  <nav class="rail">
+    <button class="nav on" data-view="week">Week <i id="n-week"></i></button>
+    <button class="nav" data-view="files">Files <i id="n-files"></i></button>
+    <button class="nav" data-view="evidence">Evidence <i id="n-evidence"></i></button>
+    <button class="nav" data-view="journal">AI journal <i id="n-journal"></i></button>
+    <a class="nav" href="binding.html" style="text-decoration:none">Decision to money <i></i></a>
+    <a class="nav" href="conversation.html" style="text-decoration:none">Chatbot dispute <i></i></a>
+    <div class="rail-foot">Every AI action is sealed by Recognitium and verifiable offline.<br><br><button data-act="reset">Reset the demo</button></div>
+  </nav>
+
+  <main>
+    <section class="view on" id="v-week">
+      <div class="vh">
+        <div><div class="eyebrow">Monday 5 to Friday 9 October 2026</div><h1>This week</h1><p class="lede" id="summary"></p></div>
+        <button class="btn ghost" data-act="urgent" id="urgentBtn">Add an urgent file</button>
+      </div>
+      <div id="alert"></div>
+      <div class="cal" id="grid"></div>
+    </section>
+
+    <section class="view" id="v-files">
+      <div class="vh"><div><div class="eyebrow">Cabinet Laurent</div><h1>Files</h1><p class="lede">Each file is ranked on its own client's priorities, never against another file.</p></div></div>
+      <table class="tbl"><thead><tr><th>Client</th><th>Matter</th><th>Deadline</th><th>Hours</th><th>Status</th></tr></thead><tbody id="files"></tbody></table>
+    </section>
+
+    <section class="view" id="v-evidence"><div id="evidence"></div></section>
+
+    <section class="view" id="v-journal">
+      <div class="vh">
+        <div><div class="eyebrow">Article 12-ready</div><h1>AI journal</h1><p class="lede">Every AI action, append-only. Each line carries the fingerprint of the line before: change one and every later line breaks.</p></div>
+        <div class="row"><button class="btn ghost" data-act="check">Check integrity</button><button class="btn ghost" data-act="alter">Rewrite a past line</button><button class="btn ghost" data-act="export">Export</button></div>
+      </div>
+      <div id="jcheck"></div>
+      <table class="tbl jt"><thead><tr><th>#</th><th>Time</th><th>Who</th><th>Action</th><th>In</th><th>Out</th><th>Decision</th></tr></thead><tbody id="jbody"></tbody></table>
+      <div class="sealbox">
+        <div><div class="eyebrow">Journal fingerprint</div><div class="hash" id="jhead"></div><div class="note">One seal covers every line above it.</div></div>
+        <div><div class="eyebrow">Recognitium receipt</div><input id="jrid" placeholder="DG-..."><div class="note" id="jvl" style="margin-top:8px">Seal the fingerprint, then paste the receipt id.</div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"><div class="dr" id="dr"></div></aside>
+
+<script>
+/* Fictional firm, fictional clients. Hours are the lawyer's; deadlines are the clients'. */
+const DAYS = ["Mon 5", "Tue 6", "Wed 7", "Thu 8", "Fri 9"];
+const CAP = 7;
+const CRIT = [["outcome", "Outcome"], ["cost", "Low cost"], ["speed", "Speed"], ["safety", "Low risk"], ["relation", "Relationship"]];
+
+const CASES = {
+  dupin: { client: "Boulangerie Dupin", matter: "Commercial lease, landlord refuses renewal", court: "Tribunal judiciaire de Paris", color: "#3b5b92",
+    weights: { outcome: 4, cost: 3, speed: 2, safety: 3, relation: 5 },
+    options: [["Negotiate a new lease with a stepped rent", [3, 5, 4, 4, 5]], ["Claim the eviction indemnity in court", [5, 2, 1, 3, 1]], ["Judicial mediation", [3, 4, 3, 4, 4]]] },
+  karim: { client: "Karim B.", matter: "Contested dismissal, labour court hearing Thursday", court: "Conseil de prud'hommes de Paris", color: "#6b4fa0",
+    weights: { outcome: 4, cost: 3, speed: 4, safety: 4, relation: 1 },
+    options: [["Plead at the hearing", [4, 3, 2, 2, 2]], ["Settlement agreement before the hearing", [3, 5, 5, 5, 3]], ["Conciliation in front of the court", [3, 4, 4, 4, 3]]] },
+  atlas: { client: "Atlas Robotics", matter: "Appeal of a commercial judgment, one month from service", court: "Cour d'appel de Paris", color: "#2f7d6d",
+    weights: { outcome: 5, cost: 2, speed: 2, safety: 3, relation: 3 },
+    options: [["File the appeal", [4, 2, 1, 3, 3]], ["Accept the judgment, negotiate payment terms", [2, 5, 5, 4, 4]], ["Appeal and propose mediation in parallel", [4, 3, 3, 3, 4]]] },
+  nexa: { client: "Nexa SAS", matter: "Unpaid invoices, 18 400 euros", court: "Tribunal de commerce de Paris", color: "#b0662c",
+    weights: { outcome: 4, cost: 4, speed: 4, safety: 3, relation: 3 },
+    options: [["Order for payment (injonction de payer)", [4, 5, 4, 4, 2]], ["Formal notice, then negotiated schedule", [3, 5, 3, 4, 4]], ["Summary claim for an advance (référé-provision)", [4, 3, 4, 3, 2]]] },
+  sophie: { client: "Sophie L.", matter: "Divorce, family mediation session", court: "Médiation familiale", color: "#a8476f",
+    weights: { outcome: 3, cost: 3, speed: 3, safety: 4, relation: 5 },
+    options: [["Mediated agreement", [4, 4, 4, 4, 5]], ["Contested divorce in court", [3, 2, 1, 2, 1]]] },
+  verde: { client: "Verde Foods", matter: "Review of a distribution contract", court: "Advisory", color: "#5f7a2e",
+    weights: { outcome: 4, cost: 3, speed: 3, safety: 5, relation: 3 },
+    options: [["Sign with amended liability clauses", [4, 4, 4, 4, 4]], ["Sign as is", [2, 5, 5, 1, 5]], ["Renegotiate exclusivity first", [5, 3, 2, 4, 3]]] },
+  horizon: { client: "Banque Horizon", matter: "Applicant contests an AI credit refusal", court: "Pre-litigation · AI Act art. 86 · GDPR art. 22", color: "#8a6a1f",
+    weights: { outcome: 4, cost: 3, speed: 3, safety: 5, relation: 4 },
+    options: [["Full explanation, with the sealed log lines", [4, 4, 4, 5, 4]], ["New human review of the file, then answer", [4, 3, 3, 4, 5]], ["Minimal answer, legal basis only", [2, 5, 5, 2, 2]]] },
+  lumen: { client: "Lumen SAS", matter: "Urgent interim hearing (référé) Tuesday morning", court: "Tribunal judiciaire de Paris", color: "#7a2e2e",
+    weights: { outcome: 4, cost: 2, speed: 5, safety: 4, relation: 2 },
+    options: [["Defend at the hearing", [3, 3, 5, 3, 2]], ["Settle before the hearing", [3, 4, 5, 4, 4]], ["Ask for a postponement", [2, 4, 1, 2, 3]]] }
+};
+
+const BASE = [
+  { id: "sophie", label: "Prepare the mediation session", hours: 2, due: 1, hard: true },
+  { id: "karim", label: "Hearing file and pleading notes", hours: 5, due: 2, hard: true },
+  { id: "atlas", label: "Notice of appeal", hours: 3, due: 3, hard: true },
+  { id: "dupin", label: "Written submissions in reply", hours: 6, due: 4, hard: true },
+  { id: "nexa", label: "Request for an order for payment", hours: 2, due: 4, hard: false },
+  { id: "verde", label: "Contract review memo", hours: 4, due: 4, hard: false }
+];
+
+const state = { view: "week", urgent: false, delegated: false, approvals: {}, open: null, drafted: {}, horizon: null, sel: null };
+const $ = id => document.getElementById(id);
+
+/* ---------- fingerprints ---------- */
+async function sha256(text) {
+  const bytes = new TextEncoder().encode(text);
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  return sha256js(bytes);
+}
+
+function sha256js(msg) {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const len = msg.length, total = ((len + 9 + 63) >> 6) << 6, m = new Uint8Array(total);
+  m.set(msg); m[len] = 0x80;
+  const bits = len * 8, dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(bits / 0x100000000)); dv.setUint32(total - 4, bits >>> 0);
+  const W = new Uint32Array(64), r = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let o = 0; o < total; o += 64) {
+    for (let i = 0; i < 16; i++) W[i] = dv.getUint32(o + i * 4);
+    for (let i = 16; i < 64; i++) {
+      const s0 = r(W[i-15], 7) ^ r(W[i-15], 18) ^ (W[i-15] >>> 3), s1 = r(W[i-2], 17) ^ r(W[i-2], 19) ^ (W[i-2] >>> 10);
+      W[i] = (W[i-16] + s0 + W[i-7] + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + W[i]) >>> 0;
+      const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  return H.map(x => x.toString(16).padStart(8, "0")).join("");
+}
+const enc = x => new TextEncoder().encode(x);
+
+/* ---------- the AI journal: append-only, chained ---------- */
+let journal = [], queue = Promise.resolve();
+const ZERO = "0".repeat(64);
+const lineBody = e => JSON.stringify({ n: e.n, at: e.at, actor: e.actor, action: e.action, in: e.in, out: e.out, decision: e.decision, prev: e.prev });
+
+function log(actor, action, input, output, decision) {
+  queue = queue.then(async () => {
+    const e = { n: journal.length + 1, at: new Date().toTimeString().slice(0, 8), actor, action,
+      in: input ? await sha256(input) : null, out: output ? await sha256(output) : null, decision,
+      prev: journal.length ? journal[journal.length - 1].hash : ZERO };
+    e.hash = await sha256(lineBody(e));
+    journal.push(e);
+    renderJournal(); renderNav();
+  });
+  return queue;
+}
+
+async function checkJournal() {
+  let prev = ZERO;
+  for (let i = 0; i < journal.length; i++) {
+    const e = journal[i];
+    if (e.prev !== prev || await sha256(lineBody(e)) !== e.hash) return i;
+    prev = e.hash;
+  }
+  return -1;
+}
+
+function seed() {
+  const p = plan(BASE.map(x => ({ ...x })));
+  log("AI", "Planned the week · 6 files, earliest deadline first", JSON.stringify(BASE), JSON.stringify(p.list.map(t => [t.id, t.days])), "Accepted by Me Laurent");
+  for (const id of ["karim", "atlas"]) {
+    state.drafted[id] = true;
+    log("AI", `Drafted strategy options · ${CASES[id].client}`, CASES[id].matter, JSON.stringify(CASES[id].options), "Scores set by Me Laurent");
+  }
+}
+
+/* ---------- planning: the client's deadline is a wall; only the lawyer's hours move ---------- */
+function tasks() {
+  const t = BASE.map(x => ({ ...x }));
+  if (state.urgent) t.push({ id: "lumen", label: "Interim hearing brief", hours: state.delegated ? 7 : 9, due: 0, hard: true });
+  if (state.horizon) t.push({ id: "horizon", label: "Answer to the applicant", hours: 3, due: 99, dueLabel: state.horizon.dueShort, hard: true });
+  return t;
+}
+const dueText = t => t.dueLabel || DAYS[t.due];
+
+function plan(list) {
+  const days = DAYS.map(() => []);
+  const order = [...list].sort((a, b) => a.due - b.due || (b.hard - a.hard));
+  let d = 0, used = 0;
+  for (const t of order) {
+    let rem = t.hours; t.days = [];
+    while (rem > 0 && d < DAYS.length) {
+      const free = CAP - used;
+      if (free <= 0) { d++; used = 0; continue; }
+      const take = Math.min(free, rem);
+      days[d].push({ t, h: take }); t.days.push(d);
+      used += take; rem -= take;
+    }
+    t.end = rem > 0 ? 99 : t.days[t.days.length - 1];
+    t.late = t.end > t.due;
+  }
+  return { days, list: order };
+}
+const BASELINE = (() => { const m = {}; plan(BASE.map(x => ({ ...x }))).list.forEach(t => m[t.id] = t.days.join()); return m; })();
+
+/* ---------- Banque Horizon's credit AI log (fictional, 200 lines) ----------
+   leaf = SHA-256(line); link = SHA-256(previous link + leaf). Do not edit: the receipts below seal these exact bytes. */
+const LOG = (() => {
+  let s = 20261004;
+  const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const fmt = ms => new Date(ms + 2 * 3600e3).toISOString().slice(0, 19).replace("T", " ");
+  const rows = [];
+  let t = Date.UTC(2026, 8, 12, 6, 0, 0);
+  for (let i = 0; i < 195; i++) {
+    t += 60e3 + Math.floor(rnd() * 50) * 60e3 + Math.floor(rnd() * 60) * 1e3;
+    let n = 4000 + Math.floor(rnd() * 900); if (n === 4417) n++;
+    const ref = "HZ-2026-0" + n, r = rnd();
+    const ev = r < .35 ? `Application received · personal loan ${(5 + Math.floor(rnd() * 30)) * 1000} EUR over ${[24, 36, 48, 60][Math.floor(rnd() * 4)]} months`
+      : r < .65 ? `Score computed by model CreditScore v3.2 · ${300 + Math.floor(rnd() * 600)} / 1000 · threshold 450`
+      : r < .85 ? `Decision · ${rnd() < .7 ? "accepted" : "refused"}`
+      : `Human review · decision confirmed by credit analyst (agent 0${100 + Math.floor(rnd() * 200)})`;
+    rows.push([fmt(t), ref, ev]);
+  }
+  const R = "HZ-2026-04417";
+  rows.push(["2026-09-12 09:14:03", R, "Application received · personal loan 18000 EUR over 48 months"],
+    ["2026-09-12 09:14:04", R, "Score computed by model CreditScore v3.2 · 412 / 1000 · threshold 450"],
+    ["2026-09-12 09:14:04", R, "Main factors · debt-to-income ratio 41 %, employment under 12 months"],
+    ["2026-09-15 14:02:51", R, "Human review · refusal confirmed by credit analyst (agent 0193)"],
+    ["2026-09-15 14:05:10", R, "Decision letter sent to the applicant"]);
+  rows.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  return rows.map((r, i) => `#${48101 + i} · ${r[0]} · ${r[1]} · ${r[2]}`);
+})();
+const LEAVES = LOG.map(l => sha256js(enc(l)));
+const HEAD = LEAVES.reduce((h, leaf) => sha256js(enc(h + leaf)), ZERO);
+const HZ = { receipt: "DG-513ea93c2b3b4dadbefe4096443f36ea", seq: 177589, sealedOn: "4 October 2026 at 11:13 Paris" };
+/* The applicant's five lines, each sealed on its own (production chain). The receipt id sits beside the line, never inside it. */
+const LINE_RECEIPTS = {
+  "#48103": { id: "DG-cbb80fadc30448dc800fd1b3784442a5", seq: 177600, ns: "1791105542770949599", hash: "bc46e47e68225987e134c771e663292884187cbfbe9d137fedefe3cd4ebf022a" },
+  "#48104": { id: "DG-095f2c1e2610460787d485f6fdd2cd21", seq: 177601, ns: "1791105543868546182", hash: "93c3bd3690d9787a6334c7b5713d10c95139164d391800515608aa8e69a7ebd0" },
+  "#48105": { id: "DG-ae7fe75767b240a696a529b9c93f7810", seq: 177604, ns: "1791105545060801620", hash: "9e3ba94bb4f5a67ca7bc09496560fa0eb77429109c9f95e9a999944561cab266" },
+  "#48272": { id: "DG-9953fa10633a4a7499a84af987cb7c15", seq: 177605, ns: "1791105546855128218", hash: "43e773e2e4020736e835074212734faa131c08cf6be62bd492eb9bbb1a9ef2e7" },
+  "#48274": { id: "DG-b7b28343d44b4a62b2047d7b9a598693", seq: 177606, ns: "1791105548110884152", hash: "d6893f70d10188e29fc68655d181ae449e9e4d925a4f3a2f803c7d6c9911b34f" }
+};
+const nsUTC = ns => new Date(+ns.slice(0, -9) * 1000).toISOString().slice(0, 19).replace("T", " ") + "." + ns.slice(-9) + " UTC";
+const seqOf = l => l.split(" · ")[0];
+const fmtSeq = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const VERIFY = id => `https://www.recognitium.com/verify/${encodeURIComponent(id)}`;
+const edits = {};
+
+const SAMPLE_LETTER = `Paul R.
+12 rue des Lilas, 75011 Paris
+
+To: Banque Horizon, Credit department
+Subject: Request for an explanation, file HZ-2026-04417
+
+On 15 September 2026 you refused my application for a personal loan (file HZ-2026-04417).
+I have reason to believe this decision was taken with the help of an automated system.
+Under Article 86 of the EU AI Act and Article 22 of the GDPR, I ask for a clear explanation
+of the role this system played in the decision and of the main factors it used.
+
+Received by Banque Horizon on 2 October 2026.`;
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+/* ---------- views ---------- */
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
+  document.querySelectorAll(".nav").forEach(x => x.classList.toggle("on", x.dataset.view === v));
+  window.scrollTo({ top: 0 });
+}
+
+function renderNav() {
+  const p = plan(tasks());
+  $("n-week").textContent = p.list.some(t => t.late) ? "1 at risk" : "";
+  $("n-files").textContent = p.list.length;
+  $("n-evidence").textContent = state.horizon ? "1" : "";
+  $("n-journal").textContent = journal.length;
+}
+
+function renderWeek() {
+  const p = plan(tasks());
+  const total = p.list.reduce((s, t) => s + t.hours, 0), late = p.list.filter(t => t.late);
+  $("summary").innerHTML = `<b>${p.list.length} files</b>, ${total} of ${CAP * 5} hours planned. ` +
+    (late.length ? `<span class="st risk">One deadline at risk</span>` : `<span class="st ok">Every deadline holds</span>`);
+  $("urgentBtn").disabled = state.urgent;
+
+  if (state.urgent && late.length) {
+    const t = late[0], short = t.hours - CAP;
+    $("alert").innerHTML = `<div class="notice risk"><h3>${CASES[t.id].client} is ${short} hours short of Monday's deadline.</h3>
+      <p>No other client's deadline moves to make room.</p>
+      <div class="row"><button class="btn" data-act="delegate">Delegate ${short} hours to the associate</button><button class="btn ghost" data-act="postpone">Draft a postponement request</button></div></div>`;
+  } else if (state.urgent) {
+    const moved = p.list.filter(t => BASELINE[t.id] !== undefined && BASELINE[t.id] !== t.days.join());
+    const days = t => [...new Set(t.days.map(d => DAYS[d].split(" ")[0]))].join(", ");
+    $("alert").innerHTML = `<div class="notice ok"><h3>Re-planned. Every deadline holds.</h3>
+      <p>Thomas, the associate, takes two hours of research on Lumen SAS. Moved, each still before its deadline:</p>
+      <ul>${moved.map(t => `<li>${CASES[t.id].client} <span>· now ${days(t)} · due ${dueText(t)}</span></li>`).join("")}</ul></div>`;
+  } else $("alert").innerHTML = "";
+
+  const H = 40;
+  $("grid").innerHTML = p.days.map((blocks, d) => {
+    const load = blocks.reduce((s, b) => s + b.h, 0), dues = p.list.filter(t => t.due === d);
+    const [w, n] = DAYS[d].split(" ");
+    return `<div class="day"><div class="day-h"><div class="dn"><span class="dw">${w}</span><span class="dd">${n}</span></div>
+      <div class="ld">${load} of ${CAP} h</div>
+      ${dues.map(t => `<div class="dl${t.hard ? "" : " soft"}">${t.hard ? "Due" : "Target"} · ${CASES[t.id].client}</div>`).join("")}</div>
+      <div class="slots">${blocks.map(b => `<div class="blk${b.t.late ? " late" : ""}" data-case="${b.t.id}" style="height:${b.h * H - 4}px;border-left-color:${CASES[b.t.id].color}">
+        <b>${CASES[b.t.id].client}</b><span>${b.t.label} · ${b.h} h</span></div>`).join("")}</div>
+      ${state.delegated && d === 0 ? `<div class="assoc">Associate · Lumen SAS research · 2 h</div>` : ""}</div>`;
+  }).join("");
+}
+
+function renderFiles() {
+  const p = plan(tasks());
+  $("files").innerHTML = p.list.map(t => {
+    const c = CASES[t.id], a = state.approvals[t.id];
+    return `<tr data-case="${t.id}"><td><div class="c"><span class="dot" style="background:${c.color}"></span>${c.client}</div></td>
+      <td>${c.matter}<div class="note">${c.court}</div></td>
+      <td class="num">${t.hard ? "" : "Target "}${dueText(t)}</td><td class="num">${t.hours} h</td>
+      <td>${t.late ? `<span class="st risk">At risk</span>` : `<span class="st ok">On time</span>`}${a ? `<div class="note" style="margin-top:4px">Strategy approved</div>` : ""}</td></tr>`;
+  }).join("");
+}
+
+function renderJournal(broken) {
+  const short = h => h ? `<span title="${h}">${h.slice(0, 8)}</span>` : "";
+  $("jbody").innerHTML = journal.map((e, i) => `<tr id="j${e.n}" class="${broken !== undefined && i >= broken ? "broken" : ""}">
+    <td class="h">${e.n}</td><td class="h">${e.at}</td><td><span class="who ${e.actor.toLowerCase()}">${e.actor}</span></td>
+    <td>${e.action}</td><td class="h">${short(e.in)}</td><td class="h">${short(e.out)}</td><td>${e.decision}</td></tr>`).join("");
+  $("jhead").textContent = journal.length ? journal[journal.length - 1].hash : "";
+}
+
+function renderAll() { renderWeek(); renderFiles(); renderEvidence(); renderNav(); if (state.open) drawer(state.open); }
+
+/* ---------- evidence ---------- */
+function renderEvidence() {
+  const h = state.horizon;
+  if (!h) {
+    $("evidence").innerHTML = `<div class="vh"><div><div class="eyebrow">Disputes about AI decisions</div><h1>Evidence</h1>
+      <p class="lede">Drop a client's dispute letter. Counsel reads it, finds the AI actions it concerns, and proves they have not changed since they happened.</p></div></div>
+      <div class="drop" id="drop"><h2>Drop a dispute letter here</h2><p>A text file or a pasted letter. Nothing leaves this machine: only fingerprints are ever sealed.</p>
+      <button class="btn" data-act="sample">Use the sample letter · Banque Horizon</button></div>`;
+    return;
+  }
+  const own = h.hits.filter(x => LINE_RECEIPTS[seqOf(x.l)]).length;
+  $("evidence").innerHTML = `
+    <div class="vh"><div><div class="eyebrow">Banque Horizon · credit AI system CreditScore v3.2</div><h1>${h.ref}</h1>
+      <p class="lede">Request for an explanation of an automated credit refusal. Case file built in ${h.ms} ms from the letter alone.</p></div>
+      <div class="row"><button class="btn" data-act="bundle">Download the evidence file</button><button class="btn ghost" data-act="explain">Explain to the applicant</button><button class="btn ghost" data-case="horizon">Strategy</button></div></div>
+    <div class="facts">
+      <div><span>Request</span><b>${h.bases.join(", ") || "Contestation"}</b></div>
+      <div><span>Received</span><b>${h.got}</b></div>
+      <div><span>Answer due</span><b>${h.due}</b><small>One month, GDPR art. 12(3)</small></div>
+      <div><span>AI actions found</span><b>${h.hits.length} of ${LOG.length}</b><small>The others stay sealed, undisclosed</small></div>
+    </div>
+    <div class="sec"><div class="sec-h"><h2>The applicant's AI actions</h2><span class="note">Each one sealed on its own. Click to open it in the log.</span></div>
+      <div class="acts">${h.hits.map(x => { const p = x.l.split(" · "), r = LINE_RECEIPTS[p[0]];
+        return `<div class="act" data-line="${x.i}"><span class="s">${p[0]}</span><span class="t">${p[1]}</span><span>${p.slice(3).join(" · ")}</span><span class="r">${r ? r.id.slice(0, 11) : ""}</span></div>`; }).join("")}</div>
+      <div class="proofline${h.intact ? "" : " bad"}"><span>${h.intact ? `Unchanged since sealed. ${own} individual receipts, and the whole log sealed on ${HZ.sealedOn}.` : "These lines do not match the sealed log."}</span>
+        <a href="${VERIFY(HZ.receipt)}" target="_blank" rel="noopener">${HZ.receipt}</a></div></div>
+    ${state.explain ? explainHTML() : ""}
+    <div class="sec" id="logbox" style="scroll-margin-top:84px"><div class="sec-h"><h2>The log, as the bank disclosed it</h2><span class="note">${h.hits.length} lines in clear, ${LOG.length - h.hits.length} as fingerprints only. The full log never leaves the bank.</span></div>
+      <div class="logview" id="logview">${LOG.map((_, i) => logRow(i)).join("")}</div>
+      <div id="ldetwrap"></div></div>`;
+  if (state.sel !== null) focusLine(state.sel, true);
+}
+
+/* The lawyer only ever receives the contested lines in clear; every other line arrives as its fingerprint. */
+const disclosed = i => !!(state.horizon && state.horizon.hits.some(x => x.i === i));
+
+function logRow(i) {
+  if (!disclosed(i)) return `<div class="lv hidden" data-line="${i}"><span class="s">${seqOf(LOG[i])}</span><span class="t">Not disclosed</span><span class="f"></span><span class="fp">${LEAVES[i].slice(0, 32)}…</span><span class="r">log seal</span></div>`;
+  const l = edits[i] || LOG[i], p = l.split(" · "), r = LINE_RECEIPTS[seqOf(LOG[i])];
+  return `<div class="lv${r ? " own" : ""}" data-line="${i}"><span class="s">${p[0]}</span><span class="t">${p[1]}</span><span class="f">${p[2]}</span><span>${p.slice(3).join(" · ")}</span><span class="r">${r ? r.id.slice(0, 11) : "log seal"}</span></div>`;
+}
+
+function lineDetail(i) {
+  if (!disclosed(i)) return `<div class="ldet"><div class="sec-h" style="margin-bottom:10px"><h2>Line ${seqOf(LOG[i])}</h2><span class="st">Not disclosed</span></div>
+    <div class="kv"><span>Fingerprint</span><code>${LEAVES[i]}</code></div>
+    <div class="kv"><span>Covered by</span><code>${HZ.receipt}, the whole log (line ${i + 1} of ${LOG.length})</code></div>
+    <div class="note" style="margin-top:8px">This line concerns another customer. Its content stays at the bank; only its fingerprint was disclosed, so the chain can be checked end to end.</div>
+    <div id="lres"></div>
+    <div class="row" style="margin-top:16px"><button class="btn" data-act="vline" data-i="${i}">Verify its place in the log</button>
+      <a class="btn ghost" href="${VERIFY(HZ.receipt)}" target="_blank" rel="noopener">Public receipt</a></div></div>`;
+  const r = LINE_RECEIPTS[seqOf(LOG[i])], shown = edits[i] || LOG[i], fp = sha256js(enc(shown));
+  return `<div class="ldet"><div class="sec-h" style="margin-bottom:10px"><h2>Line ${seqOf(LOG[i])}</h2>${edits[i] ? `<span class="st risk">Edited after sealing</span>` : ""}</div>
+    <div class="kv"><span>Fingerprint now</span><code>${fp}</code></div>
+    ${r ? `<div class="kv"><span>Receipt</span><code>${r.id}</code></div>
+      <div class="kv"><span>Chain sequence</span><code>${fmtSeq(r.seq)}</code></div>
+      <div class="kv"><span>Sealed at</span><code>${nsUTC(r.ns)}</code></div>
+      <div class="kv"><span>Sealed fingerprint</span><code>${r.hash}</code></div>`
+    : `<div class="kv"><span>Covered by</span><code>${HZ.receipt}, the whole log (line ${i + 1} of ${LOG.length})</code></div>`}
+    <div id="lres"></div>
+    <div class="row" style="margin-top:16px"><button class="btn" data-act="vline" data-i="${i}">Verify this line</button>
+      <button class="btn ghost" data-act="linkline" data-i="${i}">Copy link</button>
+      <a class="btn ghost" href="${VERIFY(r ? r.id : HZ.receipt)}" target="_blank" rel="noopener">Public receipt</a>
+      <button class="btn ghost" data-act="editline" data-i="${i}">${edits[i] ? "Undo the edit" : "Simulate an edit"}</button></div></div>`;
+}
+
+function focusLine(i, quiet) {
+  state.sel = i;
+  document.querySelectorAll(".lv.hit").forEach(x => x.classList.remove("hit"));
+  const row = document.querySelector(`.lv[data-line="${i}"]`);
+  if (!row) return;
+  row.classList.add("hit");
+  const view = $("logview");
+  view.scrollTop = row.offsetTop - view.clientHeight / 2 + row.clientHeight / 2;
+  $("ldetwrap").innerHTML = lineDetail(i);
+  if (!quiet) $("logbox").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function openDispute(text) {
+  const t0 = performance.now();
+  const ref = (text.match(/HZ-\d{4}-\d{5}/) || [])[0];
+  if (!ref) { setView("evidence"); $("evidence").insertAdjacentHTML("afterbegin", `<div class="notice risk"><h3>No file reference found in this letter.</h3><p>Expected a reference like HZ-2026-04417.</p></div>`); return; }
+  const rec = text.match(/received[^0-9]*(\d{1,2}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})/i);
+  const got = rec ? new Date(Date.UTC(+rec[3], MONTHS.indexOf(rec[2]), +rec[1])) : new Date();
+  const due = new Date(got); due.setUTCMonth(due.getUTCMonth() + 1);
+  const day = d => `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  const bases = [/article 86/i.test(text) && "AI Act art. 86", /article 22/i.test(text) && "GDPR art. 22"].filter(Boolean);
+  const hits = LOG.map((l, i) => ({ l, i })).filter(x => x.l.includes(ref));
+  const leaves = LOG.map(l => sha256js(enc(l)));
+  const head = leaves.reduce((h, leaf) => sha256js(enc(h + leaf)), ZERO);
+  const intact = head === HEAD && hits.every(x => leaves[x.i] === LEAVES[x.i]);
+  state.horizon = { ref, hits, got: day(got), due: day(due), dueShort: `${due.getUTCDate()} ${MONTHS[due.getUTCMonth()].slice(0, 3)}`, bases, intact, ms: Math.max(1, Math.round(performance.now() - t0)) };
+  state.sel = null; state.explain = null;
+  setView("evidence"); renderAll();
+  log("AI", `Read the dispute letter · ${ref}, ${bases.length} legal bases, answer due ${day(due)}`, text, JSON.stringify(state.horizon), "To be checked by Me Laurent");
+  log("AI", `Retrieved ${hits.length} of ${LOG.length} lines from Banque Horizon's credit AI log · ${ref}`, ref, hits.map(x => x.l).join("\n"), intact ? "Chain verified against the sealed fingerprint" : "Chain does NOT match");
+}
+
+function evidenceFile() {
+  const h = state.horizon, disclosed = h.hits.map(x => ({ i: x.i, text: x.l, r: (LINE_RECEIPTS[seqOf(x.l)] || {}).id || "" }));
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence file ${h.ref}</title><style>
+body{margin:0;background:#fff;color:#2b2f36;font:14px/1.55 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:880px;margin:0 auto;padding:56px 28px}h1{font:400 32px/1.2 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;color:#0f1115;margin:0 0 6px}
+.e{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#6b7079;margin-bottom:8px}p{color:#6b7079}
+table{width:100%;border-collapse:collapse;margin:28px 0;font-size:13px}td,th{padding:11px 12px 11px 0;border-bottom:1px solid #ececef;text-align:left;vertical-align:top}
+th{color:#6b7079;font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}.m{font-family:Consolas,monospace;font-size:12px;color:#6b7079;white-space:nowrap}
+a{color:#0f1115}#v{padding:14px 18px;border-left:2px solid;margin:8px 0 24px;font-weight:500}.ok{background:#f1f8f4;color:#136c4a}.bad{background:#fdf4f3;color:#b42318}
+code{font-family:Consolas,monospace;font-size:12px;word-break:break-all;color:#0f1115}</style></head><body><main>
+<div class="e">Evidence file · Banque Horizon · CreditScore v3.2</div><h1>${h.ref}</h1>
+<p>${disclosed.length} AI actions disclosed for this applicant. The other ${LOG.length - disclosed.length} lines of the log appear only as fingerprints, so no other applicant's data leaves the bank.</p>
+<table><thead><tr><th>Line</th><th>Time (Paris)</th><th>AI action</th><th>Own receipt</th></tr></thead><tbody id="rows"></tbody></table>
+<div id="v">Checking…</div>
+<p>Log fingerprint: <code>${HEAD}</code><br>Log receipt: <a href="${VERIFY(HZ.receipt)}">${HZ.receipt}</a>, chain sequence ${fmtSeq(HZ.seq)}</p>
+<p style="font-size:12.5px">This file checks itself, offline, in any browser. It recomputes the fingerprint of each disclosed line, then the chain of all ${LOG.length} lines, and compares the result with the sealed fingerprint above. Change one character anywhere and the check fails. A receipt proves when a record existed and that it has not changed since; it does not prove that the decision was right.</p>
+<script>
+const D=${JSON.stringify(disclosed)},L=${JSON.stringify(LEAVES)},HEAD="${HEAD}";
+${sha256js.toString()}
+const tb=document.getElementById("rows");
+for(const d of D){const p=d.text.split(" · "),tr=tb.insertRow();[p[0],p[1],p.slice(3).join(" · ")].forEach((x,k)=>{const c=tr.insertCell();c.textContent=x;if(k<2)c.className="m";});const rc=tr.insertCell();rc.className="m";if(d.r){const a=document.createElement("a");a.href="https://www.recognitium.com/verify/"+d.r;a.textContent=d.r.slice(0,11);rc.appendChild(a);}}
+const e=x=>new TextEncoder().encode(x);let ok=D.every(d=>sha256js(e(d.text))===L[d.i]);
+const h=L.reduce((a,l)=>sha256js(e(a+l)),"0".repeat(64));ok=ok&&h===HEAD;
+const v=document.getElementById("v");v.className=ok?"ok":"bad";
+v.textContent=ok?"Verified offline. These "+D.length+" AI actions are unchanged, in this order, inside a log of "+L.length+" lines sealed on ${HZ.sealedOn}.":"Not verified. This file has been altered.";
+<\/script></main></body></html>`;
+}
+
+/* ---------- plain-language explanation (AI Act art. 86), built only from sealed lines ---------- */
+const nowLocal = () => { const d = new Date(); return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} at ${d.toTimeString().slice(0, 5)}`; };
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const thousands = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+function draftExplanation() {
+  const h = state.horizon;
+  const find = re => { for (const x of h.hits) { const m = x.l.match(re); if (m) return { m, i: x.i, seq: seqOf(x.l) }; } return null; };
+  const dateOf = line => { const [y, mo, d] = line.split(" · ")[1].slice(0, 10).split("-"); return `${+d} ${MONTHS[+mo - 1]} ${y}`; };
+  const app = find(/loan (\d+) EUR over (\d+) months/), sc = find(/(\d+) \/ 1000 · threshold (\d+)/),
+        fa = find(/ratio (\d+) %, employment under (\d+) months/), rv = find(/Human review/), lt = find(/Decision letter sent/);
+  const text = `Dear Paul R.,
+
+Thank you for your letter of ${h.got} about your loan application ${h.ref}, for ${thousands(app.m[1])} euros over ${app.m[2]} months.
+
+Our credit system, CreditScore v3.2, gave your application a score of ${sc.m[1]} out of 1000. An application needs a score of at least ${sc.m[2]} to be accepted.
+
+Two elements weighed most in this score: your debt-to-income ratio, which was ${fa.m[1]} %, and the fact that you had been in your current job for less than ${fa.m[2]} months.
+
+The system did not decide alone. On ${dateOf(rv.m.input)}, a credit analyst reviewed your file and confirmed the refusal. We sent you our decision letter the same day.
+
+If your situation has changed, for example a new employment contract or a lower debt, you may ask us to review your file again at any time.
+
+Yours sincerely,
+Banque Horizon, Credit department`;
+  const sources = [
+    { fig: `${thousands(app.m[1])} euros over ${app.m[2]} months`, label: "The application", ...app },
+    { fig: `${sc.m[1]} out of 1000, threshold ${sc.m[2]}`, label: "The score", ...sc },
+    { fig: `${fa.m[1]} %, under ${fa.m[2]} months`, label: "The main factors", ...fa },
+    { fig: dateOf(rv.m.input), label: "The human review", ...rv },
+    { fig: "Same day", label: "The decision letter", ...lt }
+  ].map(({ fig, label, i, seq }) => ({ fig, label, i, seq }));
+  return { text, draft: text, sources };
+}
+
+function checkExplanation(text) {
+  const h = state.horizon, norm = s => s.replace(/(\d)[ , ](?=\d{3}\b)/g, "$1");
+  const known = new Set((norm(h.hits.map(x => x.l).join(" ") + " " + h.got + " " + h.ref).match(/\d+/g) || []).map(Number));
+  return [...new Set((norm(text).match(/\d+/g) || []).filter(n => !known.has(Number(n))))];
+}
+
+function explainHTML() {
+  const x = state.explain;
+  const sealed = x.hash ? `<div class="res ok">Approved ${x.at}. Every figure in the letter appears in the sealed log.</div>
+      <div class="kv" style="margin-top:14px"><span>Fingerprint of the letter</span><code>${x.hash}</code></div>
+      <div class="kv"><span>Recognitium receipt</span><div><input class="field" id="xrid" placeholder="DG-..." value="${x.receipt || ""}" style="margin:0">
+        <div class="note" id="xvl" style="margin-top:6px">${x.receipt ? `<a href="${VERIFY(x.receipt)}" target="_blank" rel="noopener">Verify this receipt</a>` : "Seal the fingerprint, then paste the receipt id."}</div></div></div>
+      <div class="note" style="margin-top:10px">The letter stays at the bank; only its fingerprint is sealed. The bank can prove what it explained, when, and that it matches the logs.</div>`
+    : `<div class="row" style="margin-top:14px"><button class="btn" data-act="xapprove">Approve and seal</button><button class="btn ghost" data-act="xcheck">Check against the logs</button></div>
+      <div class="note" style="margin-top:10px">Drafted by the AI from the sealed lines only; reviewed and approved by Me Laurent. In production, Mistral writes the draft on the firm's own servers.</div>`;
+  return `<div class="sec" id="xbox" style="scroll-margin-top:84px"><div class="sec-h"><h2>Explanation to the applicant</h2><span class="note">AI Act art. 86: a clear and meaningful explanation of the AI's role and of the main elements of the decision.</span></div>
+    <div class="xgrid"><div><textarea class="letter" id="xtext" spellcheck="false" ${x.hash ? "readonly" : ""}>${esc(x.text)}</textarea><div id="xres">${x.res || ""}</div>${sealed}</div>
+      <div><div class="eyebrow">Every figure, from a sealed line</div><div class="srcs">${x.sources.map(s => `<div class="src" data-line="${s.i}"><b>${s.fig}</b>${s.label}<br><code>${s.seq} · ${(LINE_RECEIPTS[s.seq] || { id: "" }).id.slice(0, 11)}</code></div>`).join("")}</div></div></div></div>`;
+}
+
+/* ---------- search: the receipt is the address ---------- */
+async function goTo(q) {
+  q = (q || "").trim();
+  const st = $("gostatus");
+  if (!q) { st.textContent = ""; return; }
+  if (/^J\d+$/i.test(q)) {
+    const row = $("j" + q.slice(1));
+    if (!row) { st.textContent = "No such journal line"; return; }
+    setView("journal");
+    document.querySelectorAll(".jt tr.hit").forEach(x => x.classList.remove("hit"));
+    row.classList.add("hit"); row.scrollIntoView({ behavior: "smooth", block: "center" });
+    st.textContent = `Journal line ${q.slice(1)}`; return;
+  }
+  if (!state.horizon) await openDispute(SAMPLE_LETTER);
+  setView("evidence");
+  let idx = -1, n = 0;
+  if (/^DG-/i.test(q)) {
+    const k = q.toLowerCase();
+    if (HZ.receipt.toLowerCase().startsWith(k)) { st.textContent = "Seals the whole log"; $("logbox").scrollIntoView({ behavior: "smooth" }); return; }
+    idx = LOG.findIndex(l => (LINE_RECEIPTS[seqOf(l)] || { id: "" }).id.toLowerCase().startsWith(k));
+  } else if (/^#?\d{5}$/.test(q)) {
+    idx = LOG.findIndex(l => seqOf(l) === "#" + q.replace("#", ""));
+  } else {
+    const k = q.toLowerCase(), all = LOG.map((l, i) => disclosed(i) && l.toLowerCase().includes(k) ? i : -1).filter(i => i >= 0);
+    idx = all.length ? all[0] : -1; n = all.length;
+  }
+  if (idx < 0) { st.textContent = "Nothing found"; return; }
+  focusLine(idx);
+  st.textContent = n > 1 ? `${n} lines, first shown` : `Line ${seqOf(LOG[idx])}`;
+  history.replaceState(null, "", "#" + encodeURIComponent(q));
+}
+
+/* ---------- strategy drawer ---------- */
+function scored(c) {
+  const wsum = CRIT.reduce((s, [k]) => s + c.weights[k], 0) || 1;
+  return c.options.map(([name, s]) => ({ name, s, score: Math.round(100 * CRIT.reduce((acc, [k], i) => acc + c.weights[k] * s[i], 0) / (wsum * 5)) }))
+    .sort((a, b) => b.score - a.score);
+}
+function optsHTML(opts) {
+  return opts.map((o, i) => `<div class="opt${i === 0 ? " best" : ""}"><div class="t">${o.name}<em>${i === 0 ? "Recommended · " : ""}${o.score}</em></div>
+    <div class="bar"><i style="width:${o.score}%"></i></div><div class="crit">${CRIT.map(([, l], j) => `<span>${l} ${o.s[j]}/5</span>`).join("")}</div></div>`).join("");
+}
+function apprHTML(a) {
+  return a ? `<div class="note">Approved ${a.at}. Fingerprint of the advice given:</div><div class="hash" id="h">${a.hash}</div>
+    <div class="note">Recognitium receipt</div><input class="field" id="rid" placeholder="DG-..." value="${a.receipt || ""}">
+    <div class="note" id="vl" style="margin-top:8px">${a.receipt ? `<a href="${VERIFY(a.receipt)}" target="_blank" rel="noopener">Verify this receipt</a>` : "Seal the fingerprint, then paste the receipt id."}</div>
+    <div class="row" style="margin-top:16px"><button class="btn ghost" data-act="copy">Copy fingerprint</button><button class="btn ghost" data-act="tamper">Change one comma</button></div>
+    <div class="note" style="margin-top:12px">Only the fingerprint leaves the firm. The advice itself never does.</div>`
+  : `<button class="btn" data-act="approve">Client approves the recommended strategy</button>
+    <div class="note" style="margin-top:10px">Records what the client was told, and when. The duty to inform is proven by whoever owed it.</div>`;
+}
+function drawer(id) {
+  state.open = id;
+  if (!state.drafted[id]) { state.drafted[id] = true; log("AI", `Drafted strategy options · ${CASES[id].client}`, CASES[id].matter, JSON.stringify(CASES[id].options), "Scores set by Me Laurent"); }
+  const c = CASES[id];
+  $("dr").innerHTML = `<button class="x" data-act="close" aria-label="Close">×</button>
+    <div class="eyebrow">Strategy</div><h1 style="font-size:28px">${c.client}</h1><p class="lede">${c.matter}<br>${c.court}</p>
+    <div class="sec" style="margin-top:32px"><div class="eyebrow">What matters to the client</div>
+      ${CRIT.map(([k, l]) => `<div class="w"><span>${l}</span><input type="range" min="0" max="5" value="${c.weights[k]}" data-w="${k}"><output>${c.weights[k]}</output></div>`).join("")}</div>
+    <div class="sec" style="margin-top:32px"><div class="eyebrow">Options</div><div id="opts">${optsHTML(scored(c))}</div>
+      <div class="note" style="margin-top:10px">Options drafted by the AI from the file. Scores set by Me Laurent.</div></div>
+    <div class="sec" style="margin-top:32px"><div class="eyebrow">Client approval</div><div id="appr">${apprHTML(state.approvals[id])}</div></div>`;
+  $("drawer").classList.add("on"); $("scrim").classList.add("on");
+}
+function closeDrawer() { state.open = null; $("drawer").classList.remove("on"); $("scrim").classList.remove("on"); }
+function report(id, at) {
+  const c = CASES[id], o = scored(c);
+  return JSON.stringify({ firm: "Cabinet Laurent", lawyer: "Me Claire Laurent", client: c.client, matter: c.matter, priorities: c.weights, options: o.map(x => ({ option: x.name, score: x.score })), recommended: o[0].name, approved_at: at });
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", async e => {
+  const nav = e.target.closest(".nav");
+  if (nav && nav.dataset.view) return setView(nav.dataset.view);
+  if (nav) return;
+  const lineEl = e.target.closest("[data-line]");
+  if (lineEl && !e.target.closest("[data-act]")) return focusLine(+lineEl.dataset.line);
+  const el = e.target.closest("[data-act],[data-case]");
+  if (!el) { if (e.target.id === "scrim") closeDrawer(); return; }
+  const act = el.dataset.act;
+  if (!act) return drawer(el.dataset.case);
+  switch (act) {
+    case "close": return closeDrawer();
+    case "urgent": {
+      state.urgent = true; state.delegated = false; renderAll();
+      const p = plan(tasks());
+      return log("AI", "Re-planned the week after an urgent file · Lumen SAS", JSON.stringify(tasks()), JSON.stringify(p.list.map(t => [t.id, t.days])), "Proposed · Lumen SAS flagged 2 h short");
+    }
+    case "delegate":
+      state.delegated = true; renderAll();
+      return log("Lawyer", "Accepted the re-plan with one change · 2 h of Lumen SAS research delegated to the associate", JSON.stringify(tasks()), null, "Accepted with change");
+    case "postpone":
+      el.textContent = "Draft ready for review"; el.disabled = true;
+      return log("AI", "Drafted a request for postponement · Lumen SAS", CASES.lumen.matter, "Request for postponement, Lumen SAS (demo draft)", "Awaiting review by Me Laurent");
+    case "approve": {
+      const id = state.open, at = nowLocal(), json = report(id, at);
+      state.approvals[id] = { at, json, hash: await sha256(json) };
+      renderAll();
+      return log("Client", `Approved the recommended strategy · ${CASES[id].client}`, json, null, "Approved");
+    }
+    case "copy": navigator.clipboard && navigator.clipboard.writeText(state.approvals[state.open].hash).catch(() => {}); el.textContent = "Copied"; return;
+    case "tamper": {
+      const a = state.approvals[state.open], altered = await sha256(a.json.replace(",", ";"));
+      $("h").innerHTML = `${a.hash}<br><span class="hash bad">${altered}</span>`;
+      el.outerHTML = `<span class="note" style="color:var(--risk)">One character changed: the fingerprint no longer matches.</span>`; return;
+    }
+    case "sample": return openDispute(SAMPLE_LETTER);
+    case "explain": {
+      const first = !state.explain;
+      if (first) state.explain = draftExplanation();
+      renderEvidence();
+      $("xbox").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (first) return log("AI", `Drafted a plain-language explanation (AI Act art. 86) · ${state.horizon.ref}`, state.horizon.hits.map(x => x.l).join("\n"), state.explain.text, "To be reviewed by Me Laurent");
+      return;
+    }
+    case "xcheck":
+    case "xapprove": {
+      const x = state.explain, bad = checkExplanation(x.text);
+      x.res = bad.length
+        ? `<div class="res bad">${bad.length === 1 ? "This figure does" : "These figures do"} not appear in the sealed log: ${bad.join(", ")}. Correct ${bad.length === 1 ? "it" : "them"}, or the letter contradicts the evidence.</div>`
+        : (act === "xcheck" ? `<div class="res ok">Every figure in the letter appears in the sealed log lines.</div>` : "");
+      if (act === "xcheck" || bad.length) {
+        $("xres").innerHTML = x.res;
+        return log("Lawyer", `${act === "xapprove" ? "Tried to approve the explanation" : "Checked the explanation against the sealed log"} · ${state.horizon.ref}`, x.text, null,
+          bad.length ? `Blocked: ${bad.length} figure${bad.length > 1 ? "s" : ""} not in the log` : "All figures match");
+      }
+      x.at = nowLocal(); x.hash = await sha256(x.text); x.res = "";
+      renderEvidence(); $("xbox").scrollIntoView({ behavior: "smooth", block: "start" });
+      return log("Lawyer", `Approved the explanation for sending · ${state.horizon.ref}${x.text !== x.draft ? " · edited by the lawyer" : ""}`, x.text, null, "Approved · fingerprint ready to seal");
+    }
+    case "bundle": {
+      const html = evidenceFile(), a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+      a.download = `evidence-${state.horizon.ref}.html`; a.click();
+      return log("Lawyer", `Exported the evidence file · ${state.horizon.ref} · ${state.horizon.hits.length} lines disclosed, ${LOG.length - state.horizon.hits.length} as fingerprints only`, html, null, "Exported");
+    }
+    case "vline": {
+      const i = +el.dataset.i;
+      if (!disclosed(i)) {
+        const ok = LEAVES.reduce((h, leaf) => sha256js(enc(h + leaf)), ZERO) === HEAD;
+        $("lres").innerHTML = `<div class="res ${ok ? "ok" : "bad"}">${ok ? `Match. This fingerprint sits at position ${i + 1} of the sealed log. Its content was never disclosed.` : "The chain does not match the sealed log."}</div>`;
+        return log("Lawyer", `Verified the place of undisclosed line ${seqOf(LOG[i])} in the sealed log`, LEAVES[i], null, ok ? "In the sealed chain" : "NOT in the sealed chain");
+      }
+      const shown = edits[i] || LOG[i], fp = sha256js(enc(shown)), r = LINE_RECEIPTS[seqOf(LOG[i])];
+      const ok = r ? fp === r.hash : (fp === LEAVES[i] && LEAVES.reduce((h, leaf) => sha256js(enc(h + leaf)), ZERO) === HEAD);
+      $("lres").innerHTML = `<div class="res ${ok ? "ok" : "bad"}">${ok
+        ? (r ? `Match. This line is, word for word, the content committed in ${r.id}.` : `Match. This line sits unchanged at position ${i + 1} of the sealed log.`)
+        : `No match. This line was changed after it was sealed; the receipt still holds the original fingerprint.`}</div>`;
+      return log("Lawyer", `Verified log line ${seqOf(LOG[i])} · Banque Horizon`, shown, null, ok ? "Matches its receipt" : "Does NOT match its receipt");
+    }
+    case "linkline": {
+      const i = +el.dataset.i, r = LINE_RECEIPTS[seqOf(LOG[i])], key = r ? r.id : seqOf(LOG[i]).slice(1);
+      navigator.clipboard && navigator.clipboard.writeText(location.href.split("#")[0] + "#" + key).catch(() => {});
+      history.replaceState(null, "", "#" + key); el.textContent = "Link copied"; return;
+    }
+    case "editline": {
+      const i = +el.dataset.i;
+      if (edits[i]) delete edits[i];
+      else edits[i] = LOG[i].replace(/(\d+) \/ 1000/, (m, s) => `${+s + 50} / 1000`).replace("refusal", "acceptance").replace("sent", "posted").replace("received", "registered");
+      document.querySelector(`.lv[data-line="${i}"]`).outerHTML = logRow(i);
+      return focusLine(i, true);
+    }
+    case "check": {
+      const bad = await checkJournal();
+      renderJournal(bad >= 0 ? bad : undefined);
+      $("jcheck").innerHTML = bad < 0
+        ? `<div class="notice ok"><h3>Intact. ${journal.length} lines, each chained to the one before.</h3><p style="margin:0">Its fingerprint matches the last line. Once sealed, anyone can check it offline.</p></div>`
+        : `<div class="notice risk"><h3>Line ${bad + 1} was rewritten after the fact.</h3><p style="margin:0">Lines ${bad + 1} to ${journal.length} no longer match. Recomputing them to hide it would change the journal fingerprint, which then no longer matches the receipt.</p></div>`;
+      return;
+    }
+    case "alter":
+      if (journal.length < 2) return;
+      journal[1].decision = "Rejected by Me Laurent"; renderJournal();
+      el.textContent = "Line 2 rewritten"; el.disabled = true; return;
+    case "export": {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(journal, null, 2)], { type: "application/json" }));
+      a.download = "ai-journal.json"; a.click(); return;
+    }
+    case "reset":
+      Object.assign(state, { urgent: false, delegated: false, approvals: {}, drafted: {}, horizon: null, sel: null, explain: null });
+      for (const k in edits) delete edits[k];
+      journal = []; queue = Promise.resolve();
+      $("jcheck").innerHTML = ""; $("jrid").value = ""; $("goto").value = ""; $("gostatus").textContent = "";
+      document.querySelectorAll("[data-act=alter]").forEach(b => { b.textContent = "Rewrite a past line"; b.disabled = false; });
+      try { history.replaceState(null, "", location.href.split("#")[0]); } catch (_) {}
+      closeDrawer(); setView("week"); renderAll(); seed(); return;
+  }
+});
+
+document.addEventListener("input", e => {
+  if (e.target.dataset.w && state.open) {
+    const c = CASES[state.open];
+    c.weights[e.target.dataset.w] = +e.target.value;
+    e.target.nextElementSibling.textContent = e.target.value;
+    $("opts").innerHTML = optsHTML(scored(c));
+    if (state.approvals[state.open]) { delete state.approvals[state.open]; $("appr").innerHTML = apprHTML(null); renderFiles(); }
+  }
+  const link = (inputId, outId, empty) => {
+    const v = e.target.value.trim();
+    $(outId).innerHTML = /^[A-Za-z0-9._-]{6,80}$/.test(v) ? `<a href="${VERIFY(v)}" target="_blank" rel="noopener">Verify this receipt</a>` : empty;
+    return v;
+  };
+  if (e.target.id === "xtext" && state.explain && !state.explain.hash) { state.explain.text = e.target.value; state.explain.res = ""; $("xres").innerHTML = ""; }
+  if (e.target.id === "xrid") state.explain.receipt = link("xrid", "xvl", "Seal the fingerprint, then paste the receipt id.");
+  if (e.target.id === "jrid") link("jrid", "jvl", "Seal the fingerprint, then paste the receipt id.");
+  if (e.target.id === "rid") state.approvals[state.open].receipt = link("rid", "vl", "Seal the fingerprint, then paste the receipt id.");
+});
+document.addEventListener("change", e => {
+  if (e.target.dataset.w && state.open) {
+    const c = CASES[state.open];
+    log("Lawyer", `Changed the client's priorities · ${c.client}`, JSON.stringify(c.weights), JSON.stringify(scored(c).map(o => o.name)), "Edited the AI ranking");
+  }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+$("goto").addEventListener("keydown", e => { if (e.key === "Enter") goTo(e.target.value); });
+
+document.addEventListener("dragover", e => { e.preventDefault(); const d = e.target.closest && e.target.closest("#drop"); document.querySelectorAll("#drop").forEach(x => x.classList.toggle("over", !!d)); });
+document.addEventListener("dragleave", e => { if (e.target.id === "drop") e.target.classList.remove("over"); });
+document.addEventListener("drop", e => {
+  e.preventDefault();
+  if (!(e.target.closest && e.target.closest("#drop"))) return;
+  const f = e.dataTransfer.files[0];
+  if (f) f.text().then(openDispute); else openDispute(e.dataTransfer.getData("text") || "");
+});
+
+renderAll(); seed();
+if (location.hash.length > 1) { const q = decodeURIComponent(location.hash.slice(1)); $("goto").value = q; goTo(q); }
+</script>
+</body>
+</html>
