@@ -19,12 +19,12 @@ const VERIFY_URL = id => `https://www.recognitium.com/verify/${id}`;
 const STR = {
   en: {
     traceIntro: "Everything that happened in this case, in order: documents, dates, and every question to the Assistant with its answer. Nothing can be changed afterwards without it showing.",
-    okTitle: "Nothing has been changed", okBody: (n, a) => `${n} entries checked in your browser just now. ${a} case documents are also sealed on Recognitium, a public register.`,
+    okTitle: "Nothing has been changed", okBody: (n, a) => `${n} entries recomputed in your browser just now: each one still matches the chain of this case. ${a} documents also match their receipt on Recognitium, a public register; open a receipt to check it independently.`,
     badTitle: n => `${n} entr${n > 1 ? "ies were" : "y was"} changed after being recorded`, checkAgain: "Check again",
     fAll: "All", fDocs: "Documents", fAgenda: "Agenda", fAssistant: "Assistant",
     youAsked: "You asked", someoneAsked: w => `${w} asked`, answered: "answered by the Assistant", openChat: "Open in the chat",
     addedToAgenda: "Added to the Agenda", savedTrace: "Saved in Traceability", basedOn: "Based on",
-    proofTitle: "Technical proof", sealedPublic: id => `Sealed on Recognitium, receipt ${id}`, chainedOnly: "Recorded in this case's chain (not yet on Recognitium).",
+    proofTitle: "Technical proof", sealedPublic: (id, d) => `Sealed on Recognitium on ${d}, receipt ${id}`, chainedOnly: "Recorded in this case's chain (not yet on Recognitium).",
     openReceipt: "open the public receipt", simulateDemo: "Simulate a change (demo)", changed: "Changed", unchanged: "Unchanged",
     privateChat: n => `Private chat of another member · ${n} entr${n > 1 ? "ies" : "y"}`, privateNote: "Recorded, but its content is not shared with you.",
     hiddenShort: "Recorded, but its content is not shared with you.", addDoc: "Add a document", exportShort: "Export",
@@ -40,7 +40,7 @@ const STR = {
       lawyer: [["Summarize the case", "Every document, in order"], ["What is the limitation period?", "And where it stands in this case"], ["What does article L1235-3 say?", "Explanation and official link"], ["Which employer documents are disclosed?", "And which are not"]],
       company: [["What are our next deadlines?", "Hearing and documents to hand over"], ["What is human oversight?", "EU AI Act"], ["Which employer documents are disclosed?", "What the parties see"], ["How do we prove the letter was not changed?", "Fingerprints and receipts"]]
     },
-    plain: (a, m) => `Plain language, ISO 24495-1 · ${a} words per sentence on average, longest ${m}`, plainWarn: (a, m) => `Plain-language check: ${a} words per sentence on average, longest ${m}`,
+    plain: (a, m) => `Plain-language check (ISO 24495-1 guidance): ${a} words per sentence on average, longest ${m}`, plainWarn: (a, m) => `Plain-language check: ${a} words per sentence on average, longest ${m}`,
     rules: "Rules", sealed: n => `Sealed · entry no. ${n}`, aiWarn: "AI-generated · not validated by a lawyer", noSource: x => `Figure without a source: ${x}`,
     kTerm: "JUSLIB", kDoc: "Document", receipt: "receipt", cantAnswer: e => `The Assistant could not answer: ${e}`,
     agendaLede: "Every date comes from a sealed event in the case, a rule and its source. Nobody types it by hand.",
@@ -57,7 +57,7 @@ const STR = {
     hidden: "Content not disclosed to your account. Its existence, date and fingerprint are sealed: it cannot be changed or backdated without it showing.",
     edited: "Edited after the fact, for the demonstration.", notDisclosed: t => `${t}, not disclosed`,
     okLine: undiscl => `Intact: fingerprint, content${undiscl ? " (not disclosed, not checkable)" : ""}, chaining and links verified in this browser.`,
-    pBody: "The content shown is not the one that was sealed.", pHeader: "The header no longer matches its fingerprint.", pChain: "The chain is broken at this point.", pLinks: "Linked to a missing or later event.",
+    pBody: "The content shown is not the one that was sealed.", pHeader: "The header no longer matches its fingerprint.", pChain: "The chain is broken at this point.", pLinks: "Linked to a missing or later event.", pReceipt: "Does not match its Recognitium receipt.",
     translated: "Unofficial English translation. The sealed original is French.", showOriginal: "Show the sealed original", hideOriginal: "Hide the original",
     exchange: "Exchange with the Assistant", nEvents: n => `${n} sealed events`, nCalls: n => `${n} tool call${n > 1 ? "s" : ""}`, withheld: "1 answer withheld",
     verifyExchange: "Verify this exchange", privateN: n => `${n} private Assistant events of another member`, headersOnly: "Headers only",
@@ -82,12 +82,12 @@ const STR = {
   },
   fr: {
     traceIntro: "Tout ce qui s'est passé dans ce dossier, dans l'ordre : les documents, les dates, et chaque question posée à l'Assistant avec sa réponse. Rien ne peut être modifié après coup sans que cela se voie.",
-    okTitle: "Rien n'a été modifié", okBody: (n, a) => `${n} entrées vérifiées à l'instant dans votre navigateur. ${a} documents du dossier sont aussi scellés sur Recognitium, un registre public.`,
+    okTitle: "Rien n'a été modifié", okBody: (n, a) => `${n} entrées recalculées à l'instant dans votre navigateur : chacune correspond toujours à la chaîne du dossier. ${a} documents correspondent aussi à leur reçu sur Recognitium, un registre public ; ouvrez un reçu pour le vérifier vous-même.`,
     badTitle: n => `${n} entrée${n > 1 ? "s ont" : " a"} été modifiée${n > 1 ? "s" : ""} après avoir été enregistrée${n > 1 ? "s" : ""}`, checkAgain: "Vérifier à nouveau",
     fAll: "Tout", fDocs: "Documents", fAgenda: "Agenda", fAssistant: "Assistant",
     youAsked: "Vous avez demandé", someoneAsked: w => `${w} a demandé`, answered: "réponse de l'Assistant", openChat: "Ouvrir dans la conversation",
     addedToAgenda: "Ajouté à l'Agenda", savedTrace: "Enregistré dans Traçabilité", basedOn: "Sources",
-    proofTitle: "Preuve technique", sealedPublic: id => `Scellé sur Recognitium, reçu ${id}`, chainedOnly: "Enregistré dans la chaîne du dossier (pas encore sur Recognitium).",
+    proofTitle: "Preuve technique", sealedPublic: (id, d) => `Scellé sur Recognitium le ${d}, reçu ${id}`, chainedOnly: "Enregistré dans la chaîne du dossier (pas encore sur Recognitium).",
     openReceipt: "ouvrir le reçu public", simulateDemo: "Simuler une modification (démo)", changed: "Modifié", unchanged: "Inchangé",
     privateChat: n => `Conversation privée d'un autre membre · ${n} entrée${n > 1 ? "s" : ""}`, privateNote: "Enregistrée, mais son contenu ne vous est pas partagé.",
     hiddenShort: "Enregistré, mais son contenu ne vous est pas partagé.", addDoc: "Ajouter un document", exportShort: "Exporter",
@@ -103,7 +103,7 @@ const STR = {
       lawyer: [["Résume le dossier", "Toutes les pièces, dans l'ordre"], ["C'est quoi le délai de prescription ?", "Et son état dans ce dossier"], ["Que dit l'article L1235-3 ?", "Explication et lien officiel"], ["Quelles pièces de l'employeur sont divulguées ?", "Et celles qui ne le sont pas"]],
       company: [["Quelles sont nos prochaines échéances ?", "Audience et pièces à transmettre"], ["C'est quoi le contrôle humain ?", "Règlement européen sur l'IA"], ["Quelles pièces de l'employeur sont divulguées ?", "Ce que voient les parties"], ["Comment prouver que la lettre n'a pas été modifiée ?", "Empreintes et reçus"]]
     },
-    plain: (a, m) => `Langage clair, ISO 24495-1 · ${a} mots par phrase en moyenne, la plus longue ${m}`, plainWarn: (a, m) => `Contrôle langage clair : ${a} mots par phrase en moyenne, la plus longue ${m}`,
+    plain: (a, m) => `Contrôle langage clair (repères ISO 24495-1) : ${a} mots par phrase en moyenne, la plus longue ${m}`, plainWarn: (a, m) => `Contrôle langage clair : ${a} mots par phrase en moyenne, la plus longue ${m}`,
     rules: "Règles", sealed: n => `Scellé · entrée n° ${n}`, aiWarn: "Généré par IA · non validé par un juriste", noSource: x => `Chiffre sans source : ${x}`,
     kTerm: "JUSLIB", kDoc: "Pièce", receipt: "reçu", cantAnswer: e => `L'Assistant n'a pas pu répondre : ${e}`,
     agendaLede: "Chaque date vient d'un événement scellé du dossier, d'une règle et de sa source. Personne ne la saisit à la main.",
@@ -120,7 +120,7 @@ const STR = {
     hidden: "Contenu non divulgué à votre compte. Son existence, sa date et son empreinte sont scellées : il ne peut pas être modifié ni antidaté sans que cela se voie.",
     edited: "Version modifiée après coup, pour la démonstration.", notDisclosed: t => `${t}, non divulgué`,
     okLine: undiscl => `Intact : empreinte, contenu${undiscl ? " (non divulgué, non vérifiable)" : ""}, chaînage et liens vérifiés dans ce navigateur.`,
-    pBody: "Le contenu présenté n'est pas celui qui a été scellé.", pHeader: "L'en-tête ne correspond plus à son empreinte.", pChain: "La chaîne est rompue à cet endroit.", pLinks: "Relié à un événement absent ou postérieur.",
+    pBody: "Le contenu présenté n'est pas celui qui a été scellé.", pHeader: "L'en-tête ne correspond plus à son empreinte.", pChain: "La chaîne est rompue à cet endroit.", pLinks: "Relié à un événement absent ou postérieur.", pReceipt: "Ne correspond pas à son reçu Recognitium.",
     translated: "", showOriginal: "", hideOriginal: "",
     exchange: "Échange avec l'Assistant", nEvents: n => `${n} événements scellés`, nCalls: n => `${n} appel${n > 1 ? "s" : ""} d'outil`, withheld: "1 réponse retenue",
     verifyExchange: "Vérifier cet échange", privateN: n => `${n} événements privés de l'Assistant, d'un autre membre`, headersOnly: "En-têtes seulement",
@@ -221,6 +221,8 @@ async function verifyOne(ev) {
   if (!header_ok) problems.push("pHeader");
   if (!chain_ok) problems.push("pChain");
   if (!links_ok) problems.push("pLinks");
+  // The receipt names the fingerprint that was sealed: a history rewritten consistently would still differ from it.
+  if (ev.receipt?.receipt?.content_hash && ev.receipt.receipt.content_hash !== ev.fingerprint) problems.push("pReceipt");
   return { ok: !problems.length, header_ok, chain_ok, links_ok, body_ok, problems };
 }
 async function verifyCase() {
@@ -256,10 +258,10 @@ function renderShell() {
   document.querySelectorAll("[data-view]").forEach(a => a.classList.toggle("on", a.dataset.view === S.view));
   for (const v of ["assistant", "agenda", "tracabilite"]) $("view-" + v).hidden = v !== S.view;
   const c = S.boot.case, p = me();
-  $("caseCard").innerHTML = `<b>${esc(c.title)}</b><span>${esc(c.court)}</span><br><span>${t().stage}: ${esc(c.stage)} · ${esc(c.reference)}</span>`;
+  $("caseCard").innerHTML = `<b>${esc(c.title)}</b><span>${esc(c.court)}</span><br><span>${t().stage}${S.lang === "fr" ? " : " : ": "}${esc(c.stage)} · ${esc(c.reference)}</span>`;
   $("me").innerHTML = `<span class="avatar ${p.id}">${esc(p.initials)}</span><span class="who"><b>${esc(p.name)}</b><span>${esc(pick(p.role))}</span></span>`;
   const next = S.agenda.find(it => !it.met && daysTo(it.date) >= 0), d = next ? daysTo(next.date) : null;
-  $("agendaBadge").textContent = next ? (d === 0 ? t().today : `D-${d}`) : "";
+  $("agendaBadge").textContent = next ? (d === 0 ? t().today : `${S.lang === "fr" ? "J" : "D"}-${d}`) : "";
   $("agendaBadge").className = "badge" + (next && d <= 30 ? " hot" : "");
   $("ledgerBadge").textContent = S.boot.ledger ? S.boot.ledger.length : "";
   const m = S.boot.mistral, j = S.boot.juslib;
@@ -406,7 +408,7 @@ function renderRow(ev) {
   const chips = agendaFrom(ev.id).map(it => `<button class="chip" data-act="goto-agenda">${I.cal}${w.addedToAgenda}: ${esc(it.title)} · ${esc(fmtDate(it.date))}</button>`).join("");
   const status = r ? (r.ok ? `<span class="st ok" title="${w.unchanged}">${I.check}</span>` : `<span class="st bad">${I.alert}${w.changed}</span>`) : "";
   const proof = `<details class="proof"${r && !r.ok ? " open" : ""}><summary>${w.proofTitle}</summary>
-    <p>${ev.receipt ? `${esc(w.sealedPublic(ev.receipt.receipt_id.slice(0, 11)))} · <a href="${VERIFY_URL(ev.receipt.receipt_id)}" target="_blank" rel="noopener">${w.openReceipt}</a>` : w.chainedOnly}</p>
+    <p>${ev.receipt ? `${esc(w.sealedPublic(ev.receipt.receipt_id.slice(0, 11), dayOf(ev.receipt.sealed_at)))} · <a href="${VERIFY_URL(ev.receipt.receipt_id)}" target="_blank" rel="noopener">${w.openReceipt}</a>` : w.chainedOnly}</p>
     <p class="mono">${ev.fingerprint}</p>
     ${r && !r.ok ? `<p class="result bad">${esc(problemText(r))}</p>` : ""}
     ${b && k !== "assistant" ? `<button class="btn small" data-act="tamper" data-id="${ev.id}">${ev.id in S.edits ? w.undo : w.simulateDemo}</button>` : ""}</details>`;
@@ -421,7 +423,7 @@ function renderLedger() {
   const w = t();
   if (!S.events) { $("ledgerCol").innerHTML = `<h1>${w.trace}</h1><p class="lede">${w.loading}</p>`; return; }
   const c = S.caseCheck;
-  const count = k => S.events.filter(ev => (k === "all" || kindOf(ev) === k) && (kindOf(ev) !== "assistant" || ev.body)).length;
+  const count = k => S.events.filter(ev => k === "all" || kindOf(ev) === k).length;
   const rows = [];
   for (const ev of S.events.filter(ev => S.filter === "all" || kindOf(ev) === S.filter)) {
     const day = dayOf(ev.header.at), last = rows.at(-1);
