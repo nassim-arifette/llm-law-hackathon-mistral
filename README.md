@@ -17,11 +17,22 @@ No server, no install, no internet needed (except to open the public receipt lin
 
 Before going on stage: "Reset the demo" in the left menu of `index.html`.
 
+## Live Mistral (the explanation draft)
+
+To have Mistral write the plain-language explanation live, serve the pages through the small relay instead of double-clicking. Node 18 or later, nothing to install. In PowerShell, from this folder:
+
+```powershell
+$env:MISTRAL_API_KEY = "<your Mistral API key>"
+node server.mjs
+```
+
+Then open http://localhost:8787. The left menu shows "Mistral connected". In Evidence, "Explain to the applicant" now asks Mistral (default `mistral-large-latest`; set `$env:MISTRAL_MODEL` to change it) to draft the letter from the sealed lines only. Counsel still checks every figure against the log: change 412 to 432 and approval is refused, whatever the model wrote. The key stays in the relay, never in the browser. Without the relay, or if Mistral does not answer, the draft falls back to rules and the page says so.
+
 ## What is real, what is not
 
 - The firm, the bank, the customers and every log are **fictional**.
 - The receipts are **real**, sealed on Recognitium's production chain on 4 October 2026. Anyone can open them at `https://www.recognitium.com/verify/<receipt id>`. Only fingerprints (32 bytes) were ever sent.
-- The letter reading and the plain-language draft are assembled by rules in this demo. In production, Mistral does both on the firm's own servers.
+- The plain-language draft is written live by Mistral when the relay runs with a key; otherwise by rules. The letter reading is still rules.
 - A receipt proves when a record existed and that it has not changed since. It does not prove that the AI decision was right.
 
 ## Do not edit
@@ -30,5 +41,6 @@ The bank log in `index.html` (`LOG`), the messages and random values in `convers
 
 ## Next steps for the team
 
-- Wire one live Mistral call (the explanation draft is the natural one; Counsel's figure check still blocks anything Mistral invents). A browser page cannot call the Mistral API from a local file directly: it needs a small local relay.
+- Letter reading by Mistral (reference, legal bases, deadline), through the same relay.
+- Connect Recognitium's MCP server to Le Chat as a custom connector, so Mistral itself can seal and verify.
 - Evidence file export for the chatbot case.

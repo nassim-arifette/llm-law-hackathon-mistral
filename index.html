@@ -215,7 +215,7 @@
     <button class="nav" data-view="journal">AI journal <i id="n-journal"></i></button>
     <a class="nav" href="binding.html" style="text-decoration:none">Decision to money <i></i></a>
     <a class="nav" href="conversation.html" style="text-decoration:none">Chatbot dispute <i></i></a>
-    <div class="rail-foot">Every AI action is sealed by Recognitium and verifiable offline.<br><br><button data-act="reset">Reset the demo</button></div>
+    <div class="rail-foot">Every AI action is sealed by Recognitium and verifiable offline.<br><br><span id="mstatus"></span><br><br><button data-act="reset">Reset the demo</button></div>
   </nav>
 
   <main>
@@ -625,7 +625,7 @@ async function openDispute(text) {
   const leaves = LOG.map(l => sha256js(enc(l)));
   const head = leaves.reduce((h, leaf) => sha256js(enc(h + leaf)), ZERO);
   const intact = head === HEAD && hits.every(x => leaves[x.i] === LEAVES[x.i]);
-  state.horizon = { ref, hits, got: day(got), due: day(due), dueShort: `${due.getUTCDate()} ${MONTHS[due.getUTCMonth()].slice(0, 3)}`, bases, intact, ms: Math.max(1, Math.round(performance.now() - t0)) };
+  state.horizon = { ref, hits, letter: text, got: day(got), due: day(due), dueShort: `${due.getUTCDate()} ${MONTHS[due.getUTCMonth()].slice(0, 3)}`, bases, intact, ms: Math.max(1, Math.round(performance.now() - t0)) };
   state.sel = null; state.explain = null;
   setView("evidence"); renderAll();
   log("AI", `Read the dispute letter · ${ref}, ${bases.length} legal bases, answer due ${day(due)}`, text, JSON.stringify(state.horizon), "To be checked by Me Laurent");
@@ -698,7 +698,7 @@ Banque Horizon, Credit department`;
 
 function checkExplanation(text) {
   const h = state.horizon, norm = s => s.replace(/(\d)[ , ](?=\d{3}\b)/g, "$1");
-  const known = new Set((norm(h.hits.map(x => x.l).join(" ") + " " + h.got + " " + h.ref).match(/\d+/g) || []).map(Number));
+  const known = new Set((norm(h.hits.map(x => x.l).join(" ") + " " + h.got + " " + h.ref + " " + (h.letter || "")).match(/\d+/g) || []).map(Number));
   return [...new Set((norm(text).match(/\d+/g) || []).filter(n => !known.has(Number(n))))];
 }
 
@@ -709,10 +709,13 @@ function explainHTML() {
       <div class="kv"><span>Recognitium receipt</span><div><input class="field" id="xrid" placeholder="DG-..." value="${x.receipt || ""}" style="margin:0">
         <div class="note" id="xvl" style="margin-top:6px">${x.receipt ? `<a href="${VERIFY(x.receipt)}" target="_blank" rel="noopener">Verify this receipt</a>` : "Seal the fingerprint, then paste the receipt id."}</div></div></div>
       <div class="note" style="margin-top:10px">The letter stays at the bank; only its fingerprint is sealed. The bank can prove what it explained, when, and that it matches the logs.</div>`
+    : x.busy ? `<div class="note" style="margin-top:14px">Mistral is drafting from the ${state.horizon.hits.length} sealed lines only…</div>`
     : `<div class="row" style="margin-top:14px"><button class="btn" data-act="xapprove">Approve and seal</button><button class="btn ghost" data-act="xcheck">Check against the logs</button></div>
-      <div class="note" style="margin-top:10px">Drafted by the AI from the sealed lines only; reviewed and approved by Me Laurent. In production, Mistral writes the draft on the firm's own servers.</div>`;
+      <div class="note" style="margin-top:10px">${x.by && x.by.startsWith("Mistral")
+        ? `Drafted live by ${esc(x.by)} from the sealed lines only. Every figure is checked against the log before Me Laurent can approve it.`
+        : `Drafted by rules from the sealed lines${x.why ? ` (${esc(x.why)})` : ""}. With the relay running, Mistral writes this draft.`}</div>`;
   return `<div class="sec" id="xbox" style="scroll-margin-top:84px"><div class="sec-h"><h2>Explanation to the applicant</h2><span class="note">AI Act art. 86: a clear and meaningful explanation of the AI's role and of the main elements of the decision.</span></div>
-    <div class="xgrid"><div><textarea class="letter" id="xtext" spellcheck="false" ${x.hash ? "readonly" : ""}>${esc(x.text)}</textarea><div id="xres">${x.res || ""}</div>${sealed}</div>
+    <div class="xgrid"><div><textarea class="letter" id="xtext" spellcheck="false" ${x.hash || x.busy ? "readonly" : ""}>${x.busy ? "" : esc(x.text)}</textarea><div id="xres">${x.res || ""}</div>${sealed}</div>
       <div><div class="eyebrow">Every figure, from a sealed line</div><div class="srcs">${x.sources.map(s => `<div class="src" data-line="${s.i}"><b>${s.fig}</b>${s.label}<br><code>${s.seq} · ${(LINE_RECEIPTS[s.seq] || { id: "" }).id.slice(0, 11)}</code></div>`).join("")}</div></div></div></div>`;
 }
 
@@ -824,12 +827,24 @@ document.addEventListener("click", async e => {
     }
     case "sample": return openDispute(SAMPLE_LETTER);
     case "explain": {
-      const first = !state.explain;
-      if (first) state.explain = draftExplanation();
-      renderEvidence();
-      $("xbox").scrollIntoView({ behavior: "smooth", block: "start" });
-      if (first) return log("AI", `Drafted a plain-language explanation (AI Act art. 86) · ${state.horizon.ref}`, state.horizon.hits.map(x => x.l).join("\n"), state.explain.text, "To be reviewed by Me Laurent");
-      return;
+      if (state.explain) { renderEvidence(); $("xbox").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+      const rules = draftExplanation(), h = state.horizon;
+      state.explain = { ...rules, by: "rules", busy: MISTRAL.on };
+      renderEvidence(); $("xbox").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (MISTRAL.on) {
+        try {
+          const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 30000);
+          const r = await fetch("/api/explain", { method: "POST", signal: ctrl.signal, headers: { "content-type": "application/json" }, body: JSON.stringify({ letter: h.letter, lines: h.hits.map(x => x.l) }) });
+          clearTimeout(timer);
+          const d = await r.json();
+          if (!r.ok || !d.text) throw new Error(d.error || `relay answered ${r.status}`);
+          Object.assign(state.explain, { text: d.text, draft: d.text, by: `Mistral · ${d.model}`, busy: false });
+        } catch (err) {
+          Object.assign(state.explain, { by: "rules", why: `Mistral unavailable: ${err.name === "AbortError" ? "no answer within 30 s" : err.message}`, busy: false });
+        }
+        renderEvidence(); $("xbox").scrollIntoView({ block: "start" });
+      }
+      return log("AI", `Drafted a plain-language explanation (AI Act art. 86) · ${h.ref} · ${state.explain.by}`, h.hits.map(x => x.l).join("\n"), state.explain.text, "To be reviewed by Me Laurent");
     }
     case "xcheck":
     case "xapprove": {
@@ -941,6 +956,15 @@ document.addEventListener("drop", e => {
   const f = e.dataTransfer.files[0];
   if (f) f.text().then(openDispute); else openDispute(e.dataTransfer.getData("text") || "");
 });
+
+/* Live Mistral: available when the page is served by server.mjs with a key set. */
+const MISTRAL = { on: false, model: "" };
+if (location.protocol.startsWith("http")) {
+  fetch("/api/health").then(r => r.json()).then(d => {
+    Object.assign(MISTRAL, { on: !!d.mistral, model: d.model || "" });
+    $("mstatus").textContent = d.mistral ? `Mistral connected · ${d.model}` : "Mistral relay running, no API key set";
+  }).catch(() => {});
+}
 
 renderAll(); seed();
 if (location.hash.length > 1) { const q = decodeURIComponent(location.hash.slice(1)); $("goto").value = q; goTo(q); }
