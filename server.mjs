@@ -12,7 +12,7 @@ import { extname, join, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
-const PORT = Number(process.env.PORT) || 8787;
+const PORT = Number(process.env.PORT) || Number((process.argv.find(a => a.startsWith("--port=")) || "").slice(7)) || 8787;
 const KEY = (process.env.MISTRAL_API_KEY || "").trim().replace(/^["']|["']$/g, "");
 const MODEL = process.env.MISTRAL_MODEL || "mistral-large-latest";
 const BASE = process.env.MISTRAL_BASE || "https://api.mistral.ai";
